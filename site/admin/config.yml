@@ -18,7 +18,7 @@ logo_url: https://decapbridge.com/decapcms-with-bridge.svg
 # Add site links in Decap CMS (optional)
 site_url: https://glistening-alfajores-c84e54.netlify.app
 
-media_folder: "assets/uploads"
+media_folder: "site/assets/uploads"
 public_folder: "assets/uploads"
 
 collections:
@@ -29,7 +29,7 @@ collections:
     files:
       - name: "hero-images"
         label: "Page Header Photos"
-        file: "content/hero-images.json"
+        file: "site/content/hero-images.json"
         description: "Each page's header has a red diagonal stripe by default. Upload a photo here to replace it on that page — leave blank to keep the stripe."
         fields:
           - { label: "Homepage", name: "home", widget: "image", required: false }
@@ -46,7 +46,7 @@ collections:
     files:
       - name: "news"
         label: "News & Campaign Posts"
-        file: "content/news.json"
+        file: "site/content/news.json"
         fields:
           - { label: "Campaign banner tag", name: "campaignTag", widget: "string" }
           - { label: "Campaign headline", name: "campaignHeadline", widget: "string" }
@@ -69,7 +69,7 @@ collections:
     files:
       - name: "stats"
         label: "Member Stats"
-        file: "content/stats.json"
+        file: "site/content/stats.json"
         fields:
           - { label: "Member count", name: "members", widget: "string" }
           - { label: "Member count label", name: "membersLabel", widget: "string" }
@@ -84,7 +84,7 @@ collections:
     files:
       - name: "leadership"
         label: "Committee Members"
-        file: "content/leadership.json"
+        file: "site/content/leadership.json"
         fields:
           - label: "Executive committee"
             name: "executive"
@@ -120,7 +120,7 @@ collections:
     files:
       - name: "resources"
         label: "Member Guides"
-        file: "content/resources.json"
+        file: "site/content/resources.json"
         fields:
           - label: "Member guides"
             name: "guides"
@@ -139,7 +139,7 @@ collections:
     files:
       - name: "home"
         label: "Homepage Content"
-        file: "content/home.json"
+        file: "site/content/home.json"
         fields:
           - { label: "Hero kicker text", name: "heroKicker", widget: "string" }
           - { label: "Hero headline (white part)", name: "heroHeadlinePlain", widget: "string" }
