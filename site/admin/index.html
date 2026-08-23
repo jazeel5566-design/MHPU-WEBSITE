@@ -3,25 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
   <title>MHPU Content Admin</title>
-  <!-- Netlify Identity widget: handles editor login for this admin panel -->
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
-  <!-- Decap CMS (formerly Netlify CMS) -->
-  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-  <script>
-    // Redirects invite/confirmation links (e.g. from an editor invite email)
-    // back to this admin page so login can complete properly.
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on("init", function (user) {
-        if (!user) {
-          window.netlifyIdentity.on("login", function () {
-            document.location.href = "/admin/";
-          });
-        }
-      });
-    }
-  </script>
+  <!-- Decap CMS, authenticated via DecapBridge (see decapbridge.com).
+       Netlify Identity / Git Gateway are deprecated, so this replaces
+       that setup. Nothing else on this page needs to change. -->
+  <script src="https://unpkg.com/decap-cms@^3.8.3/dist/decap-cms.js"></script>
 </body>
 </html>
