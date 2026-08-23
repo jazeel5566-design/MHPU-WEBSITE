@@ -20,7 +20,7 @@
   --error-text:#9A2222;
   --radius-sm:4px;
   --radius-md:10px;
-  --max:1180px;
+  --max:1320px;
 }
 
 *,*::before,*::after{box-sizing:border-box;}
