@@ -1,0 +1,21 @@
+{
+  "heroKicker": "Join MHPU",
+  "heroHeadline": "One membership. Every protection.",
+  "heroLede": "Whichever island you're posted on, membership gives you free case representation, a direct say in national bargaining, and access to CPD and scholarships.",
+  "monthlyFee": {
+    "tag": "Monthly subscription",
+    "title": "Membership fee",
+    "price": "MVR 100",
+    "period": "/month",
+    "features": ["Full case representation", "Collective bargaining voice", "CPD credits & scholarships", "Regional rep access"]
+  },
+  "joiningFee": {
+    "title": "Joining fee",
+    "price": "MVR 100",
+    "period": "one-time",
+    "features": ["Paid once, at sign-up", "Covers registration and processing"]
+  },
+  "feeNote": "MVR 100 per month, plus a one-time MVR 100 joining fee at sign-up — the same rate for every profession.",
+  "ticker": ["FREE CASE REPRESENTATION FOR ALL MEMBERS", "DIRECT SAY IN NATIONAL BARGAINING", "CPD CREDITS & SCHOLARSHIPS INCLUDED"],
+  "joinSectionSub": "Takes about 3 minutes"
+}

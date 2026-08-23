@@ -1,0 +1,17 @@
+{
+  "heroKicker": "Get in touch",
+  "heroHeadline": "We're here — every island, every day.",
+  "heroLede": "Reach the national office, a regional representative, or the 24/7 advice line.",
+  "headOffice": {
+    "name": "Head office — Hulhumale'",
+    "address": "Flat No: 83/01/06, Rabarugas Magu, Hulhumale', Republic of Maldives",
+    "phone1": "+960 9921992",
+    "phone2": "+960 9949439",
+    "email": "maldiveshealthunion@gmail.com"
+  },
+  "regionalOffices": [
+    { "name": "Regional office — Addu City", "details": "Details to be confirmed." },
+    { "name": "Regional office — Kulhudhuffushi", "details": "Details to be confirmed." }
+  ],
+  "repsNote": "Representative names are placeholders pending confirmation of MHPU's actual regional structure."
+}

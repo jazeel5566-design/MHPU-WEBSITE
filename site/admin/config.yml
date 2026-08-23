@@ -119,9 +119,12 @@ collections:
     label: "Resources"
     files:
       - name: "resources"
-        label: "Member Guides"
+        label: "Resources Page"
         file: "site/content/resources.json"
         fields:
+          - { label: "Page header tag", name: "heroKicker", widget: "string" }
+          - { label: "Page header headline", name: "heroHeadline", widget: "string" }
+          - { label: "Page header text", name: "heroLede", widget: "text" }
           - label: "Member guides"
             name: "guides"
             widget: "list"
@@ -132,6 +135,158 @@ collections:
               - { label: "Description", name: "description", widget: "text" }
               - { label: "Meta line", name: "meta", widget: "string", hint: "e.g. '4 pages · updated 2026'" }
               - { label: "File", name: "file", widget: "file", hint: "Upload the PDF here" }
+          - label: "Campaign materials"
+            name: "campaignMaterials"
+            widget: "list"
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "File type tag", name: "filetag", widget: "string", hint: "e.g. PDF, FORM, LINK" }
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Description", name: "description", widget: "text" }
+              - { label: "Meta line", name: "meta", widget: "string" }
+              - { label: "Link destination", name: "url", widget: "string", hint: "A file path (upload via the Media Library and paste its path), or a page like contact.html / news.html" }
+              - { label: "Is this a file download?", name: "download", widget: "boolean", default: false }
+              - { label: "Button text", name: "buttonLabel", widget: "string", hint: "e.g. Download, Open form, View updates" }
+          - { label: "Footer note", name: "footerNote", widget: "text" }
+
+  # ---------- Site-wide (footer, shared across every page) ----------
+  - name: "site"
+    label: "Site-wide"
+    files:
+      - name: "site"
+        label: "Footer Content"
+        file: "site/content/site.json"
+        description: "This appears in the footer on every single page."
+        fields:
+          - { label: "Slogan", name: "footerSlogan", widget: "string" }
+          - { label: "Description", name: "footerDescription", widget: "text" }
+
+  # ---------- About page ----------
+  - name: "about-page"
+    label: "About Page"
+    files:
+      - name: "about"
+        label: "About Page Content"
+        file: "site/content/about.json"
+        fields:
+          - { label: "Page header tag", name: "heroKicker", widget: "string" }
+          - { label: "Page header headline", name: "heroHeadline", widget: "string" }
+          - { label: "Page header text", name: "heroLede", widget: "text" }
+          - { label: "Mission — paragraph 1", name: "missionPara1", widget: "text" }
+          - { label: "Mission — paragraph 2", name: "missionPara2", widget: "text" }
+          - label: "'What guides us' points"
+            name: "guides"
+            widget: "list"
+            field: { label: "Point", name: "point", widget: "string" }
+          - label: "History timeline"
+            name: "history"
+            widget: "list"
+            summary: "{{fields.year}}"
+            fields:
+              - { label: "Year", name: "year", widget: "string" }
+              - { label: "Text", name: "text", widget: "text" }
+          - { label: "General members note", name: "generalMembersNote", widget: "text" }
+          - { label: "Bottom CTA headline", name: "ctaHeadline", widget: "string" }
+          - { label: "Bottom CTA text", name: "ctaText", widget: "text" }
+
+  # ---------- Membership page ----------
+  - name: "membership-page"
+    label: "Membership Page"
+    files:
+      - name: "membership"
+        label: "Membership Page Content"
+        file: "site/content/membership.json"
+        fields:
+          - { label: "Page header tag", name: "heroKicker", widget: "string" }
+          - { label: "Page header headline", name: "heroHeadline", widget: "string" }
+          - { label: "Page header text", name: "heroLede", widget: "text" }
+          - label: "Monthly fee card"
+            name: "monthlyFee"
+            widget: "object"
+            fields:
+              - { label: "Tag", name: "tag", widget: "string" }
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Price", name: "price", widget: "string" }
+              - { label: "Period", name: "period", widget: "string" }
+              - label: "Features"
+                name: "features"
+                widget: "list"
+                field: { label: "Feature", name: "feature", widget: "string" }
+          - label: "Joining fee card"
+            name: "joiningFee"
+            widget: "object"
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Price", name: "price", widget: "string" }
+              - { label: "Period", name: "period", widget: "string" }
+              - label: "Features"
+                name: "features"
+                widget: "list"
+                field: { label: "Feature", name: "feature", widget: "string" }
+          - { label: "Fee note", name: "feeNote", widget: "text" }
+          - label: "Ticker banner items"
+            name: "ticker"
+            widget: "list"
+            field: { label: "Item", name: "item", widget: "string" }
+          - { label: "'Apply for membership' subheading", name: "joinSectionSub", widget: "string" }
+
+  # ---------- Know your rights page ----------
+  - name: "rights-page"
+    label: "Know Your Rights Page"
+    files:
+      - name: "rights"
+        label: "Rights Page Content"
+        file: "site/content/rights.json"
+        fields:
+          - { label: "Page header tag", name: "heroKicker", widget: "string" }
+          - { label: "Page header headline", name: "heroHeadline", widget: "string" }
+          - { label: "Page header text", name: "heroLede", widget: "text" }
+          - label: "Ticker banner items"
+            name: "ticker"
+            widget: "list"
+            field: { label: "Item", name: "item", widget: "string" }
+          - label: "Rights sections (accordion)"
+            name: "accordion"
+            widget: "list"
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Body text", name: "body", widget: "text" }
+              - label: "Bullet points"
+                name: "bullets"
+                widget: "list"
+                field: { label: "Point", name: "point", widget: "string" }
+          - { label: "Bottom CTA headline", name: "ctaHeadline", widget: "string" }
+          - { label: "Bottom CTA text", name: "ctaText", widget: "text" }
+
+  # ---------- Contact page ----------
+  - name: "contact-page"
+    label: "Contact Page"
+    files:
+      - name: "contact"
+        label: "Contact Page Content"
+        file: "site/content/contact.json"
+        fields:
+          - { label: "Page header tag", name: "heroKicker", widget: "string" }
+          - { label: "Page header headline", name: "heroHeadline", widget: "string" }
+          - { label: "Page header text", name: "heroLede", widget: "text" }
+          - label: "Head office"
+            name: "headOffice"
+            widget: "object"
+            fields:
+              - { label: "Office name", name: "name", widget: "string" }
+              - { label: "Address", name: "address", widget: "text" }
+              - { label: "Phone 1", name: "phone1", widget: "string" }
+              - { label: "Phone 2", name: "phone2", widget: "string" }
+              - { label: "Email", name: "email", widget: "string" }
+          - label: "Regional offices"
+            name: "regionalOffices"
+            widget: "list"
+            summary: "{{fields.name}}"
+            fields:
+              - { label: "Office name", name: "name", widget: "string" }
+              - { label: "Details", name: "details", widget: "text" }
+          - { label: "Regional reps note", name: "repsNote", widget: "text" }
 
   # ---------- Homepage copy ----------
   - name: "home"

@@ -1,0 +1,35 @@
+{
+  "heroKicker": "Your protections",
+  "heroHeadline": "Know where you stand — and what we'll do about it.",
+  "heroLede": "A plain-language guide to the core rights every health professional in the Maldives is entitled to, and how MHPU steps in when they're not upheld.",
+  "ticker": ["FREE CASE REPRESENTATION FOR ALL MEMBERS", "CONFIDENTIAL ADVICE LINE, 24/7", "KNOW YOUR RIGHTS BEFORE YOU NEED THEM"],
+  "accordion": [
+    {
+      "title": "Employment rights & contracts",
+      "body": "You're entitled to a written contract stating your role, pay, hours and leave entitlements before you start work. If your employer changes your terms without agreement, or you've never received a written contract, MHPU can review it and raise it directly with your employer.",
+      "bullets": ["Right to a written employment contract", "Right to notice of any change in terms", "Right to statutory leave and rest periods"]
+    },
+    {
+      "title": "Safe staffing & working conditions",
+      "body": "Chronic understaffing puts both patients and staff at risk. If you're regularly working shifts below safe staffing levels, MHPU can log the pattern, raise it formally with your facility, and support a collective response from your team.",
+      "bullets": ["Right to raise safety concerns without penalty", "Right to rest breaks during long shifts", "Right to appropriate PPE and safety equipment"]
+    },
+    {
+      "title": "Grievance & disciplinary process",
+      "body": "If you're facing a disciplinary meeting or want to raise a formal grievance, you have the right to be accompanied by an MHPU representative at every stage. Contact the advice line before your first meeting — early support makes the biggest difference.",
+      "bullets": ["Right to representation at disciplinary and grievance meetings", "Right to a fair, documented process", "Right to appeal a decision"]
+    },
+    {
+      "title": "Whistleblowing & speaking up",
+      "body": "Raising a concern about patient safety, fraud or malpractice is protected activity. MHPU can advise you confidentially before you raise a concern, and support you if you face any form of retaliation afterwards.",
+      "bullets": ["Right to raise concerns in the public interest", "Protection against retaliation or dismissal", "Confidential advice before you act"]
+    },
+    {
+      "title": "Leave, pay & entitlements",
+      "body": "Pay scales, allowances and leave entitlements are set through national agreements MHPU negotiates directly. If your payslip doesn't match your grade, or an allowance is missing, our advice line can check it against the current agreement.",
+      "bullets": ["Right to be paid per the applicable pay scale", "Right to annual, sick and maternity/paternity leave", "Right to relevant allowances (night shift, hardship, on-call)"]
+    }
+  ],
+  "ctaHeadline": "Not sure if your rights are being upheld?",
+  "ctaText": "Call the confidential advice line any time — you don't need to already have a case, and nothing is shared with your employer without your consent."
+}

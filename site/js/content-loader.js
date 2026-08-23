@@ -29,6 +29,21 @@
     if (el && value != null) el.innerHTML = value;
   }
 
+  /* ---------- Generic page-hero helper ---------- */
+  function renderPageHero(data) {
+    if (!data) return;
+    setText('[data-cms="heroKicker"]', data.heroKicker);
+    setText('[data-cms="heroHeadline"]', data.heroHeadline);
+    setText('[data-cms="heroLede"]', data.heroLede);
+  }
+
+  /* ---------- Site-wide footer (every page) ---------- */
+  function renderSiteFooter(site) {
+    if (!site) return;
+    setText('[data-cms="footerSlogan"]', site.footerSlogan);
+    setText('[data-cms="footerDescription"]', site.footerDescription);
+  }
+
   /* ---------- Homepage ---------- */
   function renderHome(home, stats) {
     setText('[data-cms="heroKicker"]', home.heroKicker);
@@ -75,6 +90,7 @@
 
   /* ---------- News & campaigns page ---------- */
   function renderNews(news) {
+    renderPageHero(news);
     setText('[data-cms="campaignTag"]', news.campaignTag);
     setText('[data-cms="campaignHeadline"]', news.campaignHeadline);
     setText('[data-cms="campaignText"]', news.campaignText);
@@ -132,20 +148,129 @@
     }
   }
 
-  /* ---------- Resources page ---------- */
-  function renderResources(data) {
-    var guidesWrap = document.querySelector('[data-cms-list="guides"]');
-    if (guidesWrap && data.guides) {
-      guidesWrap.innerHTML = data.guides.map(renderResourceCard).join('');
+  function renderAbout(about) {
+    renderPageHero(about);
+    setText('[data-cms="missionPara1"]', about.missionPara1);
+    setText('[data-cms="missionPara2"]', about.missionPara2);
+
+    var guidesWrap = document.querySelector('[data-cms-list="guides-list"]');
+    if (guidesWrap && about.guides) {
+      guidesWrap.innerHTML = about.guides.map(function (g, i) {
+        var mb = i === about.guides.length - 1 ? '0' : '22px';
+        return '<div class="stat-block" style="margin-bottom:' + mb + ';"><p class="l" style="font-size:15px;color:var(--ink);font-weight:600;">' + esc(g) + '</p></div>';
+      }).join('');
     }
-    var campaignWrap = document.querySelector('[data-cms-list="campaignMaterials"]');
-    if (campaignWrap && data.campaignMaterials) {
-      campaignWrap.innerHTML = data.campaignMaterials.map(renderResourceCard).join('');
+
+    var historyWrap = document.querySelector('[data-cms-list="history"]');
+    if (historyWrap && about.history) {
+      historyWrap.innerHTML = about.history.map(function (h) {
+        return '<div class="card"><h3 style="font-size:32px;color:var(--red);">' + esc(h.year) + '</h3><p>' + esc(h.text) + '</p></div>';
+      }).join('');
+    }
+
+    setText('[data-cms="generalMembersNote"]', about.generalMembersNote);
+    setText('[data-cms="ctaHeadline"]', about.ctaHeadline);
+    setText('[data-cms="ctaText"]', about.ctaText);
+  }
+
+  /* ---------- Membership page ---------- */
+  function renderMembership(m) {
+    renderPageHero(m);
+    if (m.monthlyFee) {
+      setText('[data-cms="monthlyFee-tag"]', m.monthlyFee.tag);
+      setText('[data-cms="monthlyFee-title"]', m.monthlyFee.title);
+      setText('[data-cms="monthlyFee-price"]', m.monthlyFee.price);
+      setText('[data-cms="monthlyFee-period"]', m.monthlyFee.period);
+      var mf = document.querySelector('[data-cms-list="monthlyFee-features"]');
+      if (mf && m.monthlyFee.features) mf.innerHTML = m.monthlyFee.features.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('');
+    }
+    if (m.joiningFee) {
+      setText('[data-cms="joiningFee-title"]', m.joiningFee.title);
+      setText('[data-cms="joiningFee-price"]', m.joiningFee.price);
+      setText('[data-cms="joiningFee-period"]', m.joiningFee.period);
+      var jf = document.querySelector('[data-cms-list="joiningFee-features"]');
+      if (jf && m.joiningFee.features) jf.innerHTML = m.joiningFee.features.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('');
+    }
+    setText('[data-cms="feeNote"]', m.feeNote);
+    setText('[data-cms="joinSectionSub"]', m.joinSectionSub);
+    var tickerWrap = document.querySelector('[data-cms-list="ticker"]');
+    if (tickerWrap && m.ticker) tickerWrap.innerHTML = m.ticker.map(function (t) { return '<span>' + esc(t) + '</span>'; }).join('');
+  }
+
+  /* ---------- Know your rights page ---------- */
+  function renderRights(r) {
+    renderPageHero(r);
+    setText('[data-cms="ctaHeadline"]', r.ctaHeadline);
+    setText('[data-cms="ctaText"]', r.ctaText);
+
+    var tickerWrap = document.querySelector('[data-cms-list="ticker"]');
+    if (tickerWrap && r.ticker) tickerWrap.innerHTML = r.ticker.map(function (t) { return '<span>' + esc(t) + '</span>'; }).join('');
+
+    var accWrap = document.querySelector('[data-cms-list="accordion"]');
+    if (accWrap && r.accordion) {
+      accWrap.innerHTML = r.accordion.map(function (item, i) {
+        var n = i + 1;
+        var bullets = (item.bullets || []).map(function (b) { return '<li>' + esc(b) + '</li>'; }).join('');
+        var expanded = i === 0 ? 'true' : 'false';
+        var maxH = i === 0 ? ' style="max-height:320px;"' : '';
+        return '<div class="accordion-item">' +
+          '<button class="accordion-trigger" aria-expanded="' + expanded + '" aria-controls="panel-' + n + '" id="acc-' + n + '"><h3>' + esc(item.title) + '</h3><span class="plus">+</span></button>' +
+          '<div class="accordion-panel" id="panel-' + n + '" role="region" aria-labelledby="acc-' + n + '"' + maxH + '>' +
+          '<p>' + esc(item.body) + '</p><ul>' + bullets + '</ul></div></div>';
+      }).join('');
+
+      // Re-bind accordion behaviour now that the DOM was rebuilt.
+      accWrap.querySelectorAll('.accordion-trigger').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var expanded = btn.getAttribute('aria-expanded') === 'true';
+          var panel = document.getElementById(btn.getAttribute('aria-controls'));
+          btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+          if (panel) panel.style.maxHeight = expanded ? null : panel.scrollHeight + 'px';
+        });
+      });
     }
   }
 
-  function renderResourceCard(r) {
-    return '<div class="resource-card"><span class="filetag">' + esc(r.filetag) + '</span><h3>' + esc(r.title) + '</h3><p>' + esc(r.description) + '</p><span class="meta">' + esc(r.meta) + '</span><a href="' + esc(r.file) + '" class="btn btn-outline btn-sm" download>Download</a></div>';
+  /* ---------- Contact page ---------- */
+  function renderContact(c) {
+    renderPageHero(c);
+    if (c.headOffice) {
+      var ho = c.headOffice;
+      setText('[data-cms="headOffice-name"]', ho.name);
+      setHTML('[data-cms="headOffice-details"]',
+        esc(ho.address) + '<br>Phone: <a href="tel:' + esc((ho.phone1 || '').replace(/\s/g, '')) + '" style="color:var(--muted);">' + esc(ho.phone1) + '</a> &middot; <a href="tel:' + esc((ho.phone2 || '').replace(/\s/g, '')) + '" style="color:var(--muted);">' + esc(ho.phone2) + '</a><br>Email: <a href="mailto:' + esc(ho.email) + '" style="color:var(--muted);">' + esc(ho.email) + '</a>'
+      );
+    }
+    var regWrap = document.querySelector('[data-cms-list="regionalOffices"]');
+    if (regWrap && c.regionalOffices) {
+      regWrap.innerHTML = c.regionalOffices.map(function (o) {
+        return '<div class="office-row"><h4>' + esc(o.name) + '</h4><p>' + esc(o.details) + '</p></div>';
+      }).join('');
+    }
+    setText('[data-cms="repsNote"]', c.repsNote);
+  }
+
+  /* ---------- Resources page ---------- */
+  function renderResources(data) {
+    renderPageHero(data);
+    var guidesWrap = document.querySelector('[data-cms-list="guides"]');
+    if (guidesWrap && data.guides) {
+      guidesWrap.innerHTML = data.guides.map(function (g) {
+        return renderResourceCard(g.filetag, g.title, g.description, g.meta, g.file, true, 'Download');
+      }).join('');
+    }
+    var campaignWrap = document.querySelector('[data-cms-list="campaignMaterials"]');
+    if (campaignWrap && data.campaignMaterials) {
+      campaignWrap.innerHTML = data.campaignMaterials.map(function (c) {
+        return renderResourceCard(c.filetag, c.title, c.description, c.meta, c.url, c.download, c.buttonLabel);
+      }).join('');
+    }
+    setText('[data-cms="footerNote"]', data.footerNote);
+  }
+
+  function renderResourceCard(filetag, title, description, meta, url, download, buttonLabel) {
+    var dlAttr = download ? ' download' : '';
+    return '<div class="resource-card"><span class="filetag">' + esc(filetag) + '</span><h3>' + esc(title) + '</h3><p>' + esc(description) + '</p><span class="meta">' + esc(meta) + '</span><a href="' + esc(url) + '" class="btn btn-outline btn-sm"' + dlAttr + '>' + esc(buttonLabel) + '</a></div>';
   }
 
   /* ---------- Hero image swap (every page) ---------- */
@@ -169,6 +294,7 @@
     if (!page) return;
 
     fetchJSON('content/hero-images.json').then(applyHeroImage).catch(function () {});
+    fetchJSON('content/site.json').then(renderSiteFooter).catch(function () {});
 
     if (page === 'home') {
       Promise.all([fetchJSON('content/home.json'), fetchJSON('content/stats.json')])
@@ -178,10 +304,17 @@
       fetchJSON('content/news.json').then(renderNews).catch(function (err) { console.warn('Content load failed:', err); });
     } else if (page === 'about') {
       fetchJSON('content/leadership.json').then(renderLeadership).catch(function (err) { console.warn('Content load failed:', err); });
+      fetchJSON('content/about.json').then(renderAbout).catch(function (err) { console.warn('Content load failed:', err); });
+    } else if (page === 'membership') {
+      fetchJSON('content/membership.json').then(renderMembership).catch(function (err) { console.warn('Content load failed:', err); });
+    } else if (page === 'rights') {
+      fetchJSON('content/rights.json').then(renderRights).catch(function (err) { console.warn('Content load failed:', err); });
     } else if (page === 'contact') {
       fetchJSON('content/leadership.json').then(renderLeadership).catch(function (err) { console.warn('Content load failed:', err); });
+      fetchJSON('content/contact.json').then(renderContact).catch(function (err) { console.warn('Content load failed:', err); });
     } else if (page === 'resources') {
       fetchJSON('content/resources.json').then(renderResources).catch(function (err) { console.warn('Content load failed:', err); });
     }
   });
 })();
+

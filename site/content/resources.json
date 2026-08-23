@@ -1,10 +1,16 @@
 {
+  "heroKicker": "Guides & downloads",
+  "heroHeadline": "Everything in one place.",
+  "heroLede": "Handbooks, procedure guides and forms — the practical documents members ask for most.",
   "guides": [
     { "filetag": "PDF", "title": "Member handbook", "description": "An overview of your rights, benefits and how to get support as an MHPU member.", "meta": "4 pages · updated 2026", "file": "resources/member-handbook.pdf" },
     { "filetag": "PDF", "title": "Grievance & disciplinary procedure guide", "description": "Step-by-step guidance on what to do — and what to expect — if you're facing a formal process.", "meta": "3 pages · updated 2026", "file": "resources/grievance-procedure-guide.pdf" },
     { "filetag": "PDF", "title": "Membership application form (sample)", "description": "A printable version of the membership application, for offline or paper-based sign-up.", "meta": "1 page · updated 2026", "file": "resources/membership-application-form.pdf" }
   ],
   "campaignMaterials": [
-    { "filetag": "PDF", "title": "Safe staffing campaign — briefing note", "description": "The case for minimum staffing ratios, background on the campaign, and how members can support it.", "meta": "2 pages · updated 2026", "file": "resources/safe-staffing-briefing.pdf" }
-  ]
+    { "filetag": "PDF", "title": "Safe staffing campaign — briefing note", "description": "The case for minimum staffing ratios, background on the campaign, and how members can support it.", "meta": "2 pages · updated 2026", "url": "resources/safe-staffing-briefing.pdf", "download": true, "buttonLabel": "Download" },
+    { "filetag": "FORM", "title": "Case support request", "description": "Request confidential advice or formal representation from your regional MHPU representative.", "meta": "Online form", "url": "contact.html", "download": false, "buttonLabel": "Open form" },
+    { "filetag": "LINK", "title": "Current collective agreements", "description": "The latest ratified pay scale and conditions agreements covering public health facilities.", "meta": "External reference", "url": "news.html", "download": false, "buttonLabel": "View updates" }
+  ],
+  "footerNote": "Documents on this page are placeholder samples generated for demonstration and should be replaced with MHPU's approved materials."
 }
