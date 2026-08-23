@@ -1,0 +1,153 @@
+backend:
+  name: git-gateway
+  branch: main
+
+# Editors log in via Netlify Identity (email/password), which then talks to
+# this "git-gateway" backend to commit their changes to the site's GitHub
+# repo automatically. No GitHub account needed on the editor's side.
+
+media_folder: "assets/uploads"
+public_folder: "assets/uploads"
+
+collections:
+
+  # ---------- Hero images (every page) ----------
+  - name: "hero-images"
+    label: "Hero Images"
+    files:
+      - name: "hero-images"
+        label: "Page Header Photos"
+        file: "content/hero-images.json"
+        description: "Each page's header has a red diagonal stripe by default. Upload a photo here to replace it on that page — leave blank to keep the stripe."
+        fields:
+          - { label: "Homepage", name: "home", widget: "image", required: false }
+          - { label: "About page", name: "about", widget: "image", required: false }
+          - { label: "Membership page", name: "membership", widget: "image", required: false }
+          - { label: "Know Your Rights page", name: "rights", widget: "image", required: false }
+          - { label: "News & Campaigns page", name: "news", widget: "image", required: false }
+          - { label: "Resources page", name: "resources", widget: "image", required: false }
+          - { label: "Contact page", name: "contact", widget: "image", required: false }
+
+  # ---------- News & campaigns (add / edit only, no reordering) ----------
+  - name: "news"
+    label: "News & Campaigns"
+    files:
+      - name: "news"
+        label: "News & Campaign Posts"
+        file: "content/news.json"
+        fields:
+          - { label: "Campaign banner tag", name: "campaignTag", widget: "string" }
+          - { label: "Campaign headline", name: "campaignHeadline", widget: "string" }
+          - { label: "Campaign description", name: "campaignText", widget: "text" }
+          - label: "News posts"
+            name: "posts"
+            widget: "list"
+            summary: "{{fields.category}} — {{fields.title}}"
+            fields:
+              - label: "Category"
+                name: "category"
+                widget: "select"
+                options: ["Bargaining", "Campaigns", "Union", "Development"]
+              - { label: "Headline", name: "title", widget: "string" }
+              - { label: "Date label", name: "date", widget: "string", hint: "e.g. '2 days ago' or '14 March 2026'" }
+
+  # ---------- Homepage stats ----------
+  - name: "stats"
+    label: "Homepage Stats"
+    files:
+      - name: "stats"
+        label: "Member Stats"
+        file: "content/stats.json"
+        fields:
+          - { label: "Member count", name: "members", widget: "string" }
+          - { label: "Member count label", name: "membersLabel", widget: "string" }
+          - { label: "Atoll count", name: "atolls", widget: "string" }
+          - { label: "Atoll count label", name: "atollsLabel", widget: "string" }
+          - { label: "Case resolution rate", name: "resolutionRate", widget: "string" }
+          - { label: "Resolution rate label", name: "resolutionRateLabel", widget: "string" }
+
+  # ---------- Leadership & committee ----------
+  - name: "leadership"
+    label: "Leadership & Committee"
+    files:
+      - name: "leadership"
+        label: "Committee Members"
+        file: "content/leadership.json"
+        fields:
+          - label: "Executive committee"
+            name: "executive"
+            widget: "list"
+            summary: "{{fields.name}} — {{fields.role}}"
+            fields:
+              - { label: "Photo (optional — shows initials if left blank)", name: "photo", widget: "image", required: false }
+              - { label: "Initials (used if no photo)", name: "initials", widget: "string" }
+              - { label: "Full name", name: "name", widget: "string" }
+              - { label: "Role", name: "role", widget: "string" }
+          - label: "General committee members"
+            name: "generalMembers"
+            widget: "list"
+            summary: "{{fields.name}}"
+            fields:
+              - { label: "Photo (optional — shows initials if left blank)", name: "photo", widget: "image", required: false }
+              - { label: "Initials (used if no photo)", name: "initials", widget: "string" }
+              - { label: "Full name", name: "name", widget: "string" }
+              - { label: "Role", name: "role", widget: "string" }
+          - label: "Regional representatives"
+            name: "regionalReps"
+            widget: "list"
+            summary: "{{fields.name}} — {{fields.area}}"
+            fields:
+              - { label: "Photo (optional — shows initials if left blank)", name: "photo", widget: "image", required: false }
+              - { label: "Initials (used if no photo)", name: "initials", widget: "string" }
+              - { label: "Full name", name: "name", widget: "string" }
+              - { label: "Area covered", name: "area", widget: "string" }
+
+  # ---------- Resources / downloads ----------
+  - name: "resources"
+    label: "Resources"
+    files:
+      - name: "resources"
+        label: "Member Guides"
+        file: "content/resources.json"
+        fields:
+          - label: "Member guides"
+            name: "guides"
+            widget: "list"
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "File type tag", name: "filetag", widget: "string", hint: "e.g. PDF" }
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Description", name: "description", widget: "text" }
+              - { label: "Meta line", name: "meta", widget: "string", hint: "e.g. '4 pages · updated 2026'" }
+              - { label: "File", name: "file", widget: "file", hint: "Upload the PDF here" }
+
+  # ---------- Homepage copy ----------
+  - name: "home"
+    label: "Homepage"
+    files:
+      - name: "home"
+        label: "Homepage Content"
+        file: "content/home.json"
+        fields:
+          - { label: "Hero kicker text", name: "heroKicker", widget: "string" }
+          - { label: "Hero headline (white part)", name: "heroHeadlinePlain", widget: "string" }
+          - { label: "Hero headline (red part)", name: "heroHeadlineRed", widget: "string" }
+          - { label: "Slogan", name: "slogan", widget: "string" }
+          - { label: "Hero subtext", name: "heroSubtext", widget: "text" }
+          - { label: "'Take action' card tag", name: "actionTag", widget: "string" }
+          - { label: "'Take action' card headline", name: "actionHeadline", widget: "string" }
+          - { label: "'Take action' card text", name: "actionText", widget: "text" }
+          - label: "'What we fight for' pillars"
+            name: "pillars"
+            widget: "list"
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Text", name: "text", widget: "text" }
+          - label: "'Why join MHPU' cards"
+            name: "whyJoin"
+            widget: "list"
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Text", name: "text", widget: "text" }

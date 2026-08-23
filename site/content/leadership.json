@@ -1,0 +1,68 @@
+{
+  "executive": [
+    {
+      "initials": "HA",
+      "name": "Hashim Abubakuru",
+      "role": "President",
+      "photo": ""
+    },
+    {
+      "initials": "MJ",
+      "name": "Mohamed Jazeel",
+      "role": "Vice-President",
+      "photo": ""
+    },
+    {
+      "initials": "FZ",
+      "name": "Fathimath Zimna",
+      "role": "General Secretary",
+      "photo": ""
+    },
+    {
+      "initials": "AZ",
+      "name": "Ahmed Ziyad",
+      "role": "Treasurer",
+      "photo": ""
+    }
+  ],
+  "generalMembers": [
+    {
+      "initials": "US",
+      "name": "Umaima Ahmed Saeed",
+      "role": "General Member",
+      "photo": ""
+    },
+    {
+      "initials": "SI",
+      "name": "Saam Ismail",
+      "role": "General Member",
+      "photo": ""
+    },
+    {
+      "initials": "AS",
+      "name": "Abdulla Shamweel",
+      "role": "General Member",
+      "photo": ""
+    }
+  ],
+  "regionalReps": [
+    {
+      "initials": "HA",
+      "name": "Hussain Adam",
+      "area": "Male' & Kaafu Atoll",
+      "photo": ""
+    },
+    {
+      "initials": "ZM",
+      "name": "Zulfa Moosa",
+      "area": "Addu City & South",
+      "photo": ""
+    },
+    {
+      "initials": "SR",
+      "name": "Shifa Rasheed",
+      "area": "Haa Dhaalu & North",
+      "photo": ""
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "heroKicker": "Maldives Health Professionals Union",
+  "heroHeadlinePlain": "Health workers united. ",
+  "heroHeadlineRed": "demand heard.",
+  "slogan": "Decent work, quality care",
+  "heroSubtext": "MHPU fights for fair pay, safe staffing and real protection for every nurse, doctor, midwife and health worker in the Maldives — from Male' to the furthest atoll.",
+  "actionTag": "Take action",
+  "actionHeadline": "Sign the petition for safe staffing ratios",
+  "actionText": "1,240 members have already added their name. Join them today.",
+  "pillars": [
+    { "title": "Represent", "text": "Free representation in every disciplinary, grievance or dispute case." },
+    { "title": "Negotiate", "text": "Direct bargaining with health authorities on pay and conditions." },
+    { "title": "Protect", "text": "Pushing for enforceable safe-staffing and safety standards." },
+    { "title": "Develop", "text": "CPD access, scholarships and career pathways for members." }
+  ],
+  "whyJoin": [
+    { "title": "Case support", "text": "Confidential advice and formal representation whenever you face a workplace issue — free for every member." },
+    { "title": "Collective bargaining", "text": "We negotiate directly with health authorities on your behalf so individual voices become one strong demand." },
+    { "title": "Professional growth", "text": "CPD credits, scholarships and a growing library of clinical and career resources for every specialty." }
+  ]
+}

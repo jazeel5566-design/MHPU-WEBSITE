@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Membership — MHPU</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="assets/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-cms-page="membership">
+<div class="brand-accent-bar"></div>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<div class="topbar"><div class="wrap"><span>Contact: +960 9921992 &middot; +960 9949439</span><span>Hulhumale&#39;, Republic of Maldives</span></div></div>
+
+<header class="site-header">
+  <div class="navbar">
+    <a href="index.html" class="logo"><img src="assets/mhpu-logo-horizontal.png" alt="Maldives Health Professionals Union" style="height:38px;width:auto;"></a>
+    <nav class="main-nav" aria-label="Primary">
+      <a href="about.html">About</a>
+      <a href="membership.html" class="active">Membership</a>
+      <a href="rights.html">Know your rights</a>
+      <a href="news.html">News &amp; campaigns</a>
+      <a href="resources.html">Resources</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="contact.html" class="btn btn-outline btn-sm">Member login</a>
+      <a href="#join" class="btn btn-red btn-sm">Join now</a>
+      <button class="menu-toggle" aria-label="Open menu" aria-expanded="false"><span></span></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="page-hero">
+  <div class="stripe"></div>
+  <div class="wrap">
+    <p class="crumb"><a href="index.html">Home</a> / Membership</p>
+    <p class="kicker">Join MHPU</p>
+    <h1>One membership.<br>Every protection.</h1>
+    <p class="lede">Whichever island you're posted on, membership gives you free case representation, a direct say in national bargaining, and access to CPD and scholarships.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-title"><h2>Membership fee</h2><span class="sub">One flat rate for every member</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:620px;">
+      <div class="tier featured">
+        <span class="tag">Monthly subscription</span>
+        <h3>Membership fee</h3>
+        <p class="price">MVR 100<span>/month</span></p>
+        <ul>
+          <li>Full case representation</li>
+          <li>Collective bargaining voice</li>
+          <li>CPD credits &amp; scholarships</li>
+          <li>Regional rep access</li>
+        </ul>
+        <a href="#join" class="btn btn-red btn-sm">Apply now</a>
+      </div>
+      <div class="tier">
+        <h3>Joining fee</h3>
+        <p class="price">MVR 100<span>one-time</span></p>
+        <ul>
+          <li>Paid once, at sign-up</li>
+          <li>Covers registration and processing</li>
+        </ul>
+      </div>
+    </div>
+    <p style="font-family:'Source Sans 3',sans-serif;color:var(--muted);font-size:13px;margin-top:20px;">MVR 100 per month, plus a one-time MVR 100 joining fee at sign-up — the same rate for every profession.</p>
+  </div>
+</section>
+
+<div class="ticker"><div class="wrap"><span>FREE CASE REPRESENTATION FOR ALL MEMBERS</span><span>DIRECT SAY IN NATIONAL BARGAINING</span><span>CPD CREDITS &amp; SCHOLARSHIPS INCLUDED</span></div></div>
+
+<section id="join" style="background:var(--offwhite);">
+  <div class="wrap" style="max-width:760px;">
+    <div class="section-title"><h2>Apply for membership</h2><span class="sub">Takes about 3 minutes</span></div>
+
+    <div class="form-alert" role="status" aria-live="polite"></div>
+
+    <form data-validate data-appscript name="join-membership" method="POST" data-success="Thank you for applying — your membership application has been received. We'll confirm by email within 3 working days.">
+      <input type="hidden" name="form-type" value="membership">
+      <p style="position:absolute;left:-9999px;" aria-hidden="true"><label>Leave this field blank: <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+      <div class="form-grid">
+        <div class="field">
+          <label for="fullname">Full name <span class="req">*</span></label>
+          <input type="text" id="fullname" name="fullname" required placeholder="Aishath Waheed">
+          <span class="error-msg">Enter your full name.</span>
+        </div>
+        <div class="field">
+          <label for="regnumber">Registration / license number <span class="req">*</span></label>
+          <input type="text" id="regnumber" name="regnumber" required placeholder="e.g. MNMC-00000">
+          <span class="error-msg">Enter your registration number.</span>
+        </div>
+        <div class="field">
+          <label for="profession">Profession <span class="req">*</span></label>
+          <select id="profession" name="profession" required>
+            <option value="">Select one</option>
+            <option>Registered nurse</option>
+            <option>Midwife</option>
+            <option>Physician / specialist</option>
+            <option>Allied health professional</option>
+            <option>Student</option>
+          </select>
+          <span class="error-msg">Select your profession.</span>
+        </div>
+        <div class="field">
+          <label for="workplace">Workplace / island <span class="req">*</span></label>
+          <input type="text" id="workplace" name="workplace" required placeholder="e.g. IGMH, Male'">
+          <span class="error-msg">Enter your workplace or island.</span>
+        </div>
+        <div class="field">
+          <label for="email">Email address <span class="req">*</span></label>
+          <input type="email" id="email" name="email" required placeholder="you@example.com">
+          <span class="error-msg">Enter a valid email address.</span>
+        </div>
+        <div class="field">
+          <label for="phone">Phone number <span class="req">*</span></label>
+          <input type="tel" id="phone" name="phone" required placeholder="+960 000 0000">
+          <span class="error-msg">Enter a phone number.</span>
+        </div>
+      </div>
+
+      <div class="checkbox-row" style="margin-bottom:24px;">
+        <input type="checkbox" id="terms" name="terms" required>
+        <label for="terms">I agree to MHPU's membership terms and authorise deduction of the monthly subscription fee. <span class="req">*</span></label>
+      </div>
+
+      <button type="submit" class="btn btn-red">Submit application</button>
+    </form>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <a href="index.html" class="logo" style="margin-bottom:14px;"><img src="assets/mhpu-logo-horizontal-white.png" alt="Maldives Health Professionals Union" style="height:34px;width:auto;"></a>
+      <p style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-teal-light);margin-bottom:10px;">Decent work, quality care</p>
+      <p style="max-width:260px;color:#93918A;">The Maldives Health Professionals Union represents nurses, doctors, midwives and allied health workers nationwide.</p>
+    </div>
+    <div><h4>Union</h4><a href="about.html">About us</a><a href="about.html#leadership">Leadership</a><a href="contact.html">Contact</a></div>
+    <div><h4>Members</h4><a href="membership.html">Join now</a><a href="rights.html">Your rights</a><a href="contact.html">Advice line</a></div>
+    <div><h4>Resources</h4><a href="resources.html">Guides &amp; forms</a><a href="news.html">News &amp; campaigns</a><a href="resources.html">Policy library</a></div>
+  </div>
+  <div class="foot-bottom"><span>&copy; 2026 Maldives Health Professionals Union. Placeholder content for demonstration.</span><span>Privacy &middot; Terms</span></div>
+</footer>
+
+<script src="js/main.js"></script>
+<script src="js/content-loader.js"></script>
+</body>
+</html>
