@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Member Area — MHPU</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="../assets/favicon-32.png">
+<link rel="stylesheet" href="../css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div class="brand-accent-bar"></div>
+
+<header class="site-header">
+  <div class="navbar">
+    <a href="../index.html" class="logo"><img src="../assets/mhpu-logo-horizontal.png" alt="Maldives Health Professionals Union" style="height:38px;width:auto;"></a>
+    <div class="nav-actions">
+      <span id="welcome-name" style="font-family:'Source Sans 3',sans-serif;font-size:14px;color:var(--muted);"></span>
+      <a href="#" id="admin-link" class="btn btn-outline btn-sm" style="display:none;">Admin portal</a>
+      <button id="logout-btn" class="btn btn-outline btn-sm">Log out</button>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="page-hero">
+  <div class="stripe"></div>
+  <div class="wrap">
+    <p class="kicker">Members only</p>
+    <h1>Member updates</h1>
+    <p class="lede">Announcements, documents and updates shared only with MHPU members.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap" style="max-width:820px;">
+    <div id="posts-loading" style="font-family:'Source Sans 3',sans-serif;color:var(--muted);">Loading updates…</div>
+    <div id="posts-list"></div>
+    <div id="posts-empty" style="display:none;font-family:'Source Sans 3',sans-serif;color:var(--muted);">No member updates have been posted yet.</div>
+  </div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap" style="text-align:center;">
+    <p style="color:#93918A;font-family:'Source Sans 3',sans-serif;font-size:13px;">&copy; 2026 Maldives Health Professionals Union — Member Portal</p>
+  </div>
+</footer>
+
+<script src="supabase-client.js"></script>
+<script>
+  (async function () {
+    const session = await requireLogin();
+    if (!session) return;
+
+    const profile = await getMyProfile();
+    if (profile) {
+      document.getElementById('welcome-name').textContent = 'Signed in as ' + profile.full_name;
+      if (profile.role === 'admin' || profile.role === 'comms') {
+        var adminLink = document.getElementById('admin-link');
+        adminLink.style.display = 'inline-block';
+        adminLink.href = 'admin.html';
+      }
+    }
+
+    document.getElementById('logout-btn').addEventListener('click', async function () {
+      await supabaseClient.auth.signOut();
+      window.location.href = 'login.html';
+    });
+
+    const { data: posts, error } = await supabaseClient
+      .from('member_posts')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    document.getElementById('posts-loading').style.display = 'none';
+
+    if (error) {
+      document.getElementById('posts-empty').textContent = 'Could not load updates: ' + error.message;
+      document.getElementById('posts-empty').style.display = 'block';
+      return;
+    }
+
+    if (!posts || posts.length === 0) {
+      document.getElementById('posts-empty').style.display = 'block';
+      return;
+    }
+
+    const list = document.getElementById('posts-list');
+    posts.forEach(function (post) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.marginBottom = '20px';
+      const date = new Date(post.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+
+      let html = '<span style="font-family:\'Source Sans 3\',sans-serif;font-size:12px;color:var(--muted);">' + date + '</span>';
+      html += '<h3 style="margin-top:6px;">' + escapeHTML(post.title) + '</h3>';
+      html += '<p style="white-space:pre-wrap;">' + escapeHTML(post.body) + '</p>';
+      if (post.attachment_url) {
+        html += '<div style="margin-top:14px;"><a href="' + escapeHTML(post.attachment_url) + '" class="btn btn-outline btn-sm" target="_blank" rel="noopener">' + escapeHTML(post.attachment_label || 'Download attachment') + '</a></div>';
+      }
+      card.innerHTML = html;
+      list.appendChild(card);
+    });
+  })();
+
+  function escapeHTML(str) {
+    const div = document.createElement('div');
+    div.textContent = str == null ? '' : String(str);
+    return div.innerHTML;
+  }
+</script>
+</body>
+</html>

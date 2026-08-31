@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Member Login — MHPU</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="../assets/favicon-32.png">
+<link rel="stylesheet" href="../css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div class="brand-accent-bar"></div>
+
+<header class="site-header">
+  <div class="navbar">
+    <a href="../index.html" class="logo"><img src="../assets/mhpu-logo-horizontal.png" alt="Maldives Health Professionals Union" style="height:38px;width:auto;"></a>
+  </div>
+</header>
+
+<main>
+<section style="padding:80px 0;">
+  <div class="wrap" style="max-width:420px;">
+    <div class="section-title" style="border-bottom:none;padding-bottom:0;margin-bottom:24px;">
+      <h2>Member login</h2>
+    </div>
+
+    <div class="form-alert" id="alert-box" role="status" aria-live="polite"></div>
+
+    <form id="login-form">
+      <div class="field">
+        <label for="email">Email address <span class="req">*</span></label>
+        <input type="email" id="email" required autocomplete="username">
+      </div>
+      <div class="field">
+        <label for="password">Password <span class="req">*</span></label>
+        <input type="password" id="password" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-red" style="width:100%;">Log in</button>
+    </form>
+
+    <p style="font-family:'Source Sans 3',sans-serif;color:var(--muted);font-size:13.5px;margin-top:20px;text-align:center;">
+      Don't have login details yet? Contact your union office to have an account set up.
+    </p>
+  </div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap" style="text-align:center;">
+    <p style="color:#93918A;font-family:'Source Sans 3',sans-serif;font-size:13px;">&copy; 2026 Maldives Health Professionals Union — Member Portal</p>
+  </div>
+</footer>
+
+<script src="supabase-client.js"></script>
+<script>
+  document.getElementById('login-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const alertBox = document.getElementById('alert-box');
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const submitBtn = e.target.querySelector('[type="submit"]');
+    submitBtn.disabled = true;
+
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      alertBox.textContent = error.message === 'Invalid login credentials'
+        ? 'Incorrect email or password.'
+        : error.message;
+      alertBox.className = 'form-alert error show';
+      submitBtn.disabled = false;
+      return;
+    }
+
+    window.location.href = 'dashboard.html';
+  });
+
+  // If already logged in, skip straight to the dashboard.
+  supabaseClient.auth.getSession().then(function (res) {
+    if (res.data.session) window.location.href = 'dashboard.html';
+  });
+</script>
+</body>
+</html>
