@@ -1,21 +1,33 @@
 {
-  "heroKicker": "Who we are",
-  "heroHeadline": "Built by health workers, for health workers.",
-  "heroLede": "MHPU has represented nursing, medical, midwifery and allied health staff across the Maldives for over three decades — independent, member-led, and accountable to the people who do the work.",
+  "generalMembersNote": "Committee roles (registered nurse, physician, workplace, etc.) to be added once confirmed. Elections are held every three years, open to all active members.",
+  "ctaHeadline": "Want to get involved?",
   "missionPara1": "MHPU exists to make sure no health professional in the Maldives faces an unsafe workplace, an unfair dispute, or a stalled career alone. We represent members in individual cases, bargain collectively on pay and conditions, and campaign publicly for safer, better-resourced health services — from Male' hospitals to the smallest island health centre.",
   "missionPara2": "We are independent of any single employer or political party, funded by member subscriptions, and governed by an elected council of working health professionals.",
+  "heroKicker": "Who we are (MHPU)",
+  "heroHeadline": "Built by health workers, for health workers.",
+  "history": [
+    {
+      "year": "1993",
+      "text": "Founded by a small group of nurses and doctors in Male' seeking a collective voice on pay and safety."
+    },
+    {
+      "year": "2008",
+      "text": "First national collective agreement covering public hospital nursing staff."
+    },
+    {
+      "year": "2016",
+      "text": "Regional representative network extended to cover all inhabited atolls."
+    },
+    {
+      "year": "2026",
+      "text": "Over 4,200 members and an active regional office in Addu City."
+    }
+  ],
+  "heroLede": "MHPU has represented nursing, medical, midwifery and allied health staff across the Maldives for over three decades — independent, member-led, and accountable to the people who do the work.",
   "guides": [
     "Independence — no employer or political control over union decisions.",
     "Solidarity — every member has equal standing, regardless of role or island.",
     "Accountability — leadership is elected and answers directly to members."
   ],
-  "history": [
-    { "year": "1993", "text": "Founded by a small group of nurses and doctors in Male' seeking a collective voice on pay and safety." },
-    { "year": "2008", "text": "First national collective agreement covering public hospital nursing staff." },
-    { "year": "2016", "text": "Regional representative network extended to cover all inhabited atolls." },
-    { "year": "2026", "text": "Over 4,200 members and an active regional office in Addu City." }
-  ],
-  "generalMembersNote": "Committee roles (registered nurse, physician, workplace, etc.) to be added once confirmed. Elections are held every three years, open to all active members.",
-  "ctaHeadline": "Want to get involved?",
   "ctaText": "Members can stand for regional representative roles, join a bargaining committee, or help organise in their workplace."
 }
