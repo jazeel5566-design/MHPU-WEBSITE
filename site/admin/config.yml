@@ -35,13 +35,13 @@ collections:
           - label: "Homepage (upload one or more — rotates every 30 seconds if more than one)"
             name: "home"
             widget: "list"
-            field: { label: "Photo", name: "photo", widget: "image" }
-          - { label: "About page", name: "about", widget: "image", required: false }
-          - { label: "Membership page", name: "membership", widget: "image", required: false }
-          - { label: "Know Your Rights page", name: "rights", widget: "image", required: false }
-          - { label: "News & Campaigns page", name: "news", widget: "image", required: false }
-          - { label: "Resources page", name: "resources", widget: "image", required: false }
-          - { label: "Contact page", name: "contact", widget: "image", required: false }
+            field: { label: "Photo", name: "photo", widget: "image", hint: "Recommended size: at least 2000×1500px, landscape orientation, JPG format, under 1MB. This fills the full screen height, so use a high-resolution photo with the main subject centered." }
+          - { label: "About page", name: "about", widget: "image", required: false, hint: "Recommended size: at least 1600×1000px, landscape orientation, JPG format, under 800KB. Fills half of the page banner." }
+          - { label: "Membership page", name: "membership", widget: "image", required: false, hint: "Recommended size: at least 1600×1000px, landscape orientation, JPG format, under 800KB. Fills half of the page banner." }
+          - { label: "Know Your Rights page", name: "rights", widget: "image", required: false, hint: "Recommended size: at least 1600×1000px, landscape orientation, JPG format, under 800KB. Fills half of the page banner." }
+          - { label: "News & Campaigns page", name: "news", widget: "image", required: false, hint: "Recommended size: at least 1600×1000px, landscape orientation, JPG format, under 800KB. Fills half of the page banner." }
+          - { label: "Resources page", name: "resources", widget: "image", required: false, hint: "Recommended size: at least 1600×1000px, landscape orientation, JPG format, under 800KB. Fills half of the page banner." }
+          - { label: "Contact page", name: "contact", widget: "image", required: false, hint: "Recommended size: at least 1600×1000px, landscape orientation, JPG format, under 800KB. Fills half of the page banner." }
 
   # ---------- News & campaigns (add / edit only, no reordering) ----------
   - name: "news"
@@ -94,7 +94,7 @@ collections:
             widget: "list"
             summary: "{{fields.name}} — {{fields.role}}"
             fields:
-              - { label: "Photo (optional — shows initials if left blank)", name: "photo", widget: "image", required: false }
+              - { label: "Photo (optional — shows initials if left blank)", name: "photo", widget: "image", required: false, hint: "Recommended size: at least 500×500px, square (1:1) crop, JPG or PNG, under 500KB." }
               - { label: "Initials (used if no photo)", name: "initials", widget: "string" }
               - { label: "Full name", name: "name", widget: "string" }
               - { label: "Role", name: "role", widget: "string" }
@@ -103,7 +103,7 @@ collections:
             widget: "list"
             summary: "{{fields.name}}"
             fields:
-              - { label: "Photo (optional — shows initials if left blank)", name: "photo", widget: "image", required: false }
+              - { label: "Photo (optional — shows initials if left blank)", name: "photo", widget: "image", required: false, hint: "Recommended size: at least 500×500px, square (1:1) crop, JPG or PNG, under 500KB." }
               - { label: "Initials (used if no photo)", name: "initials", widget: "string" }
               - { label: "Full name", name: "name", widget: "string" }
               - { label: "Role", name: "role", widget: "string" }
@@ -112,7 +112,7 @@ collections:
             widget: "list"
             summary: "{{fields.name}} — {{fields.area}}"
             fields:
-              - { label: "Photo (optional — shows initials if left blank)", name: "photo", widget: "image", required: false }
+              - { label: "Photo (optional — shows initials if left blank)", name: "photo", widget: "image", required: false, hint: "Recommended size: at least 500×500px, square (1:1) crop, JPG or PNG, under 500KB." }
               - { label: "Initials (used if no photo)", name: "initials", widget: "string" }
               - { label: "Full name", name: "name", widget: "string" }
               - { label: "Area covered", name: "area", widget: "string" }
@@ -137,7 +137,7 @@ collections:
               - { label: "Title", name: "title", widget: "string" }
               - { label: "Description", name: "description", widget: "text" }
               - { label: "Meta line", name: "meta", widget: "string", hint: "e.g. '4 pages · updated 2026'" }
-              - { label: "File", name: "file", widget: "file", hint: "Upload the PDF here" }
+              - { label: "File", name: "file", widget: "file", hint: "Upload the PDF here. Keep file size under 5MB where possible for faster downloads." }
           - label: "Campaign materials"
             name: "campaignMaterials"
             widget: "list"
