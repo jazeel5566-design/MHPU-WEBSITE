@@ -31,5 +31,11 @@
     }
   ],
   "ctaHeadline": "Not sure if your rights are being upheld?",
-  "ctaText": "Call the confidential advice line any time — you don't need to already have a case, and nothing is shared with your employer without your consent."
+  "ctaText": "Call the confidential advice line any time — you don't need to already have a case, and nothing is shared with your employer without your consent.",
+  "usefulLinks": [
+    { "label": "Labour Relations Authority", "url": "https://lra.gov.mv/" },
+    { "label": "Employment Act (2/2008)", "url": "https://lra.gov.mv/wp-content/uploads/2020/07/Employment-Act-Unofficial-English-Translation.pdf" },
+    { "label": "Ministry of Health", "url": "https://health.gov.mv/" },
+    { "label": "Health Protection Agency", "url": "https://hpa.gov.mv/en" }
+  ]
 }
