@@ -203,6 +203,13 @@
     setText('[data-cms="ctaHeadline"]', r.ctaHeadline);
     setText('[data-cms="ctaText"]', r.ctaText);
 
+    var linksWrap = document.querySelector('[data-cms-list="usefulLinks"]');
+    if (linksWrap && r.usefulLinks && r.usefulLinks.length) {
+      linksWrap.innerHTML = r.usefulLinks.map(function (link) {
+        return '<a href="' + esc(link.url) + '" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="text-align:left;width:100%;">' + esc(link.label) + '</a>';
+      }).join('');
+    }
+
     var tickerWrap = document.querySelector('[data-cms-list="ticker"]');
     if (tickerWrap && r.ticker) tickerWrap.innerHTML = r.ticker.map(function (t) { return '<span>' + esc(t) + '</span>'; }).join('');
 
@@ -277,9 +284,9 @@
   // The hero's diagonal red stripe can be replaced with an uploaded photo,
   // per page, from /admin. Falls back to the original stripe pattern
   // automatically when no image has been set for that page. The homepage
-  // supports multiple photos: they auto-rotate every 10 seconds, and if
+  // supports multiple photos: they auto-rotate every 30 seconds, and if
   // there's more than one, prev/next arrows let visitors step through
-  // manually (which also resets the 10-second auto-rotate timer).
+  // manually (which also resets the 30-second auto-rotate timer).
   function applyHeroImage(images) {
     var page = document.body.getAttribute('data-cms-page');
     var stripeEl = document.querySelector('.stripe');
@@ -305,7 +312,7 @@
     function startAutoRotate() {
       if (autoTimer) clearInterval(autoTimer);
       if (urls.length > 1) {
-        autoTimer = setInterval(function () { setImage(i + 1); }, 10000);
+        autoTimer = setInterval(function () { setImage(i + 1); }, 30000);
       }
     }
 
