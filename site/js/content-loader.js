@@ -277,9 +277,9 @@
   // The hero's diagonal red stripe can be replaced with an uploaded photo,
   // per page, from /admin. Falls back to the original stripe pattern
   // automatically when no image has been set for that page. The homepage
-  // supports multiple photos: they auto-rotate every 30 seconds, and if
+  // supports multiple photos: they auto-rotate every 10 seconds, and if
   // there's more than one, prev/next arrows let visitors step through
-  // manually (which also resets the 30-second auto-rotate timer).
+  // manually (which also resets the 10-second auto-rotate timer).
   function applyHeroImage(images) {
     var page = document.body.getAttribute('data-cms-page');
     var stripeEl = document.querySelector('.stripe');
