@@ -32,7 +32,10 @@ collections:
         file: "site/content/hero-images.json"
         description: "Each page's header has a red diagonal stripe by default. Upload a photo here to replace it on that page — leave blank to keep the stripe."
         fields:
-          - { label: "Homepage", name: "home", widget: "image", required: false }
+          - label: "Homepage (upload one or more — rotates every 30 seconds if more than one)"
+            name: "home"
+            widget: "list"
+            field: { label: "Photo", name: "photo", widget: "image" }
           - { label: "About page", name: "about", widget: "image", required: false }
           - { label: "Membership page", name: "membership", widget: "image", required: false }
           - { label: "Know Your Rights page", name: "rights", widget: "image", required: false }

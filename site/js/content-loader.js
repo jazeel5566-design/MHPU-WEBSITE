@@ -276,15 +276,35 @@
   /* ---------- Hero image swap (every page) ---------- */
   // The hero's diagonal red stripe can be replaced with an uploaded photo,
   // per page, from /admin. Falls back to the original stripe pattern
-  // automatically when no image has been set for that page.
+  // automatically when no image has been set for that page. The homepage
+  // supports multiple photos, rotating one every 30 seconds; other pages
+  // use a single static photo.
   function applyHeroImage(images) {
     var page = document.body.getAttribute('data-cms-page');
     var stripeEl = document.querySelector('.stripe');
     if (!page || !stripeEl || !images) return;
-    var url = images[page];
-    if (url) {
-      stripeEl.style.background = 'center / cover no-repeat url("' + url + '")';
+
+    var value = images[page];
+    if (!value) return;
+
+    var urls = (Array.isArray(value) ? value : [value]).filter(Boolean);
+    if (urls.length === 0) return;
+
+    function setImage(url) {
+      stripeEl.style.backgroundImage = 'url("' + url + '")';
+      stripeEl.style.backgroundSize = 'cover';
+      stripeEl.style.backgroundPosition = 'center';
       stripeEl.style.opacity = '1';
+    }
+
+    var i = 0;
+    setImage(urls[i]);
+
+    if (urls.length > 1) {
+      setInterval(function () {
+        i = (i + 1) % urls.length;
+        setImage(urls[i]);
+      }, 30000);
     }
   }
 
