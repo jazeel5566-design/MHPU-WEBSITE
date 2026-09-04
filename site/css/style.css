@@ -62,12 +62,6 @@ button{font-family:inherit;cursor:pointer;}
   background:linear-gradient(90deg, var(--red) 0%, var(--red) 55%, var(--accent-teal) 100%);
 }
 
-/* ---------- Top bar ---------- */
-.topbar{background:var(--ink);color:#C9C6BF;font-size:12.5px;padding:8px 0;}
-.topbar .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;}
-.topbar a{color:#C9C6BF;}
-.topbar a:hover{color:white;}
-
 /* ---------- Header / nav ---------- */
 header.site-header{border-bottom:3px solid var(--ink);background:var(--paper);position:sticky;top:0;z-index:50;}
 .navbar{
