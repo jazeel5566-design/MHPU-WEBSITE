@@ -107,7 +107,9 @@ nav.main-nav a:hover,nav.main-nav a.active{border-color:var(--red);}
 .page-hero{background:var(--ink);color:white;padding:64px 0;position:relative;overflow:hidden;}
 .page-hero .stripe{position:absolute;top:0;right:0;bottom:0;width:220px;
   background:repeating-linear-gradient(135deg, var(--red) 0px, var(--red) 22px, var(--red-deep) 22px, var(--red-deep) 44px);
-  opacity:.85;}
+  opacity:.85;
+  -webkit-mask-image:linear-gradient(to right, transparent, black 90px);
+  mask-image:linear-gradient(to right, transparent, black 90px);}
 .page-hero .wrap{position:relative;z-index:2;}
 .page-hero .kicker{color:var(--accent-teal-light);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.12em;margin-bottom:14px;font-family:'Source Sans 3',sans-serif;}
 .page-hero h1{font-size:52px;line-height:1;max-width:720px;}
