@@ -277,8 +277,9 @@
   // The hero's diagonal red stripe can be replaced with an uploaded photo,
   // per page, from /admin. Falls back to the original stripe pattern
   // automatically when no image has been set for that page. The homepage
-  // supports multiple photos, rotating one every 30 seconds; other pages
-  // use a single static photo.
+  // supports multiple photos: they auto-rotate every 30 seconds, and if
+  // there's more than one, prev/next arrows let visitors step through
+  // manually (which also resets the 30-second auto-rotate timer).
   function applyHeroImage(images) {
     var page = document.body.getAttribute('data-cms-page');
     var stripeEl = document.querySelector('.stripe');
@@ -290,21 +291,42 @@
     var urls = (Array.isArray(value) ? value : [value]).filter(Boolean);
     if (urls.length === 0) return;
 
-    function setImage(url) {
-      stripeEl.style.backgroundImage = 'url("' + url + '")';
+    var i = 0;
+    var autoTimer = null;
+
+    function setImage(index) {
+      i = ((index % urls.length) + urls.length) % urls.length;
+      stripeEl.style.backgroundImage = 'url("' + urls[i] + '")';
       stripeEl.style.backgroundSize = 'cover';
       stripeEl.style.backgroundPosition = 'center';
       stripeEl.style.opacity = '1';
     }
 
-    var i = 0;
-    setImage(urls[i]);
+    function startAutoRotate() {
+      if (autoTimer) clearInterval(autoTimer);
+      if (urls.length > 1) {
+        autoTimer = setInterval(function () { setImage(i + 1); }, 30000);
+      }
+    }
+
+    setImage(0);
+    startAutoRotate();
 
     if (urls.length > 1) {
-      setInterval(function () {
-        i = (i + 1) % urls.length;
-        setImage(urls[i]);
-      }, 30000);
+      var prevBtn = document.createElement('button');
+      prevBtn.className = 'hero-slide-arrow prev';
+      prevBtn.setAttribute('aria-label', 'Previous photo');
+      prevBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      prevBtn.addEventListener('click', function () { setImage(i - 1); startAutoRotate(); });
+
+      var nextBtn = document.createElement('button');
+      nextBtn.className = 'hero-slide-arrow next';
+      nextBtn.setAttribute('aria-label', 'Next photo');
+      nextBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      nextBtn.addEventListener('click', function () { setImage(i + 1); startAutoRotate(); });
+
+      stripeEl.appendChild(prevBtn);
+      stripeEl.appendChild(nextBtn);
     }
   }
 
