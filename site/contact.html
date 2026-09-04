@@ -69,9 +69,9 @@
     <div>
       <div class="section-title" style="border-bottom:none;padding-bottom:0;margin-bottom:20px;"><h2>Send a message</h2></div>
 
-      <div class="form-alert" role="status" aria-live="polite"></div>
+      <div class="form-alert" id="contact-alert" role="status" aria-live="polite"></div>
 
-      <form data-validate data-appscript name="contact-message" method="POST" data-success="Message sent — a member of the MHPU team will reply within 2 working days.">
+      <form id="contact-form" novalidate>
         <input type="hidden" name="form-type" value="contact">
         <p style="position:absolute;left:-9999px;" aria-hidden="true"><label>Leave this field blank: <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
         <div class="field">
@@ -100,7 +100,7 @@
           <textarea id="c-message" name="c-message" required></textarea>
           <span class="error-msg">Enter a message.</span>
         </div>
-        <button type="submit" class="btn btn-red">Send message</button>
+        <button type="submit" class="btn btn-red" id="contact-submit-btn">Send message</button>
       </form>
     </div>
   </div>
@@ -119,6 +119,57 @@
 </section>
 
 </main>
+
+<iframe name="contact-submit-frame" style="display:none;" aria-hidden="true"></iframe>
+
+<script>
+(function () {
+  var CONTACT_APPSCRIPT_URL = "https://script.google.com/macros/s/AKfycby1mujouk0jWxPX3ExyC0pqrB6rVMk6JHrihXfHDzeGIyI7tYaNf4azBGeL_i0D-Y008A/exec";
+
+  var form = document.getElementById('contact-form');
+  var alertBox = document.getElementById('contact-alert');
+  var submitBtn = document.getElementById('contact-submit-btn');
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    var honeypot = form.querySelector('[name="bot-field"]');
+    if (honeypot && honeypot.value) return;
+
+    var valid = true;
+    var firstInvalid = null;
+    form.querySelectorAll('[required]').forEach(function (input) {
+      var fieldWrap = input.closest('.field');
+      var ok = input.type === 'email'
+        ? (input.value.trim() !== '' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim()))
+        : input.value.trim() !== '';
+      if (fieldWrap) fieldWrap.classList.toggle('has-error', !ok);
+      if (!ok) { valid = false; if (!firstInvalid) firstInvalid = input; }
+    });
+
+    if (!valid) {
+      alertBox.textContent = 'Please check the highlighted fields and try again.';
+      alertBox.className = 'form-alert error show';
+      if (firstInvalid) firstInvalid.focus();
+      return;
+    }
+
+    submitBtn.disabled = true;
+    form.action = CONTACT_APPSCRIPT_URL;
+    form.method = 'POST';
+    form.target = 'contact-submit-frame';
+    form.submit();
+
+    setTimeout(function () {
+      alertBox.textContent = 'Message sent — a member of the MHPU team will reply within 2 working days.';
+      alertBox.className = 'form-alert success show';
+      form.reset();
+      form.querySelectorAll('.has-error').forEach(function (f) { f.classList.remove('has-error'); });
+      submitBtn.disabled = false;
+    }, 900);
+  });
+})();
+</script>
 
 <footer class="site-footer" id="login">
   <div class="wrap">
