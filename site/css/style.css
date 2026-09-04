@@ -311,4 +311,15 @@ footer.site-footer a:hover{color:white;}
      including ones set via inline style (e.g. hero layouts, fee cards,
      one-off page sections) that a plain class selector can't reach. */
   [style*="grid-template-columns"]{grid-template-columns:1fr !important;}
+
+  /* Homepage hero: once stacked to one column, the photo area is an
+     empty grid cell with nothing forcing its height — without this it
+     collapses to almost nothing. Give it a real, visible height. */
+  .hero > .stripe{min-height:320px;}
+  .hero h1{font-size:34px !important;line-height:1.05 !important;}
+  .hero > div:first-child{padding:40px 24px !important;}
+  .hero > .stripe{padding:24px !important;}
+
+  /* Rights page sidebar: match the accordion's full width once stacked. */
+  aside .btn{width:100%;}
 }
