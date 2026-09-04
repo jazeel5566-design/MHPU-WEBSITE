@@ -261,6 +261,13 @@ collections:
                 field: { label: "Point", name: "point", widget: "string" }
           - { label: "Bottom CTA headline", name: "ctaHeadline", widget: "string" }
           - { label: "Bottom CTA text", name: "ctaText", widget: "text" }
+          - label: "Useful links (sidebar buttons)"
+            name: "usefulLinks"
+            widget: "list"
+            summary: "{{fields.label}}"
+            fields:
+              - { label: "Button text", name: "label", widget: "string" }
+              - { label: "Link (full URL, e.g. https://...)", name: "url", widget: "string" }
 
   # ---------- Contact page ----------
   - name: "contact-page"
