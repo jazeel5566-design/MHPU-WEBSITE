@@ -1,23 +1,27 @@
 {
   "actionText": "1,240 members have already added their name. Join them today.",
-  "heroHeadlineRed": "Quality care",
+  "heroHeadlineRed": "",
   "actionTag": "Take action",
   "pillars": [
     {
       "title": "Represent",
-      "text": "Free representation in every disciplinary, grievance or dispute case."
+      "text": "Free representation in every disciplinary, grievance or dispute case.",
+      "hidden": true
     },
     {
       "title": "Negotiate",
-      "text": "Direct bargaining with health authorities on pay and conditions."
+      "text": "Direct bargaining with health authorities on pay and conditions.",
+      "hidden": true
     },
     {
       "title": "Protect",
-      "text": "Pushing for enforceable safe-staffing and safety standards."
+      "text": "Pushing for enforceable safe-staffing and safety standards.",
+      "hidden": true
     },
     {
       "title": "Develop",
-      "text": "CPD access, scholarships and career pathways for members."
+      "text": "CPD access, scholarships and career pathways for members.",
+      "hidden": false
     }
   ],
   "actionHeadline": "Sign the petition for safe staffing ratios",
@@ -25,18 +29,21 @@
   "whyJoin": [
     {
       "title": "Case support",
-      "text": "Confidential advice and formal representation whenever you face a workplace issue — free for every member."
+      "text": "Confidential advice and formal representation whenever you face a workplace issue — free for every member.",
+      "hidden": false
     },
     {
       "title": "Collective bargaining",
-      "text": "We negotiate directly with health authorities on your behalf so individual voices become one strong demand."
+      "text": "We negotiate directly with health authorities on your behalf so individual voices become one strong demand.",
+      "hidden": false
     },
     {
       "title": "Professional growth",
-      "text": "CPD credits, scholarships and a growing library of clinical and career resources for every specialty."
+      "text": "CPD credits, scholarships and a growing library of clinical and career resources for every specialty.",
+      "hidden": false
     }
   ],
   "heroSubtext": "MHPU fights for fair pay, safe staffing and real protection for every nurse, doctor, midwife and health worker in the Maldives — from Male' to the furthest atoll.",
-  "heroHeadlinePlain": "Decent work",
+  "heroHeadlinePlain": "",
   "slogan": "Decent work, quality care"
 }
