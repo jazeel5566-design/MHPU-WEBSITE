@@ -52,11 +52,11 @@ collections:
         file: "site/content/news.json"
         fields:
           - { label: "Page header tag (leave blank to hide it entirely)", name: "heroKicker", widget: "string", required: false }
-          - { label: "Page header headline", name: "heroHeadline", widget: "string" }
-          - { label: "Page header text", name: "heroLede", widget: "text" }
-          - { label: "Campaign banner tag", name: "campaignTag", widget: "string" }
-          - { label: "Campaign headline", name: "campaignHeadline", widget: "string" }
-          - { label: "Campaign description", name: "campaignText", widget: "text" }
+          - { label: "Page header headline (leave blank to hide it entirely)", name: "heroHeadline", widget: "string", required: false }
+          - { label: "Page header text", name: "heroLede", widget: "text", required: false }
+          - { label: "Campaign banner tag", name: "campaignTag", widget: "string", required: false }
+          - { label: "Campaign headline", name: "campaignHeadline", widget: "string", required: false }
+          - { label: "Campaign description", name: "campaignText", widget: "text", required: false }
           - label: "News posts"
             name: "posts"
             widget: "list"
@@ -66,8 +66,9 @@ collections:
                 name: "category"
                 widget: "select"
                 options: ["Bargaining", "Campaigns", "Union", "Development"]
-              - { label: "Headline", name: "title", widget: "string" }
-              - { label: "Date label", name: "date", widget: "string", hint: "e.g. '2 days ago' or '14 March 2026'" }
+              - { label: "Headline", name: "title", widget: "string", required: false }
+              - { label: "Date label", name: "date", widget: "string", hint: "e.g. '2 days ago' or '14 March 2026'", required: false }
+              - { label: "Hidden (tick to hide this post)", name: "hidden", widget: "boolean", default: false }
 
   # ---------- Homepage stats ----------
   - name: "stats"
@@ -77,12 +78,12 @@ collections:
         label: "Member Stats"
         file: "site/content/stats.json"
         fields:
-          - { label: "Member count", name: "members", widget: "string" }
-          - { label: "Member count label", name: "membersLabel", widget: "string" }
-          - { label: "Atoll count", name: "atolls", widget: "string" }
-          - { label: "Atoll count label", name: "atollsLabel", widget: "string" }
-          - { label: "Case resolution rate", name: "resolutionRate", widget: "string" }
-          - { label: "Resolution rate label", name: "resolutionRateLabel", widget: "string" }
+          - { label: "Member count", name: "members", widget: "string", required: false }
+          - { label: "Member count label", name: "membersLabel", widget: "string", required: false }
+          - { label: "Atoll count", name: "atolls", widget: "string", required: false }
+          - { label: "Atoll count label", name: "atollsLabel", widget: "string", required: false }
+          - { label: "Case resolution rate", name: "resolutionRate", widget: "string", required: false }
+          - { label: "Resolution rate label", name: "resolutionRateLabel", widget: "string", required: false }
 
   # ---------- Leadership & committee ----------
   - name: "leadership"
@@ -98,27 +99,30 @@ collections:
             summary: "{{fields.name}} — {{fields.role}}"
             fields:
               - { label: "Photo (optional — shows initials if left blank)", name: "photo", widget: "image", required: false, hint: "Recommended size: at least 500×500px, square (1:1) crop, JPG or PNG, under 500KB." }
-              - { label: "Initials (used if no photo)", name: "initials", widget: "string" }
-              - { label: "Full name", name: "name", widget: "string" }
-              - { label: "Role", name: "role", widget: "string" }
+              - { label: "Initials (used if no photo)", name: "initials", widget: "string", required: false }
+              - { label: "Full name", name: "name", widget: "string", required: false }
+              - { label: "Role", name: "role", widget: "string", required: false }
+              - { label: "Hidden (tick to hide this person)", name: "hidden", widget: "boolean", default: false }
           - label: "General committee members"
             name: "generalMembers"
             widget: "list"
             summary: "{{fields.name}}"
             fields:
               - { label: "Photo (optional — shows initials if left blank)", name: "photo", widget: "image", required: false, hint: "Recommended size: at least 500×500px, square (1:1) crop, JPG or PNG, under 500KB." }
-              - { label: "Initials (used if no photo)", name: "initials", widget: "string" }
-              - { label: "Full name", name: "name", widget: "string" }
-              - { label: "Role", name: "role", widget: "string" }
+              - { label: "Initials (used if no photo)", name: "initials", widget: "string", required: false }
+              - { label: "Full name", name: "name", widget: "string", required: false }
+              - { label: "Role", name: "role", widget: "string", required: false }
+              - { label: "Hidden (tick to hide this person)", name: "hidden", widget: "boolean", default: false }
           - label: "Regional representatives"
             name: "regionalReps"
             widget: "list"
             summary: "{{fields.name}} — {{fields.area}}"
             fields:
               - { label: "Photo (optional — shows initials if left blank)", name: "photo", widget: "image", required: false, hint: "Recommended size: at least 500×500px, square (1:1) crop, JPG or PNG, under 500KB." }
-              - { label: "Initials (used if no photo)", name: "initials", widget: "string" }
-              - { label: "Full name", name: "name", widget: "string" }
-              - { label: "Area covered", name: "area", widget: "string" }
+              - { label: "Initials (used if no photo)", name: "initials", widget: "string", required: false }
+              - { label: "Full name", name: "name", widget: "string", required: false }
+              - { label: "Area covered", name: "area", widget: "string", required: false }
+              - { label: "Hidden (tick to hide this person)", name: "hidden", widget: "boolean", default: false }
 
   # ---------- Resources / downloads ----------
   - name: "resources"
@@ -129,31 +133,33 @@ collections:
         file: "site/content/resources.json"
         fields:
           - { label: "Page header tag (leave blank to hide it entirely)", name: "heroKicker", widget: "string", required: false }
-          - { label: "Page header headline", name: "heroHeadline", widget: "string" }
-          - { label: "Page header text", name: "heroLede", widget: "text" }
+          - { label: "Page header headline (leave blank to hide it entirely)", name: "heroHeadline", widget: "string", required: false }
+          - { label: "Page header text", name: "heroLede", widget: "text", required: false }
           - label: "Member guides"
             name: "guides"
             widget: "list"
             summary: "{{fields.title}}"
             fields:
-              - { label: "File type tag", name: "filetag", widget: "string", hint: "e.g. PDF" }
-              - { label: "Title", name: "title", widget: "string" }
-              - { label: "Description", name: "description", widget: "text" }
-              - { label: "Meta line", name: "meta", widget: "string", hint: "e.g. '4 pages · updated 2026'" }
+              - { label: "File type tag", name: "filetag", widget: "string", hint: "e.g. PDF", required: false }
+              - { label: "Title", name: "title", widget: "string", required: false }
+              - { label: "Description", name: "description", widget: "text", required: false }
+              - { label: "Meta line", name: "meta", widget: "string", hint: "e.g. '4 pages · updated 2026'", required: false }
               - { label: "File", name: "file", widget: "file", hint: "Upload the PDF here. Keep file size under 5MB where possible for faster downloads." }
+              - { label: "Hidden (tick to hide this guide)", name: "hidden", widget: "boolean", default: false }
           - label: "Campaign materials"
             name: "campaignMaterials"
             widget: "list"
             summary: "{{fields.title}}"
             fields:
-              - { label: "File type tag", name: "filetag", widget: "string", hint: "e.g. PDF, FORM, LINK" }
-              - { label: "Title", name: "title", widget: "string" }
-              - { label: "Description", name: "description", widget: "text" }
-              - { label: "Meta line", name: "meta", widget: "string" }
-              - { label: "Link destination", name: "url", widget: "string", hint: "A file path (upload via the Media Library and paste its path), or a page like contact.html / news.html" }
+              - { label: "File type tag", name: "filetag", widget: "string", hint: "e.g. PDF, FORM, LINK", required: false }
+              - { label: "Title", name: "title", widget: "string", required: false }
+              - { label: "Description", name: "description", widget: "text", required: false }
+              - { label: "Meta line", name: "meta", widget: "string", required: false }
+              - { label: "Link destination", name: "url", widget: "string", hint: "A file path (upload via the Media Library and paste its path), or a page like contact.html / news.html", required: false }
               - { label: "Is this a file download?", name: "download", widget: "boolean", default: false }
-              - { label: "Button text", name: "buttonLabel", widget: "string", hint: "e.g. Download, Open form, View updates" }
-          - { label: "Footer note", name: "footerNote", widget: "text" }
+              - { label: "Button text", name: "buttonLabel", widget: "string", hint: "e.g. Download, Open form, View updates", required: false }
+              - { label: "Hidden (tick to hide this item)", name: "hidden", widget: "boolean", default: false }
+          - { label: "Footer note", name: "footerNote", widget: "text", required: false }
 
   # ---------- Site-wide (footer, shared across every page) ----------
   - name: "site"
@@ -164,8 +170,8 @@ collections:
         file: "site/content/site.json"
         description: "This appears in the footer on every single page."
         fields:
-          - { label: "Slogan", name: "footerSlogan", widget: "string" }
-          - { label: "Description", name: "footerDescription", widget: "text" }
+          - { label: "Slogan", name: "footerSlogan", widget: "string", required: false }
+          - { label: "Description", name: "footerDescription", widget: "text", required: false }
 
   # ---------- Page visibility (show/hide each page independently) ----------
   - name: "page-visibility"
@@ -193,10 +199,10 @@ collections:
         file: "site/content/about.json"
         fields:
           - { label: "Page header tag (leave blank to hide it entirely)", name: "heroKicker", widget: "string", required: false }
-          - { label: "Page header headline", name: "heroHeadline", widget: "string" }
-          - { label: "Page header text", name: "heroLede", widget: "text" }
-          - { label: "Mission — paragraph 1", name: "missionPara1", widget: "text" }
-          - { label: "Mission — paragraph 2", name: "missionPara2", widget: "text" }
+          - { label: "Page header headline (leave blank to hide it entirely)", name: "heroHeadline", widget: "string", required: false }
+          - { label: "Page header text", name: "heroLede", widget: "text", required: false }
+          - { label: "Mission — paragraph 1", name: "missionPara1", widget: "text", required: false }
+          - { label: "Mission — paragraph 2", name: "missionPara2", widget: "text", required: false }
           - label: "'What guides us' points"
             name: "guides"
             widget: "list"
@@ -206,11 +212,12 @@ collections:
             widget: "list"
             summary: "{{fields.year}}"
             fields:
-              - { label: "Year", name: "year", widget: "string" }
-              - { label: "Text", name: "text", widget: "text" }
-          - { label: "General members note", name: "generalMembersNote", widget: "text" }
-          - { label: "Bottom CTA headline", name: "ctaHeadline", widget: "string" }
-          - { label: "Bottom CTA text", name: "ctaText", widget: "text" }
+              - { label: "Year", name: "year", widget: "string", required: false }
+              - { label: "Text", name: "text", widget: "text", required: false }
+              - { label: "Hidden (tick to hide this entry)", name: "hidden", widget: "boolean", default: false }
+          - { label: "General members note", name: "generalMembersNote", widget: "text", required: false }
+          - { label: "Bottom CTA headline", name: "ctaHeadline", widget: "string", required: false }
+          - { label: "Bottom CTA text", name: "ctaText", widget: "text", required: false }
 
   # ---------- Membership page ----------
   - name: "membership-page"
@@ -221,16 +228,16 @@ collections:
         file: "site/content/membership.json"
         fields:
           - { label: "Page header tag (leave blank to hide it entirely)", name: "heroKicker", widget: "string", required: false }
-          - { label: "Page header headline", name: "heroHeadline", widget: "string" }
-          - { label: "Page header text", name: "heroLede", widget: "text" }
+          - { label: "Page header headline (leave blank to hide it entirely)", name: "heroHeadline", widget: "string", required: false }
+          - { label: "Page header text", name: "heroLede", widget: "text", required: false }
           - label: "Monthly fee card"
             name: "monthlyFee"
             widget: "object"
             fields:
-              - { label: "Tag", name: "tag", widget: "string" }
-              - { label: "Title", name: "title", widget: "string" }
-              - { label: "Price", name: "price", widget: "string" }
-              - { label: "Period", name: "period", widget: "string" }
+              - { label: "Tag", name: "tag", widget: "string", required: false }
+              - { label: "Title", name: "title", widget: "string", required: false }
+              - { label: "Price", name: "price", widget: "string", required: false }
+              - { label: "Period", name: "period", widget: "string", required: false }
               - label: "Features"
                 name: "features"
                 widget: "list"
@@ -239,19 +246,19 @@ collections:
             name: "joiningFee"
             widget: "object"
             fields:
-              - { label: "Title", name: "title", widget: "string" }
-              - { label: "Price", name: "price", widget: "string" }
-              - { label: "Period", name: "period", widget: "string" }
+              - { label: "Title", name: "title", widget: "string", required: false }
+              - { label: "Price", name: "price", widget: "string", required: false }
+              - { label: "Period", name: "period", widget: "string", required: false }
               - label: "Features"
                 name: "features"
                 widget: "list"
                 field: { label: "Feature", name: "feature", widget: "string" }
-          - { label: "Fee note", name: "feeNote", widget: "text" }
+          - { label: "Fee note", name: "feeNote", widget: "text", required: false }
           - label: "Ticker banner items"
             name: "ticker"
             widget: "list"
             field: { label: "Item", name: "item", widget: "string" }
-          - { label: "'Apply for membership' subheading", name: "joinSectionSub", widget: "string" }
+          - { label: "'Apply for membership' subheading", name: "joinSectionSub", widget: "string", required: false }
 
   # ---------- Know your rights page ----------
   - name: "rights-page"
@@ -262,8 +269,8 @@ collections:
         file: "site/content/rights.json"
         fields:
           - { label: "Page header tag (leave blank to hide it entirely)", name: "heroKicker", widget: "string", required: false }
-          - { label: "Page header headline", name: "heroHeadline", widget: "string" }
-          - { label: "Page header text", name: "heroLede", widget: "text" }
+          - { label: "Page header headline (leave blank to hide it entirely)", name: "heroHeadline", widget: "string", required: false }
+          - { label: "Page header text", name: "heroLede", widget: "text", required: false }
           - label: "Ticker banner items"
             name: "ticker"
             widget: "list"
@@ -273,21 +280,23 @@ collections:
             widget: "list"
             summary: "{{fields.title}}"
             fields:
-              - { label: "Title", name: "title", widget: "string" }
-              - { label: "Body text", name: "body", widget: "text" }
+              - { label: "Title", name: "title", widget: "string", required: false }
+              - { label: "Body text", name: "body", widget: "text", required: false }
               - label: "Bullet points"
                 name: "bullets"
                 widget: "list"
                 field: { label: "Point", name: "point", widget: "string" }
-          - { label: "Bottom CTA headline", name: "ctaHeadline", widget: "string" }
-          - { label: "Bottom CTA text", name: "ctaText", widget: "text" }
+              - { label: "Hidden (tick to hide this section)", name: "hidden", widget: "boolean", default: false }
+          - { label: "Bottom CTA headline", name: "ctaHeadline", widget: "string", required: false }
+          - { label: "Bottom CTA text", name: "ctaText", widget: "text", required: false }
           - label: "Useful links (sidebar buttons)"
             name: "usefulLinks"
             widget: "list"
             summary: "{{fields.label}}"
             fields:
-              - { label: "Button text", name: "label", widget: "string" }
-              - { label: "Link (full URL, e.g. https://...)", name: "url", widget: "string" }
+              - { label: "Button text", name: "label", widget: "string", required: false }
+              - { label: "Link (full URL, e.g. https://...)", name: "url", widget: "string", required: false }
+              - { label: "Hidden (tick to hide this link)", name: "hidden", widget: "boolean", default: false }
 
   # ---------- Contact page ----------
   - name: "contact-page"
@@ -298,25 +307,26 @@ collections:
         file: "site/content/contact.json"
         fields:
           - { label: "Page header tag (leave blank to hide it entirely)", name: "heroKicker", widget: "string", required: false }
-          - { label: "Page header headline", name: "heroHeadline", widget: "string" }
-          - { label: "Page header text", name: "heroLede", widget: "text" }
+          - { label: "Page header headline (leave blank to hide it entirely)", name: "heroHeadline", widget: "string", required: false }
+          - { label: "Page header text", name: "heroLede", widget: "text", required: false }
           - label: "Head office"
             name: "headOffice"
             widget: "object"
             fields:
-              - { label: "Office name", name: "name", widget: "string" }
-              - { label: "Address", name: "address", widget: "text" }
-              - { label: "Phone 1", name: "phone1", widget: "string" }
-              - { label: "Phone 2", name: "phone2", widget: "string" }
-              - { label: "Email", name: "email", widget: "string" }
+              - { label: "Office name", name: "name", widget: "string", required: false }
+              - { label: "Address", name: "address", widget: "text", required: false }
+              - { label: "Phone 1", name: "phone1", widget: "string", required: false }
+              - { label: "Phone 2", name: "phone2", widget: "string", required: false }
+              - { label: "Email", name: "email", widget: "string", required: false }
           - label: "Regional offices"
             name: "regionalOffices"
             widget: "list"
             summary: "{{fields.name}}"
             fields:
-              - { label: "Office name", name: "name", widget: "string" }
-              - { label: "Details", name: "details", widget: "text" }
-          - { label: "Regional reps note", name: "repsNote", widget: "text" }
+              - { label: "Office name", name: "name", widget: "string", required: false }
+              - { label: "Details", name: "details", widget: "text", required: false }
+              - { label: "Hidden (tick to hide this office)", name: "hidden", widget: "boolean", default: false }
+          - { label: "Regional reps note", name: "repsNote", widget: "text", required: false }
 
   # ---------- Homepage copy ----------
   - name: "home"
@@ -327,24 +337,26 @@ collections:
         file: "site/content/home.json"
         fields:
           - { label: "Hero kicker text (leave blank to hide it entirely)", name: "heroKicker", widget: "string", required: false }
-          - { label: "Hero headline (white part)", name: "heroHeadlinePlain", widget: "string" }
-          - { label: "Hero headline (red part)", name: "heroHeadlineRed", widget: "string" }
-          - { label: "Slogan", name: "slogan", widget: "string" }
-          - { label: "Hero subtext", name: "heroSubtext", widget: "text" }
-          - { label: "'Take action' card tag", name: "actionTag", widget: "string" }
-          - { label: "'Take action' card headline", name: "actionHeadline", widget: "string" }
-          - { label: "'Take action' card text", name: "actionText", widget: "text" }
+          - { label: "Hero headline (white part) — leave both parts blank to hide the whole headline", name: "heroHeadlinePlain", widget: "string", required: false }
+          - { label: "Hero headline (red part) — optional", name: "heroHeadlineRed", widget: "string", required: false }
+          - { label: "Slogan", name: "slogan", widget: "string", required: false }
+          - { label: "Hero subtext", name: "heroSubtext", widget: "text", required: false }
+          - { label: "'Take action' card tag", name: "actionTag", widget: "string", required: false }
+          - { label: "'Take action' card headline", name: "actionHeadline", widget: "string", required: false }
+          - { label: "'Take action' card text", name: "actionText", widget: "text", required: false }
           - label: "'What we fight for' pillars"
             name: "pillars"
             widget: "list"
             summary: "{{fields.title}}"
             fields:
-              - { label: "Title", name: "title", widget: "string" }
-              - { label: "Text", name: "text", widget: "text" }
+              - { label: "Title", name: "title", widget: "string", required: false }
+              - { label: "Text", name: "text", widget: "text", required: false }
+              - { label: "Hidden (tick to hide this pillar)", name: "hidden", widget: "boolean", default: false }
           - label: "'Why join MHPU' cards"
             name: "whyJoin"
             widget: "list"
             summary: "{{fields.title}}"
             fields:
-              - { label: "Title", name: "title", widget: "string" }
-              - { label: "Text", name: "text", widget: "text" }
+              - { label: "Title", name: "title", widget: "string", required: false }
+              - { label: "Text", name: "text", widget: "text", required: false }
+              - { label: "Hidden (tick to hide this card)", name: "hidden", widget: "boolean", default: false }
