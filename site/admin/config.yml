@@ -54,9 +54,6 @@ collections:
           - { label: "Page header tag (leave blank to hide it entirely)", name: "heroKicker", widget: "string", required: false }
           - { label: "Page header headline (leave blank to hide it entirely)", name: "heroHeadline", widget: "string", required: false }
           - { label: "Page header text", name: "heroLede", widget: "text", required: false }
-          - { label: "Campaign banner tag", name: "campaignTag", widget: "string", required: false }
-          - { label: "Campaign headline", name: "campaignHeadline", widget: "string", required: false }
-          - { label: "Campaign description", name: "campaignText", widget: "text", required: false }
           - label: "News posts"
             name: "posts"
             widget: "list"
@@ -160,6 +157,20 @@ collections:
               - { label: "Button text", name: "buttonLabel", widget: "string", hint: "e.g. Download, Open form, View updates", required: false }
               - { label: "Hidden (tick to hide this item)", name: "hidden", widget: "boolean", default: false }
           - { label: "Footer note", name: "footerNote", widget: "text", required: false }
+
+  # ---------- Active campaign (shared banner on Homepage + News page) ----------
+  - name: "campaign"
+    label: "Active Campaign"
+    files:
+      - name: "campaign"
+        label: "Campaign Banner"
+        file: "site/content/campaign.json"
+        description: "This one campaign shows up in two places: the 'Take action' card on the Homepage, and the banner on the News & Campaigns page. Editing it here updates both at once, and they'll always match."
+        fields:
+          - { label: "Show this campaign banner? (turn off when there's no active campaign)", name: "show", widget: "boolean", default: true }
+          - { label: "Tag", name: "tag", widget: "string", required: false, hint: "e.g. 'Take action' or 'Active campaign'" }
+          - { label: "Headline", name: "headline", widget: "string", required: false }
+          - { label: "Description", name: "text", widget: "text", required: false }
 
   # ---------- Site-wide (footer, shared across every page) ----------
   - name: "site"
@@ -342,10 +353,6 @@ collections:
           - { label: "Hero headline (red part) — optional", name: "heroHeadlineRed", widget: "string", required: false }
           - { label: "Slogan", name: "slogan", widget: "string", required: false }
           - { label: "Hero subtext", name: "heroSubtext", widget: "text", required: false }
-          - { label: "'Take action' card tag", name: "actionTag", widget: "string", required: false }
-          - { label: "'Take action' card headline", name: "actionHeadline", widget: "string", required: false }
-          - { label: "'Take action' card text", name: "actionText", widget: "text", required: false }
-          - { label: "Show 'Take action' campaign card? (turn off when there's no active campaign)", name: "showActiveCampaign", widget: "boolean", default: true }
           - label: "'What we fight for' pillars"
             name: "pillars"
             widget: "list"
