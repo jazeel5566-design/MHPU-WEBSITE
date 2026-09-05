@@ -345,6 +345,7 @@ collections:
           - { label: "'Take action' card tag", name: "actionTag", widget: "string", required: false }
           - { label: "'Take action' card headline", name: "actionHeadline", widget: "string", required: false }
           - { label: "'Take action' card text", name: "actionText", widget: "text", required: false }
+          - { label: "Show 'Take action' campaign card? (turn off when there's no active campaign)", name: "showActiveCampaign", widget: "boolean", default: true }
           - label: "'What we fight for' pillars"
             name: "pillars"
             widget: "list"
