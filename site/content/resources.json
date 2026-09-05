@@ -9,7 +9,7 @@
       "description": "Governing Constitution of MHPU.",
       "meta": "",
       "file": "assets/uploads/2023-r-158-public-finance-regulation-1-.pdf",
-      "hidden": true
+      "hidden": false
     },
     {
       "filetag": "PDF",
@@ -25,7 +25,7 @@
       "description": "A printable version of the membership application, for offline or paper-based sign-up.",
       "meta": "1 page · updated 2026",
       "file": "https://script.google.com/macros/s/AKfycby1mujouk0jWxPX3ExyC0pqrB6rVMk6JHrihXfHDzeGIyI7tYaNf4azBGeL_i0D-Y008A/exec",
-      "hidden": false
+      "hidden": true
     }
   ],
   "campaignMaterials": [
@@ -37,7 +37,7 @@
       "url": "resources/safe-staffing-briefing.pdf",
       "download": true,
       "buttonLabel": "Download",
-      "hidden": false
+      "hidden": true
     },
     {
       "filetag": "PDF",
