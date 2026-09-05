@@ -223,6 +223,7 @@
     }
     setText('[data-cms="feeNote"]', m.feeNote);
     setText('[data-cms="joinSectionSub"]', m.joinSectionSub);
+    setText('[data-cms="declarationText"]', m.declarationText);
     var tickerWrap = document.querySelector('[data-cms-list="ticker"]');
     if (tickerWrap && m.ticker) tickerWrap.innerHTML = m.ticker.map(function (t) { return '<span>' + esc(t) + '</span>'; }).join('');
   }
