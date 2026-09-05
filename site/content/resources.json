@@ -5,22 +5,6 @@
   "guides": [
     {
       "filetag": "PDF",
-      "title": "Constitution",
-      "description": "Governing Constitution of MHPU.",
-      "meta": "",
-      "file": "assets/uploads/2023-r-158-public-finance-regulation-1-.pdf",
-      "hidden": false
-    },
-    {
-      "filetag": "PDF",
-      "title": "Grievance & disciplinary procedure guide",
-      "description": "Step-by-step guidance on what to do — and what to expect — if you're facing a formal process.",
-      "meta": "3 pages · updated 2026",
-      "file": "resources/grievance-procedure-guide.pdf",
-      "hidden": true
-    },
-    {
-      "filetag": "PDF",
       "title": "Membership application form (sample)",
       "description": "A printable version of the membership application, for offline or paper-based sign-up.",
       "meta": "1 page · updated 2026",
