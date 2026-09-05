@@ -259,6 +259,7 @@ collections:
             widget: "list"
             field: { label: "Item", name: "item", widget: "string" }
           - { label: "'Apply for membership' subheading", name: "joinSectionSub", widget: "string", required: false }
+          - { label: "Declaration text (shown next to the consent checkbox)", name: "declarationText", widget: "text", required: false }
 
   # ---------- Know your rights page ----------
   - name: "rights-page"
