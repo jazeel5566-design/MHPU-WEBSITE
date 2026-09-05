@@ -3,14 +3,62 @@
   "heroHeadline": "Everything in one place.",
   "heroLede": "Handbooks, procedure guides and forms — the practical documents members ask for most.",
   "guides": [
-    { "filetag": "PDF", "title": "Member handbook", "description": "An overview of your rights, benefits and how to get support as an MHPU member.", "meta": "4 pages · updated 2026", "file": "resources/member-handbook.pdf" },
-    { "filetag": "PDF", "title": "Grievance & disciplinary procedure guide", "description": "Step-by-step guidance on what to do — and what to expect — if you're facing a formal process.", "meta": "3 pages · updated 2026", "file": "resources/grievance-procedure-guide.pdf" },
-    { "filetag": "PDF", "title": "Membership application form (sample)", "description": "A printable version of the membership application, for offline or paper-based sign-up.", "meta": "1 page · updated 2026", "file": "resources/membership-application-form.pdf" }
+    {
+      "filetag": "PDF",
+      "title": "Member handbook",
+      "description": "An overview of your rights, benefits and how to get support as an MHPU member.",
+      "meta": "4 pages · updated 2026",
+      "file": "assets/uploads/2023-r-158-public-finance-regulation-1-.pdf",
+      "hidden": true
+    },
+    {
+      "filetag": "PDF",
+      "title": "Grievance & disciplinary procedure guide",
+      "description": "Step-by-step guidance on what to do — and what to expect — if you're facing a formal process.",
+      "meta": "3 pages · updated 2026",
+      "file": "resources/grievance-procedure-guide.pdf",
+      "hidden": true
+    },
+    {
+      "filetag": "PDF",
+      "title": "Membership application form (sample)",
+      "description": "A printable version of the membership application, for offline or paper-based sign-up.",
+      "meta": "1 page · updated 2026",
+      "file": "https://script.google.com/macros/s/AKfycby1mujouk0jWxPX3ExyC0pqrB6rVMk6JHrihXfHDzeGIyI7tYaNf4azBGeL_i0D-Y008A/exec",
+      "hidden": false
+    }
   ],
   "campaignMaterials": [
-    { "filetag": "PDF", "title": "Safe staffing campaign — briefing note", "description": "The case for minimum staffing ratios, background on the campaign, and how members can support it.", "meta": "2 pages · updated 2026", "url": "resources/safe-staffing-briefing.pdf", "download": true, "buttonLabel": "Download" },
-    { "filetag": "FORM", "title": "Case support request", "description": "Request confidential advice or formal representation from your regional MHPU representative.", "meta": "Online form", "url": "contact.html", "download": false, "buttonLabel": "Open form" },
-    { "filetag": "LINK", "title": "Current collective agreements", "description": "The latest ratified pay scale and conditions agreements covering public health facilities.", "meta": "External reference", "url": "news.html", "download": false, "buttonLabel": "View updates" }
+    {
+      "filetag": "PDF",
+      "title": "Safe staffing campaign — briefing note",
+      "description": "The case for minimum staffing ratios, background on the campaign, and how members can support it.",
+      "meta": "2 pages · updated 2026",
+      "url": "resources/safe-staffing-briefing.pdf",
+      "download": true,
+      "buttonLabel": "Download",
+      "hidden": false
+    },
+    {
+      "filetag": "PDF",
+      "title": "Case support request",
+      "description": "Request confidential advice or formal representation from your regional MHPU representative.",
+      "meta": "Online form",
+      "url": "contact.html",
+      "download": true,
+      "buttonLabel": "Open form",
+      "hidden": true
+    },
+    {
+      "filetag": "LINK",
+      "title": "Current collective agreements",
+      "description": "The latest ratified pay scale and conditions agreements covering public health facilities.",
+      "meta": "External reference",
+      "url": "news.html",
+      "download": true,
+      "buttonLabel": "View updates",
+      "hidden": true
+    }
   ],
   "footerNote": "Documents on this page are placeholder samples generated for demonstration and should be replaced with MHPU's approved materials."
 }
