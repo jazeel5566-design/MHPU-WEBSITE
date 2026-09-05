@@ -21,7 +21,15 @@
 
   function setText(selector, value) {
     var el = document.querySelector(selector);
-    if (el && value != null) el.textContent = value;
+    if (!el || value == null) return; // field not present at all — leave static fallback as-is
+    if (String(value).trim() === '') {
+      // Editor intentionally cleared this field — hide it entirely rather
+      // than leaving an empty, oddly-spaced element on the page.
+      el.style.display = 'none';
+    } else {
+      el.style.display = '';
+      el.textContent = value;
+    }
   }
 
   function setHTML(selector, value) {
@@ -337,6 +345,30 @@
     }
   }
 
+  /* ---------- Page visibility (every page) ---------- */
+  // A page can be toggled off in /admin without deleting anything — this
+  // swaps its main content for a simple "unavailable" message while
+  // leaving the header, footer, and navigation fully intact so visitors
+  // can still reach the site's other pages.
+  function applyPageVisibility(visibility) {
+    var page = document.body.getAttribute('data-cms-page');
+    if (!page || !visibility) return true; // visible by default if data is missing
+
+    var isVisible = visibility[page] !== false; // default true unless explicitly false
+    if (isVisible) return true;
+
+    var main = document.querySelector('main');
+    if (main) {
+      main.innerHTML =
+        '<section style="padding:120px 0;text-align:center;">' +
+        '<div class="wrap" style="max-width:560px;">' +
+        '<h1 style="font-size:32px;color:var(--ink);margin-bottom:16px;">Page unavailable</h1>' +
+        '<p style="font-family:\'Source Sans 3\',sans-serif;color:var(--muted);font-size:16px;line-height:1.6;">This page is temporarily unavailable. Please check back later, or use the menu above to visit another page.</p>' +
+        '</div></section>';
+    }
+    return false;
+  }
+
   /* ---------- Boot ---------- */
   document.addEventListener('DOMContentLoaded', function () {
     var page = document.body.getAttribute('data-cms-page');
@@ -345,6 +377,17 @@
     fetchJSON('content/hero-images.json').then(applyHeroImage).catch(function () {});
     fetchJSON('content/site.json').then(renderSiteFooter).catch(function () {});
 
+    fetchJSON('content/page-visibility.json').then(function (visibility) {
+      var visible = applyPageVisibility(visibility);
+      if (!visible) return; // don't bother loading/rendering content for a hidden page
+
+      loadPageContent(page);
+    }).catch(function () {
+      loadPageContent(page); // if the visibility file itself fails to load, default to showing the page
+    });
+  });
+
+  function loadPageContent(page) {
     if (page === 'home') {
       Promise.all([fetchJSON('content/home.json'), fetchJSON('content/stats.json')])
         .then(function (results) { renderHome(results[0], results[1]); })
@@ -364,6 +407,5 @@
     } else if (page === 'resources') {
       fetchJSON('content/resources.json').then(renderResources).catch(function (err) { console.warn('Content load failed:', err); });
     }
-  });
+  }
 })();
-
