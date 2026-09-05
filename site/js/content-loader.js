@@ -60,6 +60,38 @@
     setText('[data-cms="footerDescription"]', site.footerDescription);
   }
 
+  /* ---------- Active campaign banner (shared by Homepage + News page) ---------- */
+  // One campaign, one place to edit it — whichever page you're on, this
+  // fills in and shows/hides that page's version of the banner using the
+  // exact same data, so the two can never drift out of sync.
+  function applyCampaignBanner(campaign) {
+    if (!campaign) return;
+
+    var actionCard = document.getElementById('action-card');
+    if (actionCard) {
+      if (campaign.show === false) {
+        actionCard.style.display = 'none';
+      } else {
+        actionCard.style.display = '';
+        setText('[data-cms="actionTag"]', campaign.tag);
+        setText('[data-cms="actionHeadline"]', campaign.headline);
+        setText('[data-cms="actionText"]', campaign.text);
+      }
+    }
+
+    var campaignSection = document.getElementById('campaign-banner-section');
+    if (campaignSection) {
+      if (campaign.show === false) {
+        campaignSection.style.display = 'none';
+      } else {
+        campaignSection.style.display = '';
+        setText('[data-cms="campaignTag"]', campaign.tag);
+        setText('[data-cms="campaignHeadline"]', campaign.headline);
+        setText('[data-cms="campaignText"]', campaign.text);
+      }
+    }
+  }
+
   /* ---------- Homepage ---------- */
   function renderHome(home, stats) {
     setText('[data-cms="heroKicker"]', home.heroKicker);
@@ -80,18 +112,6 @@
 
     setText('[data-cms="slogan"]', home.slogan);
     setText('[data-cms="heroSubtext"]', home.heroSubtext);
-
-    var actionCard = document.getElementById('action-card');
-    if (actionCard) {
-      if (home.showActiveCampaign === false) {
-        actionCard.style.display = 'none';
-      } else {
-        actionCard.style.display = '';
-        setText('[data-cms="actionTag"]', home.actionTag);
-        setText('[data-cms="actionHeadline"]', home.actionHeadline);
-        setText('[data-cms="actionText"]', home.actionText);
-      }
-    }
 
     var pillarWrap = document.querySelector('[data-cms-list="pillars"]');
     if (pillarWrap && home.pillars) {
@@ -130,9 +150,6 @@
   /* ---------- News & campaigns page ---------- */
   function renderNews(news) {
     renderPageHero(news);
-    setText('[data-cms="campaignTag"]', news.campaignTag);
-    setText('[data-cms="campaignHeadline"]', news.campaignHeadline);
-    setText('[data-cms="campaignText"]', news.campaignText);
 
     var listWrap = document.querySelector('[data-cms-list="posts"]');
     if (listWrap && news.posts) {
@@ -408,6 +425,7 @@
 
     fetchJSON('content/hero-images.json').then(applyHeroImage).catch(function () {});
     fetchJSON('content/site.json').then(renderSiteFooter).catch(function () {});
+    fetchJSON('content/campaign.json').then(applyCampaignBanner).catch(function () {});
 
     fetchJSON('content/page-visibility.json').then(function (visibility) {
       var visible = applyPageVisibility(visibility);
