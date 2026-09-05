@@ -28,37 +28,6 @@
       "hidden": true
     }
   ],
-  "campaignMaterials": [
-    {
-      "filetag": "PDF",
-      "title": "Safe staffing campaign — briefing note",
-      "description": "The case for minimum staffing ratios, background on the campaign, and how members can support it.",
-      "meta": "2 pages · updated 2026",
-      "url": "resources/safe-staffing-briefing.pdf",
-      "download": true,
-      "buttonLabel": "Download",
-      "hidden": true
-    },
-    {
-      "filetag": "PDF",
-      "title": "Case support request",
-      "description": "Request confidential advice or formal representation from your regional MHPU representative.",
-      "meta": "Online form",
-      "url": "contact.html",
-      "download": true,
-      "buttonLabel": "Open form",
-      "hidden": true
-    },
-    {
-      "filetag": "LINK",
-      "title": "Current collective agreements",
-      "description": "The latest ratified pay scale and conditions agreements covering public health facilities.",
-      "meta": "External reference",
-      "url": "news.html",
-      "download": true,
-      "buttonLabel": "View updates",
-      "hidden": true
-    }
-  ],
+  "campaignMaterials": [],
   "footerNote": "Documents on this page are placeholder samples generated for demonstration and should be replaced with MHPU's approved materials."
 }
