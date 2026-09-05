@@ -1,7 +1,7 @@
 {
-  "actionText": "1,240 members have already added their name. Join them today.",
+  "actionText": "",
   "heroHeadlineRed": "",
-  "actionTag": "Take action",
+  "actionTag": "",
   "pillars": [
     {
       "title": "Represent",
@@ -24,7 +24,7 @@
       "hidden": false
     }
   ],
-  "actionHeadline": "Sign the petition for safe staffing ratios",
+  "actionHeadline": "",
   "heroKicker": "Maldives Health Professionals Union",
   "whyJoin": [
     {
