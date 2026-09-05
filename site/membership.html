@@ -131,15 +131,15 @@
           <span class="error-msg">Upload a copy of your ID or passport.</span>
         </div>
         <div class="field">
-          <label for="signatureFile">Signature <span class="req">*</span></label>
-          <input type="file" id="signatureFile" name="signatureFile" required accept="image/*">
-          <span class="error-msg">Upload an image of your signature.</span>
+          <label for="signatureText">Signature (type your full name) <span class="req">*</span></label>
+          <input type="text" id="signatureText" name="signatureText" required placeholder="Type your full name to sign">
+          <span class="error-msg">Type your full name to sign this application.</span>
         </div>
       </div>
 
       <div class="checkbox-row" style="margin-bottom:24px;">
         <input type="checkbox" id="terms" name="terms" required>
-        <label for="terms">I declare that the information given above is true and correct, and I agree to MHPU's membership terms. <span class="req">*</span></label>
+        <label for="terms"><span data-cms="declarationText">I, the undersigned, apply for membership of the MHPU and declare that the foregoing statements are correct. I wish to join MHPU subject to the rule and constitution of the Union. I hereby undertake, if accepted as a member, to abide the rules of the Union and use my best endeavours to promote its objectives and interests.</span> <span class="req">*</span></label>
       </div>
 
       <button type="submit" class="btn btn-red" id="membership-submit-btn">Submit application</button>
@@ -206,9 +206,8 @@
     alertBox.className = 'form-alert success show';
 
     var idFile = document.getElementById('idFile').files[0];
-    var sigFile = document.getElementById('signatureFile').files[0];
 
-    Promise.all([fileToBase64(idFile), fileToBase64(sigFile)]).then(function (results) {
+    fileToBase64(idFile).then(function (idBase64) {
       var payload = {
         fullName: document.getElementById('fullName').value.trim(),
         idNumber: document.getElementById('idNumber').value.trim(),
@@ -218,12 +217,10 @@
         phone: document.getElementById('phone').value.trim(),
         jobTitle: document.getElementById('jobTitle').value.trim(),
         hospital: document.getElementById('hospital').value.trim(),
-        idFile_base64: results[0],
+        idFile_base64: idBase64,
         idFile_fileName: idFile.name,
         idFile_mimeType: idFile.type || 'application/octet-stream',
-        signatureFile_base64: results[1],
-        signatureFile_fileName: sigFile.name,
-        signatureFile_mimeType: sigFile.type || 'image/png',
+        signatureText: document.getElementById('signatureText').value.trim(),
         declarationDate: new Date().toISOString().slice(0, 10)
       };
 
@@ -254,7 +251,7 @@
         submitBtn.disabled = false;
       });
     }).catch(function () {
-      alertBox.textContent = 'Something went wrong reading your files — please try again.';
+      alertBox.textContent = 'Something went wrong reading your ID file — please try again.';
       alertBox.className = 'form-alert error show';
       submitBtn.disabled = false;
     });
