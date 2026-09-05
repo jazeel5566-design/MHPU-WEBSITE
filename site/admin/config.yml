@@ -51,6 +51,9 @@ collections:
         label: "News & Campaign Posts"
         file: "site/content/news.json"
         fields:
+          - { label: "Page header tag (leave blank to hide it entirely)", name: "heroKicker", widget: "string", required: false }
+          - { label: "Page header headline", name: "heroHeadline", widget: "string" }
+          - { label: "Page header text", name: "heroLede", widget: "text" }
           - { label: "Campaign banner tag", name: "campaignTag", widget: "string" }
           - { label: "Campaign headline", name: "campaignHeadline", widget: "string" }
           - { label: "Campaign description", name: "campaignText", widget: "text" }
@@ -125,7 +128,7 @@ collections:
         label: "Resources Page"
         file: "site/content/resources.json"
         fields:
-          - { label: "Page header tag", name: "heroKicker", widget: "string" }
+          - { label: "Page header tag (leave blank to hide it entirely)", name: "heroKicker", widget: "string", required: false }
           - { label: "Page header headline", name: "heroHeadline", widget: "string" }
           - { label: "Page header text", name: "heroLede", widget: "text" }
           - label: "Member guides"
@@ -164,6 +167,23 @@ collections:
           - { label: "Slogan", name: "footerSlogan", widget: "string" }
           - { label: "Description", name: "footerDescription", widget: "text" }
 
+  # ---------- Page visibility (show/hide each page independently) ----------
+  - name: "page-visibility"
+    label: "Page Visibility"
+    files:
+      - name: "page-visibility"
+        label: "Show / Hide Pages"
+        file: "site/content/page-visibility.json"
+        description: "Turn any page off to show a simple \"page unavailable\" message instead of its content — the page itself isn't deleted, and turning the toggle back on restores everything exactly as it was. The header, footer, and navigation stay visible either way, so people can still get to your other pages."
+        fields:
+          - { label: "Homepage", name: "home", widget: "boolean", default: true }
+          - { label: "About page", name: "about", widget: "boolean", default: true }
+          - { label: "Membership page", name: "membership", widget: "boolean", default: true }
+          - { label: "Know Your Rights page", name: "rights", widget: "boolean", default: true }
+          - { label: "News & Campaigns page", name: "news", widget: "boolean", default: true }
+          - { label: "Resources page", name: "resources", widget: "boolean", default: true }
+          - { label: "Contact page", name: "contact", widget: "boolean", default: true }
+
   # ---------- About page ----------
   - name: "about-page"
     label: "About Page"
@@ -172,7 +192,7 @@ collections:
         label: "About Page Content"
         file: "site/content/about.json"
         fields:
-          - { label: "Page header tag", name: "heroKicker", widget: "string" }
+          - { label: "Page header tag (leave blank to hide it entirely)", name: "heroKicker", widget: "string", required: false }
           - { label: "Page header headline", name: "heroHeadline", widget: "string" }
           - { label: "Page header text", name: "heroLede", widget: "text" }
           - { label: "Mission — paragraph 1", name: "missionPara1", widget: "text" }
@@ -200,7 +220,7 @@ collections:
         label: "Membership Page Content"
         file: "site/content/membership.json"
         fields:
-          - { label: "Page header tag", name: "heroKicker", widget: "string" }
+          - { label: "Page header tag (leave blank to hide it entirely)", name: "heroKicker", widget: "string", required: false }
           - { label: "Page header headline", name: "heroHeadline", widget: "string" }
           - { label: "Page header text", name: "heroLede", widget: "text" }
           - label: "Monthly fee card"
@@ -241,7 +261,7 @@ collections:
         label: "Rights Page Content"
         file: "site/content/rights.json"
         fields:
-          - { label: "Page header tag", name: "heroKicker", widget: "string" }
+          - { label: "Page header tag (leave blank to hide it entirely)", name: "heroKicker", widget: "string", required: false }
           - { label: "Page header headline", name: "heroHeadline", widget: "string" }
           - { label: "Page header text", name: "heroLede", widget: "text" }
           - label: "Ticker banner items"
@@ -277,7 +297,7 @@ collections:
         label: "Contact Page Content"
         file: "site/content/contact.json"
         fields:
-          - { label: "Page header tag", name: "heroKicker", widget: "string" }
+          - { label: "Page header tag (leave blank to hide it entirely)", name: "heroKicker", widget: "string", required: false }
           - { label: "Page header headline", name: "heroHeadline", widget: "string" }
           - { label: "Page header text", name: "heroLede", widget: "text" }
           - label: "Head office"
@@ -306,7 +326,7 @@ collections:
         label: "Homepage Content"
         file: "site/content/home.json"
         fields:
-          - { label: "Hero kicker text", name: "heroKicker", widget: "string" }
+          - { label: "Hero kicker text (leave blank to hide it entirely)", name: "heroKicker", widget: "string", required: false }
           - { label: "Hero headline (white part)", name: "heroHeadlinePlain", widget: "string" }
           - { label: "Hero headline (red part)", name: "heroHeadlineRed", widget: "string" }
           - { label: "Slogan", name: "slogan", widget: "string" }
