@@ -120,8 +120,6 @@
 
 </main>
 
-<iframe name="contact-submit-frame" style="display:none;" aria-hidden="true"></iframe>
-
 <script>
 (function () {
   var CONTACT_APPSCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCsmvzFfNQwkmO-c05AXBgr96DHXB01W_r1o5zpRbPrNlCJ1BOhKsUcENEbmjWT35X/exec";
@@ -155,18 +153,38 @@
     }
 
     submitBtn.disabled = true;
-    form.action = CONTACT_APPSCRIPT_URL;
-    form.method = 'POST';
-    form.target = 'contact-submit-frame';
-    form.submit();
 
-    setTimeout(function () {
+    var payload = {
+      'form-type': 'contact',
+      'c-name': document.getElementById('c-name').value.trim(),
+      'c-email': document.getElementById('c-email').value.trim(),
+      'c-subject': document.getElementById('c-subject').value.trim(),
+      'c-message': document.getElementById('c-message').value.trim()
+    };
+
+    var body = Object.keys(payload)
+      .map(function (key) { return encodeURIComponent(key) + '=' + encodeURIComponent(payload[key]); })
+      .join('&');
+
+    // mode: 'no-cors' — see membership.html for why this replaced the
+    // hidden-iframe <form> submission (Google silently downgraded those
+    // POSTs to GETs, so messages were never actually arriving).
+    fetch(CONTACT_APPSCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body
+    }).then(function () {
       alertBox.textContent = 'Message sent — a member of the MHPU team will reply within 2 working days.';
       alertBox.className = 'form-alert success show';
       form.reset();
       form.querySelectorAll('.has-error').forEach(function (f) { f.classList.remove('has-error'); });
       submitBtn.disabled = false;
-    }, 900);
+    }).catch(function () {
+      alertBox.textContent = 'Something went wrong sending your message — please try again, or call the advice line.';
+      alertBox.className = 'form-alert error show';
+      submitBtn.disabled = false;
+    });
   });
 })();
 </script>

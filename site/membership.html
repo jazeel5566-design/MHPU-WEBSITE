@@ -147,8 +147,6 @@
   </div>
 </section>
 
-<iframe name="membership-submit-frame" style="display:none;" aria-hidden="true"></iframe>
-
 <script>
 (function () {
   var MEMBERSHIP_APPSCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCsmvzFfNQwkmO-c05AXBgr96DHXB01W_r1o5zpRbPrNlCJ1BOhKsUcENEbmjWT35X/exec";
@@ -170,13 +168,6 @@
     });
   }
 
-  function addHiddenField(name, value) {
-    var input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = name;
-    input.value = value;
-    form.appendChild(input);
-  }
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -218,32 +209,50 @@
     var sigFile = document.getElementById('signatureFile').files[0];
 
     Promise.all([fileToBase64(idFile), fileToBase64(sigFile)]).then(function (results) {
-      addHiddenField('idFile_base64', results[0]);
-      addHiddenField('idFile_fileName', idFile.name);
-      addHiddenField('idFile_mimeType', idFile.type || 'application/octet-stream');
-      addHiddenField('signatureFile_base64', results[1]);
-      addHiddenField('signatureFile_fileName', sigFile.name);
-      addHiddenField('signatureFile_mimeType', sigFile.type || 'image/png');
-      addHiddenField('declarationDate', new Date().toISOString().slice(0, 10));
+      var payload = {
+        fullName: document.getElementById('fullName').value.trim(),
+        idNumber: document.getElementById('idNumber').value.trim(),
+        address: document.getElementById('address').value.trim(),
+        country: document.getElementById('country').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        jobTitle: document.getElementById('jobTitle').value.trim(),
+        hospital: document.getElementById('hospital').value.trim(),
+        idFile_base64: results[0],
+        idFile_fileName: idFile.name,
+        idFile_mimeType: idFile.type || 'application/octet-stream',
+        signatureFile_base64: results[1],
+        signatureFile_fileName: sigFile.name,
+        signatureFile_mimeType: sigFile.type || 'image/png',
+        declarationDate: new Date().toISOString().slice(0, 10)
+      };
 
-      // Remove the raw file inputs so they don't get submitted twice /
-      // interfere with the urlencoded submission — the base64 versions
-      // above carry the actual file data now.
-      document.getElementById('idFile').removeAttribute('name');
-      document.getElementById('signatureFile').removeAttribute('name');
+      var body = Object.keys(payload)
+        .map(function (key) { return encodeURIComponent(key) + '=' + encodeURIComponent(payload[key]); })
+        .join('&');
 
-      form.action = MEMBERSHIP_APPSCRIPT_URL;
-      form.method = 'POST';
-      form.target = 'membership-submit-frame';
-      form.submit();
-
-      setTimeout(function () {
+      // mode: 'no-cors' is required here — script.google.com doesn't send
+      // CORS headers, so a normal fetch would be blocked from reading the
+      // response anyway. This still reliably delivers the POST to doPost,
+      // unlike a plain <form> submission (which Google silently downgrades
+      // to a GET when it internally redirects — the bug that caused
+      // submissions to never actually arrive).
+      fetch(MEMBERSHIP_APPSCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body
+      }).then(function () {
         alertBox.textContent = "Thank you for applying — your membership application has been received. We'll confirm by email within 3 working days.";
         alertBox.className = 'form-alert success show';
         form.reset();
         form.querySelectorAll('.has-error').forEach(function (f) { f.classList.remove('has-error'); });
         submitBtn.disabled = false;
-      }, 1200);
+      }).catch(function () {
+        alertBox.textContent = "Something went wrong sending your application — please try again, or contact us directly.";
+        alertBox.className = 'form-alert error show';
+        submitBtn.disabled = false;
+      });
     }).catch(function () {
       alertBox.textContent = 'Something went wrong reading your files — please try again.';
       alertBox.className = 'form-alert error show';
