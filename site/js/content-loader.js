@@ -37,6 +37,14 @@
     if (el && value != null) el.innerHTML = value;
   }
 
+  // Shared helper — every list item across the site now supports an
+  // individual "Hidden" checkbox in /admin. This filters those out before
+  // rendering, without ever touching the underlying data (so un-hiding is
+  // instant, no re-entry needed).
+  function visibleOnly(items) {
+    return (items || []).filter(function (item) { return !item || item.hidden !== true; });
+  }
+
   /* ---------- Generic page-hero helper ---------- */
   function renderPageHero(data) {
     if (!data) return;
@@ -55,7 +63,21 @@
   /* ---------- Homepage ---------- */
   function renderHome(home, stats) {
     setText('[data-cms="heroKicker"]', home.heroKicker);
-    setHTML('[data-cms="heroHeadline"]', esc(home.heroHeadlinePlain) + '<span style="color:var(--red);">' + esc(home.heroHeadlineRed) + '</span>');
+
+    var headlineEl = document.querySelector('[data-cms="heroHeadline"]');
+    if (headlineEl) {
+      var plain = (home.heroHeadlinePlain || '').trim();
+      var red = (home.heroHeadlineRed || '').trim();
+      if (!plain && !red) {
+        headlineEl.style.display = 'none';
+      } else {
+        headlineEl.style.display = '';
+        var html = esc(plain);
+        if (red) html += '<span style="color:var(--red);">' + esc(red) + '</span>';
+        headlineEl.innerHTML = html;
+      }
+    }
+
     setText('[data-cms="slogan"]', home.slogan);
     setText('[data-cms="heroSubtext"]', home.heroSubtext);
     setText('[data-cms="actionTag"]', home.actionTag);
@@ -64,14 +86,14 @@
 
     var pillarWrap = document.querySelector('[data-cms-list="pillars"]');
     if (pillarWrap && home.pillars) {
-      pillarWrap.innerHTML = home.pillars.map(function (p) {
+      pillarWrap.innerHTML = visibleOnly(home.pillars).map(function (p) {
         return '<div class="pillar"><div class="mark-sm"></div><h3>' + esc(p.title) + '</h3><p>' + esc(p.text) + '</p></div>';
       }).join('');
     }
 
     var whyJoinWrap = document.querySelector('[data-cms-list="whyJoin"]');
     if (whyJoinWrap && home.whyJoin) {
-      whyJoinWrap.innerHTML = home.whyJoin.map(function (w) {
+      whyJoinWrap.innerHTML = visibleOnly(home.whyJoin).map(function (w) {
         return '<div class="card"><h3>' + esc(w.title) + '</h3><p>' + esc(w.text) + '</p></div>';
       }).join('');
     }
@@ -85,11 +107,11 @@
       setText('[data-cms="stat-resolutionRateLabel"]', stats.resolutionRateLabel);
     }
 
-    // Homepage news preview — first 3 posts
+    // Homepage news preview — first 3 visible posts
     var newsWrap = document.querySelector('[data-cms-list="news-preview"]');
     fetchJSON('content/news.json').then(function (news) {
       if (newsWrap && news.posts) {
-        newsWrap.innerHTML = news.posts.slice(0, 3).map(function (p) {
+        newsWrap.innerHTML = visibleOnly(news.posts).slice(0, 3).map(function (p) {
           return '<div class="news-row"><div><h4>' + esc(p.title) + '</h4></div><span class="date">' + esc(p.date) + '</span></div>';
         }).join('');
       }
@@ -105,7 +127,7 @@
 
     var listWrap = document.querySelector('[data-cms-list="posts"]');
     if (listWrap && news.posts) {
-      listWrap.innerHTML = news.posts.map(function (p) {
+      listWrap.innerHTML = visibleOnly(news.posts).map(function (p) {
         var cat = esc(p.category).toLowerCase();
         return '<div class="news-row" data-category="' + cat + '"><div><span class="cat">' + esc(p.category) + '</span><h4>' + esc(p.title) + '</h4></div><span class="date">' + esc(p.date) + '</span></div>';
       }).join('');
@@ -138,19 +160,19 @@
   function renderLeadership(data) {
     var execWrap = document.querySelector('[data-cms-list="executive"]');
     if (execWrap && data.executive) {
-      execWrap.innerHTML = data.executive.map(function (m) {
+      execWrap.innerHTML = visibleOnly(data.executive).map(function (m) {
         return '<div class="team-card">' + avatarHTML(m) + '<h4>' + esc(m.name) + '</h4><p>' + esc(m.role) + '</p></div>';
       }).join('');
     }
     var genWrap = document.querySelector('[data-cms-list="generalMembers"]');
     if (genWrap && data.generalMembers) {
-      genWrap.innerHTML = data.generalMembers.map(function (m) {
+      genWrap.innerHTML = visibleOnly(data.generalMembers).map(function (m) {
         return '<div class="team-card">' + avatarHTML(m) + '<h4>' + esc(m.name) + '</h4><p>' + esc(m.role) + '</p></div>';
       }).join('');
     }
     var repWrap = document.querySelector('[data-cms-list="regionalReps"]');
     if (repWrap && data.regionalReps) {
-      repWrap.innerHTML = data.regionalReps.map(function (r) {
+      repWrap.innerHTML = visibleOnly(data.regionalReps).map(function (r) {
         return '<div class="team-card">' + avatarHTML(r) + '<h4>' + esc(r.name) + '</h4><p>' + esc(r.area) + '</p></div>';
       }).join('');
     }
@@ -171,7 +193,7 @@
 
     var historyWrap = document.querySelector('[data-cms-list="history"]');
     if (historyWrap && about.history) {
-      historyWrap.innerHTML = about.history.map(function (h) {
+      historyWrap.innerHTML = visibleOnly(about.history).map(function (h) {
         return '<div class="card"><h3 style="font-size:32px;color:var(--red);">' + esc(h.year) + '</h3><p>' + esc(h.text) + '</p></div>';
       }).join('');
     }
@@ -213,7 +235,7 @@
 
     var linksWrap = document.querySelector('[data-cms-list="usefulLinks"]');
     if (linksWrap && r.usefulLinks && r.usefulLinks.length) {
-      linksWrap.innerHTML = r.usefulLinks.map(function (link) {
+      linksWrap.innerHTML = visibleOnly(r.usefulLinks).map(function (link) {
         return '<a href="' + esc(link.url) + '" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="text-align:left;width:100%;">' + esc(link.label) + '</a>';
       }).join('');
     }
@@ -223,7 +245,7 @@
 
     var accWrap = document.querySelector('[data-cms-list="accordion"]');
     if (accWrap && r.accordion) {
-      accWrap.innerHTML = r.accordion.map(function (item, i) {
+      accWrap.innerHTML = visibleOnly(r.accordion).map(function (item, i) {
         var n = i + 1;
         var bullets = (item.bullets || []).map(function (b) { return '<li>' + esc(b) + '</li>'; }).join('');
         var expanded = i === 0 ? 'true' : 'false';
@@ -258,7 +280,7 @@
     }
     var regWrap = document.querySelector('[data-cms-list="regionalOffices"]');
     if (regWrap && c.regionalOffices) {
-      regWrap.innerHTML = c.regionalOffices.map(function (o) {
+      regWrap.innerHTML = visibleOnly(c.regionalOffices).map(function (o) {
         return '<div class="office-row"><h4>' + esc(o.name) + '</h4><p>' + esc(o.details) + '</p></div>';
       }).join('');
     }
@@ -270,13 +292,13 @@
     renderPageHero(data);
     var guidesWrap = document.querySelector('[data-cms-list="guides"]');
     if (guidesWrap && data.guides) {
-      guidesWrap.innerHTML = data.guides.map(function (g) {
+      guidesWrap.innerHTML = visibleOnly(data.guides).map(function (g) {
         return renderResourceCard(g.filetag, g.title, g.description, g.meta, g.file, true, 'Download');
       }).join('');
     }
     var campaignWrap = document.querySelector('[data-cms-list="campaignMaterials"]');
     if (campaignWrap && data.campaignMaterials) {
-      campaignWrap.innerHTML = data.campaignMaterials.map(function (c) {
+      campaignWrap.innerHTML = visibleOnly(data.campaignMaterials).map(function (c) {
         return renderResourceCard(c.filetag, c.title, c.description, c.meta, c.url, c.download, c.buttonLabel);
       }).join('');
     }
