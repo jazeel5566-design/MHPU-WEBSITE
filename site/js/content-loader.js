@@ -80,9 +80,18 @@
 
     setText('[data-cms="slogan"]', home.slogan);
     setText('[data-cms="heroSubtext"]', home.heroSubtext);
-    setText('[data-cms="actionTag"]', home.actionTag);
-    setText('[data-cms="actionHeadline"]', home.actionHeadline);
-    setText('[data-cms="actionText"]', home.actionText);
+
+    var actionCard = document.getElementById('action-card');
+    if (actionCard) {
+      if (home.showActiveCampaign === false) {
+        actionCard.style.display = 'none';
+      } else {
+        actionCard.style.display = '';
+        setText('[data-cms="actionTag"]', home.actionTag);
+        setText('[data-cms="actionHeadline"]', home.actionHeadline);
+        setText('[data-cms="actionText"]', home.actionText);
+      }
+    }
 
     var pillarWrap = document.querySelector('[data-cms-list="pillars"]');
     if (pillarWrap && home.pillars) {
