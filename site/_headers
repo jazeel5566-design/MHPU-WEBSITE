@@ -1,73 +1,26 @@
 # ===========================================================
 # Security headers for Cloudflare Pages
 # ===========================================================
-# Cloudflare Pages reads this file automatically from the root of the
-# published folder (no configuration needed) and applies these headers
-# to every response matching each path pattern.
+# IMPORTANT: this is intentionally ONE single rule for every path, not
+# separate rules per section. Cloudflare Pages applies every matching
+# _headers block simultaneously rather than letting a more specific path
+# override a general one — so a "/*" block and an "/admin/*" block both
+# fire for /admin/, and browsers enforce the strictest combination of
+# both. That's what caused the CMS to load blank: the admin-friendly
+# policy was always fighting the public-page policy. One combined policy
+# below avoids that entirely.
 #
-# Three separate blocks below, because the public pages, the /admin/
-# CMS, and the /portal/ member area each load different external
-# resources — a single one-size-fits-all policy would either break one
-# of them or be too loose everywhere else.
-#
-# Note: script-src and style-src both include 'unsafe-inline' because
-# this site uses inline <script> blocks (the form-handling code) and
-# inline style="" attributes extensively throughout. Removing that would
-# require rewriting every page to move all styling and scripting into
-# external files — a large restructure, not a header change. Everything
-# else below (frame-ancestors, object-src, connect-src restrictions,
-# etc.) still provides real protection even with that one exception.
+# This means the policy is a bit looser overall than perfectly scoped
+# per-section policies would be — it allows a few domains (unpkg.com,
+# cdn.jsdelivr.net, unsafe-eval) on public pages that they don't
+# actually use. That's an acceptable tradeoff for something that
+# reliably works over something "tighter" that silently breaks the CMS
+# or member portal.
 # ===========================================================
 
-# ---------- CMS admin panel ----------
-/admin
-  X-Content-Type-Options: nosniff
-  X-Frame-Options: DENY
-  Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: https: blob:; connect-src 'self' https://auth.decapbridge.com https://gateway.decapbridge.com https://api.github.com https://*.githubusercontent.com https://cloudflareinsights.com; worker-src 'self' blob:; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'
-
-/admin/
-  X-Content-Type-Options: nosniff
-  X-Frame-Options: DENY
-  Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: https: blob:; connect-src 'self' https://auth.decapbridge.com https://gateway.decapbridge.com https://api.github.com https://*.githubusercontent.com https://cloudflareinsights.com; worker-src 'self' blob:; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'
-
-/admin/*
-  X-Content-Type-Options: nosniff
-  X-Frame-Options: DENY
-  Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: https: blob:; connect-src 'self' https://auth.decapbridge.com https://gateway.decapbridge.com https://api.github.com https://*.githubusercontent.com https://cloudflareinsights.com; worker-src 'self' blob:; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'
-
-# ---------- Member portal ----------
-/portal
-  X-Content-Type-Options: nosniff
-  X-Frame-Options: DENY
-  Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://cykghfwuelikoqueqyoa.supabase.co https://cloudflareinsights.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'
-
-/portal/
-  X-Content-Type-Options: nosniff
-  X-Frame-Options: DENY
-  Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://cykghfwuelikoqueqyoa.supabase.co https://cloudflareinsights.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'
-
-/portal/*
-  X-Content-Type-Options: nosniff
-  X-Frame-Options: DENY
-  Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://cykghfwuelikoqueqyoa.supabase.co https://cloudflareinsights.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'
-
-# ---------- Public pages ----------
 /*
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://script.google.com https://cloudflareinsights.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'
-
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://cdn.jsdelivr.net https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://script.google.com https://auth.decapbridge.com https://gateway.decapbridge.com https://api.github.com https://*.githubusercontent.com https://cykghfwuelikoqueqyoa.supabase.co https://cloudflareinsights.com; worker-src 'self' blob:; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'
