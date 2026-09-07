@@ -3,6 +3,18 @@
    Design system: "Clinical Solidarity"
    =========================================================== */
 
+/* Faruma — self-hosted Thaana (Dhivehi) font. Embedding it directly
+   means Dhivehi text always renders correctly for every visitor,
+   regardless of whether their own device happens to have a Thaana
+   font installed. */
+@font-face {
+  font-family: 'Faruma';
+  src: url('../assets/fonts/faruma.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root{
   --red:#D52228;
   --red-deep:#A31A1F;
