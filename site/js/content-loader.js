@@ -405,6 +405,12 @@
   /* ---------- Contact page ---------- */
   function renderContact(c) {
     renderPageHero(c);
+
+    var repsSection = document.getElementById('regional-reps-section');
+    if (repsSection) {
+      repsSection.style.display = (c.showRegionalReps === false) ? 'none' : '';
+    }
+
     if (c.headOffice) {
       var ho = c.headOffice;
       setText('[data-cms="headOffice-name"]', ho.name);
