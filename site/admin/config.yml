@@ -62,6 +62,13 @@ collections:
           - { label: "Page header tag (leave blank to hide it entirely)", name: "heroKicker", widget: "string", required: false }
           - { label: "Page header headline (leave blank to hide it entirely)", name: "heroHeadline", widget: "string", required: false }
           - { label: "Page header text", name: "heroLede", widget: "text", required: false }
+          - label: "News categories (hide one to remove it from the filter buttons and hide its posts from the list)"
+            name: "categories"
+            widget: "list"
+            summary: "{{fields.name}}"
+            fields:
+              - { label: "Category name", name: "name", widget: "string", required: false, hint: "Must match one of the category names used on posts below exactly (Bargaining, Campaigns, Union, Development)." }
+              - { label: "Hidden (tick to hide this whole category)", name: "hidden", widget: "boolean", default: false }
           - label: "News posts"
             name: "posts"
             widget: "list"
@@ -169,19 +176,24 @@ collections:
               - { label: "Hidden (tick to hide this item)", name: "hidden", widget: "boolean", default: false }
           - { label: "Footer note", name: "footerNote", widget: "text", required: false }
 
-  # ---------- Active campaign (shared banner on Homepage + News page) ----------
+  # ---------- Active campaigns (Homepage shows the first one; News page shows all of them) ----------
   - name: "campaign"
-    label: "Active Campaign"
+    label: "Active Campaigns"
     files:
       - name: "campaign"
-        label: "Campaign Banner"
+        label: "Campaigns / Petitions"
         file: "site/content/campaign.json"
-        description: "This one campaign shows up in two places: the 'Take action' card on the Homepage, and the banner on the News & Campaigns page. Editing it here updates both at once, and they'll always match."
+        description: "Add as many active campaigns or petitions as you need. The Homepage's 'Take action' card always shows the first one in this list that isn't hidden. The News & Campaigns page shows all of them, in order."
         fields:
-          - { label: "Show this campaign banner? (turn off when there's no active campaign)", name: "show", widget: "boolean", default: true }
-          - { label: "Tag", name: "tag", widget: "string", required: false, hint: "e.g. 'Take action' or 'Active campaign'" }
-          - { label: "Headline", name: "headline", widget: "string", required: false }
-          - { label: "Description", name: "text", widget: "text", required: false }
+          - label: "Campaigns"
+            name: "campaigns"
+            widget: "list"
+            summary: "{{fields.headline}}"
+            fields:
+              - { label: "Tag", name: "tag", widget: "string", required: false, hint: "e.g. 'Take action' or 'Active campaign'" }
+              - { label: "Headline", name: "headline", widget: "string", required: false }
+              - { label: "Description", name: "text", widget: "text", required: false }
+              - { label: "Hidden (tick to hide this campaign)", name: "hidden", widget: "boolean", default: false }
 
   # ---------- Site-wide (footer, shared across every page) ----------
   - name: "site"
