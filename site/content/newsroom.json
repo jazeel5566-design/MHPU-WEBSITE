@@ -4,25 +4,28 @@
   "heroLede": "Featured stories, official statements and press releases from the Maldives Health Professionals Union.",
   "featuredStories": [
     {
-      "tag": "",
+      "tag": "Bargaining",
       "headline": "New pay scale agreement ratified for public hospitals",
       "date": "2 days ago",
       "url": "news.html",
-      "hidden": false
+      "hidden": false,
+      "image": ""
     },
     {
-      "tag": "",
+      "tag": "Union",
       "headline": "MHPU opens regional office in Addu City",
       "date": "1 week ago",
       "url": "news.html",
-      "hidden": false
+      "hidden": false,
+      "image": ""
     },
     {
-      "tag": "",
+      "tag": "Campaigns",
       "headline": "Petition for safe staffing ratios passes 1,200 signatures",
       "date": "4 days ago",
       "url": "news.html",
-      "hidden": false
+      "hidden": false,
+      "image": ""
     }
   ],
   "pressReleases": [
