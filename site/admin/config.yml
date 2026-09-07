@@ -75,20 +75,23 @@ collections:
               - { label: "Published date (auto-fills to today when created)", name: "date", widget: "date", format: "YYYY-MM-DD", default: "{{now}}", required: false }
               - { label: "Hidden (tick to hide this post)", name: "hidden", widget: "boolean", default: false }
 
-  # ---------- Homepage stats ----------
-  - name: "stats"
-    label: "Homepage Stats"
+  # ---------- Affiliations ----------
+  - name: "affiliations"
+    label: "Affiliations"
     files:
-      - name: "stats"
-        label: "Member Stats"
-        file: "site/content/stats.json"
+      - name: "affiliations"
+        label: "Affiliated Organizations"
+        file: "site/content/affiliations.json"
         fields:
-          - { label: "Member count", name: "members", widget: "string", required: false }
-          - { label: "Member count label", name: "membersLabel", widget: "string", required: false }
-          - { label: "Atoll count", name: "atolls", widget: "string", required: false }
-          - { label: "Atoll count label", name: "atollsLabel", widget: "string", required: false }
-          - { label: "Case resolution rate", name: "resolutionRate", widget: "string", required: false }
-          - { label: "Resolution rate label", name: "resolutionRateLabel", widget: "string", required: false }
+          - label: "Affiliated organizations"
+            name: "affiliations"
+            widget: "list"
+            summary: "{{fields.name}}"
+            fields:
+              - { label: "Organization name", name: "name", widget: "string", required: false }
+              - { label: "Website", name: "url", widget: "string", required: false, hint: "The full link to their website, e.g. https://publicservices.international" }
+              - { label: "Logo (optional)", name: "logo", widget: "image", required: false, hint: "Recommended size: at least 200×80px, transparent PNG works best, under 200KB." }
+              - { label: "Hidden (tick to hide this one)", name: "hidden", widget: "boolean", default: false }
 
   # ---------- Leadership & committee ----------
   - name: "leadership"
