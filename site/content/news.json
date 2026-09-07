@@ -6,14 +6,14 @@
     {
       "date": "{{now}}",
       "hidden": false,
-      "category": "Campaigns",
-      "title": "MHPU requests Ministry of Health and Ministry of Homeland Security to address revised expatriate occupation categorization of healthcare professionals"
+      "category": "Union",
+      "title": "UPDATE: EXPATRIATE HEALTHCARE PROFESSIONALS’ OCCUPATION CATEGORIZATION CORRECTED"
     },
     {
       "date": "{{now}}",
       "hidden": false,
-      "category": "Union",
-      "title": "UPDATE: EXPATRIATE HEALTHCARE PROFESSIONALS’ OCCUPATION CATEGORIZATION CORRECTED"
+      "category": "Campaigns",
+      "title": "MHPU requests Ministry of Health and Ministry of Homeland Security to address revised expatriate occupation categorization of healthcare professionals"
     }
   ]
 }
