@@ -1,0 +1,16 @@
+{
+  "affiliations": [
+    {
+      "name": "Public Services International (PSI)",
+      "url": "https://publicservices.international",
+      "logo": "",
+      "hidden": false
+    },
+    {
+      "name": "International Council of Nurses (ICN)",
+      "url": "https://www.icn.ch",
+      "logo": "",
+      "hidden": false
+    }
+  ]
+}
