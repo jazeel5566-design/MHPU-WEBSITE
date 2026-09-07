@@ -353,7 +353,7 @@ collections:
           - { label: "Page header tag (leave blank to hide it entirely)", name: "heroKicker", widget: "string", required: false }
           - { label: "Page header headline (leave blank to hide it entirely)", name: "heroHeadline", widget: "string", required: false }
           - { label: "Page header text", name: "heroLede", widget: "text", required: false }
-          - label: "Featured stories"
+          - label: "Featured articles"
             name: "featuredStories"
             widget: "list"
             summary: "{{fields.headline}}"
@@ -367,7 +367,7 @@ collections:
               - { label: "Dhivehi article text", name: "bodyDv", widget: "text", required: false, hint: "Same as above, in Dhivehi. Leave a blank line between paragraphs. If both this and the Dhivehi headline are filled in, a language switch button appears on the article page automatically." }
               - { label: "Article web address (only needed if writing a full article above)", name: "slug", widget: "string", required: false, hint: "Lowercase, no spaces — e.g. new-pay-scale-agreement. This becomes part of the page's URL." }
               - { label: "Link (only used if no full article is written above)", name: "url", widget: "string", required: false, hint: "e.g. news.html, or a full https:// link" }
-              - { label: "Hidden (tick to hide this story)", name: "hidden", widget: "boolean", default: false }
+              - { label: "Hidden (tick to hide this article)", name: "hidden", widget: "boolean", default: false }
           - label: "Press releases"
             name: "pressReleases"
             widget: "list"
