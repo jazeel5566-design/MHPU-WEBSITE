@@ -5,6 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex" />
   <title>MHPU Content Admin</title>
+  <style>
+    /* Faruma — self-hosted Thaana (Dhivehi) font, so editors can see
+       properly-shaped Dhivehi text while typing here, not just once
+       published. Applied broadly to text fields in the editor rather
+       than targeting specific field names, since Decap's internal CSS
+       classes can change between versions and aren't reliable to target
+       precisely — English fields rendering in this font too is a
+       harmless side effect, not a problem. */
+    @font-face {
+      font-family: 'Faruma';
+      src: url('../assets/fonts/faruma.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+    textarea, input[type="text"] {
+      font-family: 'Faruma', sans-serif !important;
+    }
+  </style>
 </head>
 <body>
   <!-- Decap CMS, authenticated via DecapBridge (see decapbridge.com).
