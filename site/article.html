@@ -38,6 +38,11 @@
   <div class="wrap" style="max-width:760px;">
     <p class="crumb"><a href="index.html">Home</a> / <a href="newsroom.html">Newsroom</a> / <span id="article-crumb">Article</span></p>
 
+    <div id="lang-switch" style="display:none;margin-bottom:20px;">
+      <button type="button" id="lang-en-btn" class="btn btn-outline btn-sm" style="margin-right:8px;">English</button>
+      <button type="button" id="lang-dv-btn" class="btn btn-outline btn-sm">ދިވެހި</button>
+    </div>
+
     <div id="article-content">
       <p style="font-family:'Source Sans 3',sans-serif;color:var(--muted);">Loading…</p>
     </div>
@@ -74,9 +79,10 @@
     return d.innerHTML;
   }
 
-  function paragraphsFrom(text) {
+  function paragraphsFrom(text, dir) {
+    var alignStyle = dir === 'rtl' ? 'text-align:right;' : '';
     return (text || '').split(/\n\s*\n/).filter(function (p) { return p.trim() !== ''; })
-      .map(function (p) { return '<p style="font-family:\'Source Sans 3\',sans-serif;font-size:16px;line-height:1.7;color:var(--ink);margin-bottom:18px;">' + esc(p.trim()).replace(/\n/g, '<br>') + '</p>'; })
+      .map(function (p) { return '<p style="font-family:\'Source Sans 3\',sans-serif;font-size:16px;line-height:1.7;color:var(--ink);margin-bottom:18px;' + alignStyle + '">' + esc(p.trim()).replace(/\n/g, '<br>') + '</p>'; })
       .join('');
   }
 
@@ -84,11 +90,49 @@
   var slug = params.get('slug');
   var contentEl = document.getElementById('article-content');
   var notFoundEl = document.getElementById('article-not-found');
+  var langSwitch = document.getElementById('lang-switch');
+  var langEnBtn = document.getElementById('lang-en-btn');
+  var langDvBtn = document.getElementById('lang-dv-btn');
 
   if (!slug) {
     contentEl.style.display = 'none';
     notFoundEl.style.display = 'block';
     return;
+  }
+
+  // Renders the article in either language. Dhivehi uses right-to-left
+  // layout and a font stack that includes Thaana-capable system fonts —
+  // no font file needs hosting, since Thaana has been a standard Unicode
+  // script for years and virtually every modern device already has one.
+  function renderArticle(story, lang) {
+    var isDv = lang === 'dv';
+    var dir = isDv ? 'rtl' : 'ltr';
+    var headline = isDv ? (story.headlineDv || story.headline) : story.headline;
+    var body = isDv ? (story.bodyDv || story.body) : story.body;
+    var fontStack = isDv ? "'MV Boli','Faruma','Noto Sans Thaana',sans-serif" : "'Barlow Condensed',sans-serif";
+
+    document.title = headline + ' — MHPU';
+    document.getElementById('article-crumb').textContent = headline;
+
+    var html = '';
+    if (story.image) {
+      html += '<img src="' + esc(story.image) + '" alt="" style="width:100%;height:auto;margin-bottom:24px;display:block;">';
+    }
+    if (story.tag) {
+      html += '<span style="background:var(--ink);color:white;font-size:11px;font-weight:700;padding:4px 10px;display:inline-block;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;font-family:\'Source Sans 3\',sans-serif;">' + esc(story.tag) + '</span>';
+    }
+    html += '<h1 style="font-size:36px;line-height:1.2;color:var(--ink);margin-bottom:10px;font-family:' + fontStack + ';' + (isDv ? 'text-align:right;' : '') + '">' + esc(headline) + '</h1>';
+    if (story.date) {
+      html += '<p style="font-family:\'Source Sans 3\',sans-serif;color:var(--muted);font-size:14px;margin-bottom:28px;' + (isDv ? 'text-align:right;' : '') + '">' + esc(story.date) + '</p>';
+    }
+    html += paragraphsFrom(body, dir);
+
+    contentEl.setAttribute('dir', dir);
+    contentEl.style.fontFamily = fontStack;
+    contentEl.innerHTML = html;
+
+    langEnBtn.className = 'btn btn-sm ' + (isDv ? 'btn-outline' : 'btn-red');
+    langDvBtn.className = 'btn btn-sm ' + (isDv ? 'btn-red' : 'btn-outline');
   }
 
   fetch('content/newsroom.json', { cache: 'no-store' })
@@ -102,23 +146,14 @@
         return;
       }
 
-      document.title = story.headline + ' — MHPU';
-      document.getElementById('article-crumb').textContent = story.headline;
+      var hasDhivehi = !!(story.headlineDv && story.bodyDv);
+      if (hasDhivehi) {
+        langSwitch.style.display = 'block';
+        langEnBtn.addEventListener('click', function () { renderArticle(story, 'en'); });
+        langDvBtn.addEventListener('click', function () { renderArticle(story, 'dv'); });
+      }
 
-      var html = '';
-      if (story.image) {
-        html += '<img src="' + esc(story.image) + '" alt="" style="width:100%;height:auto;margin-bottom:24px;display:block;">';
-      }
-      if (story.tag) {
-        html += '<span style="background:var(--ink);color:white;font-size:11px;font-weight:700;padding:4px 10px;display:inline-block;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;font-family:\'Source Sans 3\',sans-serif;">' + esc(story.tag) + '</span>';
-      }
-      html += '<h1 style="font-size:36px;line-height:1.1;color:var(--ink);margin-bottom:10px;">' + esc(story.headline) + '</h1>';
-      if (story.date) {
-        html += '<p style="font-family:\'Source Sans 3\',sans-serif;color:var(--muted);font-size:14px;margin-bottom:28px;">' + esc(story.date) + '</p>';
-      }
-      html += paragraphsFrom(story.body);
-
-      contentEl.innerHTML = html;
+      renderArticle(story, 'en');
     })
     .catch(function () {
       contentEl.style.display = 'none';
