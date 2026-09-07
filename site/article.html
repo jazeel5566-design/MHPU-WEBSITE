@@ -140,20 +140,27 @@
     .then(function (data) {
       var story = (data.featuredStories || []).find(function (s) { return s.slug === slug && s.hidden !== true; });
 
-      if (!story || !story.body) {
+      // A story is valid if it has a full article in EITHER language —
+      // not just English. Requiring English specifically was the bug that
+      // made Dhivehi-only stories show as "not found."
+      var hasEnglish = !!story && !!story.body;
+      var hasDhivehi = !!story && !!(story.headlineDv && story.bodyDv);
+
+      if (!story || (!hasEnglish && !hasDhivehi)) {
         contentEl.style.display = 'none';
         notFoundEl.style.display = 'block';
         return;
       }
 
-      var hasDhivehi = !!(story.headlineDv && story.bodyDv);
-      if (hasDhivehi) {
+      if (hasEnglish && hasDhivehi) {
         langSwitch.style.display = 'block';
         langEnBtn.addEventListener('click', function () { renderArticle(story, 'en'); });
         langDvBtn.addEventListener('click', function () { renderArticle(story, 'dv'); });
       }
 
-      renderArticle(story, 'en');
+      // Default to whichever language actually has content — if only
+      // Dhivehi was written, open on that instead of a blank English view.
+      renderArticle(story, hasEnglish ? 'en' : 'dv');
     })
     .catch(function () {
       contentEl.style.display = 'none';
