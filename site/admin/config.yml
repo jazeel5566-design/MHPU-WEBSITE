@@ -359,6 +359,7 @@ collections:
             summary: "{{fields.headline}}"
             fields:
               - { label: "Tag", name: "tag", widget: "string", required: false, hint: "e.g. Bargaining, Union, Campaigns" }
+              - { label: "Thumbnail photo", name: "image", widget: "image", required: false, hint: "Recommended size: at least 800×450px, landscape orientation, JPG format, under 400KB." }
               - { label: "Headline", name: "headline", widget: "string", required: false }
               - { label: "Date label", name: "date", widget: "string", hint: "e.g. '2 days ago' or '14 March 2026'", required: false }
               - { label: "Link", name: "url", widget: "string", required: false, hint: "e.g. news.html, or a full https:// link" }
