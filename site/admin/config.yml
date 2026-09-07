@@ -65,7 +65,7 @@ collections:
                 widget: "select"
                 options: ["Bargaining", "Campaigns", "Union", "Development"]
               - { label: "Headline", name: "title", widget: "string", required: false }
-              - { label: "Date label", name: "date", widget: "string", hint: "e.g. '2 days ago' or '14 March 2026'", required: false }
+              - { label: "Published date (auto-fills to today when created)", name: "date", widget: "date", format: "YYYY-MM-DD", default: "{{now}}", required: false }
               - { label: "Hidden (tick to hide this post)", name: "hidden", widget: "boolean", default: false }
 
   # ---------- Homepage stats ----------
@@ -361,7 +361,7 @@ collections:
               - { label: "Tag", name: "tag", widget: "string", required: false, hint: "e.g. Bargaining, Union, Campaigns" }
               - { label: "Thumbnail photo", name: "image", widget: "image", required: false, hint: "Recommended size: at least 800×450px, landscape orientation, JPG format, under 400KB." }
               - { label: "Headline", name: "headline", widget: "string", required: false }
-              - { label: "Date label", name: "date", widget: "string", hint: "e.g. '2 days ago' or '14 March 2026'", required: false }
+              - { label: "Published date (auto-fills to today when created)", name: "date", widget: "date", format: "YYYY-MM-DD", default: "{{now}}", required: false }
               - { label: "Write the full article here (leave blank if you're just linking elsewhere instead)", name: "body", widget: "text", required: false, hint: "Leave a blank line between paragraphs. If this is filled in, the story gets its own page on the site and 'Read more' opens that instead of the link below." }
               - { label: "Dhivehi headline (optional)", name: "headlineDv", widget: "string", required: false, hint: "Type normally in Thaana — no special setup needed. Leave blank if there's no Dhivehi version of this story yet." }
               - { label: "Dhivehi article text (optional)", name: "bodyDv", widget: "text", required: false, hint: "Same as above, in Dhivehi. Leave a blank line between paragraphs. If both this and the Dhivehi headline are filled in, a language switch button appears on the article page automatically." }
@@ -374,7 +374,7 @@ collections:
             summary: "{{fields.title}}"
             fields:
               - { label: "Title", name: "title", widget: "string", required: false }
-              - { label: "Date", name: "date", widget: "string", hint: "e.g. 30 August 2026", required: false }
+              - { label: "Published date (auto-fills to today when created)", name: "date", widget: "date", format: "YYYY-MM-DD", default: "{{now}}", required: false }
               - { label: "Summary", name: "summary", widget: "text", required: false }
               - { label: "Button text", name: "fileLabel", widget: "string", hint: "e.g. Download statement (PDF)", required: false }
               - { label: "File", name: "file", widget: "file", required: false, hint: "Upload the PDF here. Keep file size under 5MB where possible for faster downloads." }
