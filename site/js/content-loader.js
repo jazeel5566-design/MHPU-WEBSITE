@@ -115,7 +115,7 @@
   }
 
   /* ---------- Homepage ---------- */
-  function renderHome(home, stats) {
+  function renderHome(home, affiliations) {
     setText('[data-cms="heroKicker"]', home.heroKicker);
 
     var headlineEl = document.querySelector('[data-cms="heroHeadline"]');
@@ -149,13 +149,14 @@
       }).join('');
     }
 
-    if (stats) {
-      setText('[data-cms="stat-members"]', stats.members);
-      setText('[data-cms="stat-membersLabel"]', stats.membersLabel);
-      setText('[data-cms="stat-atolls"]', stats.atolls);
-      setText('[data-cms="stat-atollsLabel"]', stats.atollsLabel);
-      setText('[data-cms="stat-resolutionRate"]', stats.resolutionRate);
-      setText('[data-cms="stat-resolutionRateLabel"]', stats.resolutionRateLabel);
+    if (affiliations && affiliations.affiliations) {
+      var affWrap = document.querySelector('[data-cms-list="affiliations"]');
+      if (affWrap) {
+        affWrap.innerHTML = visibleOnly(affiliations.affiliations).map(function (a) {
+          var logo = a.logo ? '<img src="' + esc(a.logo) + '" alt="">' : '';
+          return '<div class="affiliation-item">' + logo + '<a href="' + esc(a.url || '#') + '" target="_blank" rel="noopener">' + esc(a.name) + '</a></div>';
+        }).join('');
+      }
     }
 
     // Homepage news preview — first 3 visible posts
@@ -506,7 +507,7 @@
 
   function loadPageContent(page) {
     if (page === 'home') {
-      Promise.all([fetchJSON('content/home.json'), fetchJSON('content/stats.json')])
+      Promise.all([fetchJSON('content/home.json'), fetchJSON('content/affiliations.json')])
         .then(function (results) { renderHome(results[0], results[1]); })
         .catch(function (err) { console.warn('Content load failed:', err); });
     } else if (page === 'news') {
