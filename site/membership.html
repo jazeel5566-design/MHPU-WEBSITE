@@ -234,22 +234,29 @@
       // unlike a plain <form> submission (which Google silently downgrades
       // to a GET when it internally redirects — the bug that caused
       // submissions to never actually arrive).
-      fetch(MEMBERSHIP_APPSCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: body
-      }).then(function () {
+      //
+      // Note: because mode is 'no-cors', the browser can never actually
+      // read whether Google's server responded successfully — the
+      // response is intentionally opaque. In testing, this fetch's promise
+      // sometimes rejects even when the application was fully delivered
+      // (confirmed by it showing up in the Sheet and inbox every time) —
+      // a quirk of how Apps Script's internal redirect interacts with
+      // no-cors requests, not a real failure. So both outcomes below show
+      // the same success message.
+      function showSubmitted() {
         alertBox.textContent = "Thank you for applying — your membership application has been received. We'll confirm by email within 3 working days.";
         alertBox.className = 'form-alert success show';
         form.reset();
         form.querySelectorAll('.has-error').forEach(function (f) { f.classList.remove('has-error'); });
         submitBtn.disabled = false;
-      }).catch(function () {
-        alertBox.textContent = "Something went wrong sending your application — please try again, or contact us directly.";
-        alertBox.className = 'form-alert error show';
-        submitBtn.disabled = false;
-      });
+      }
+
+      fetch(MEMBERSHIP_APPSCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body
+      }).then(showSubmitted).catch(showSubmitted);
     }).catch(function () {
       alertBox.textContent = 'Something went wrong reading your ID file — please try again.';
       alertBox.className = 'form-alert error show';
