@@ -225,6 +225,7 @@ section{padding:80px 0;}
 /* ---------- Resource cards ---------- */
 .resource-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
 .resource-card{border:1px solid var(--line);padding:26px;display:flex;flex-direction:column;gap:14px;}
+.resource-card .thumb{margin:-26px -26px 4px -26px;width:calc(100% + 52px);height:160px;object-fit:cover;display:block;}
 .resource-card .filetag{align-self:flex-start;background:var(--ink);color:white;font-size:11px;font-weight:700;padding:4px 10px;font-family:'Source Sans 3',sans-serif;letter-spacing:.04em;}
 .resource-card h3{font-size:19px;}
 .resource-card p{font-family:'Source Sans 3',sans-serif;text-transform:none;color:var(--muted);font-size:13.5px;line-height:1.6;flex:1;}
