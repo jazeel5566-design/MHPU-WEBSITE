@@ -193,6 +193,7 @@ collections:
               - { label: "Tag", name: "tag", widget: "string", required: false, hint: "e.g. 'Take action' or 'Active campaign'" }
               - { label: "Headline", name: "headline", widget: "string", required: false }
               - { label: "Description", name: "text", widget: "text", required: false }
+              - { label: "Published date (auto-fills to today when created — newest shows first)", name: "date", widget: "date", format: "YYYY-MM-DD", default: "{{now}}", required: false }
               - { label: "Hidden (tick to hide this campaign)", name: "hidden", widget: "boolean", default: false }
 
   # ---------- Site-wide (footer, shared across every page) ----------
@@ -427,6 +428,11 @@ collections:
           - { label: "Hero headline (red part) — optional", name: "heroHeadlineRed", widget: "string", required: false }
           - { label: "Slogan", name: "slogan", widget: "string", required: false }
           - { label: "Hero subtext", name: "heroSubtext", widget: "text", required: false }
+          - { label: "Show the scrolling banner below the hero photo?", name: "showTicker", widget: "boolean", default: true }
+          - label: "Scrolling banner items"
+            name: "ticker"
+            widget: "list"
+            field: { label: "Item", name: "item", widget: "string" }
           - label: "'What we fight for' pillars"
             name: "pillars"
             widget: "list"
