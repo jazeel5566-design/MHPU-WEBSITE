@@ -367,10 +367,14 @@
     if (featuredWrap && data.featuredStories) {
       featuredWrap.innerHTML = visibleOnly(data.featuredStories).map(function (s) {
         var thumb = s.image ? '<img class="thumb" src="' + esc(s.image) + '" alt="">' : '';
-        // A story with a full article written in /admin gets its own page;
-        // otherwise "Read more" falls back to whatever external link was set.
-        var link = (s.body && s.slug) ? ('article.html?slug=' + encodeURIComponent(s.slug)) : (s.url || '#');
-        return '<div class="resource-card">' + thumb + '<span class="filetag">' + esc(s.tag) + '</span><h3>' + esc(s.headline) + '</h3><span class="meta">' + esc(formatDate(s.date)) + '</span><a href="' + esc(link) + '" class="btn btn-outline btn-sm">Read more</a></div>';
+        // Fall back to the Dhivehi headline/article when there's no
+        // English version — this was the bug: checking only the English
+        // fields meant a Dhivehi-only story showed a blank headline and
+        // a dead "Read more" link (falling through to '#').
+        var headline = s.headline || s.headlineDv || '';
+        var hasArticle = !!((s.body || s.bodyDv) && s.slug);
+        var link = hasArticle ? ('article.html?slug=' + encodeURIComponent(s.slug)) : (s.url || '#');
+        return '<div class="resource-card">' + thumb + '<span class="filetag">' + esc(s.tag) + '</span><h3>' + esc(headline) + '</h3><span class="meta">' + esc(formatDate(s.date)) + '</span><a href="' + esc(link) + '" class="btn btn-outline btn-sm">Read more</a></div>';
       }).join('');
     }
 
