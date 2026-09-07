@@ -45,6 +45,28 @@
     return (items || []).filter(function (item) { return !item || item.hidden !== true; });
   }
 
+  // Formats a real stored date (YYYY-MM-DD, auto-filled by /admin when an
+  // item is created) the way a news feed normally reads — relative for
+  // recent items, a plain date for older ones. Falls back to showing
+  // whatever text is there unchanged if it isn't a real date at all
+  // (covers older content entered before dates were auto-filled).
+  function formatDate(value) {
+    if (!value) return '';
+    var d = new Date(value);
+    if (isNaN(d.getTime())) return value;
+
+    var now = new Date();
+    var diffDays = Math.floor((now - d) / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return '1 day ago';
+    if (diffDays < 7) return diffDays + ' days ago';
+    if (diffDays < 14) return '1 week ago';
+    if (diffDays < 30) return Math.floor(diffDays / 7) + ' weeks ago';
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
   /* ---------- Generic page-hero helper ---------- */
   function renderPageHero(data) {
     if (!data) return;
@@ -141,7 +163,7 @@
     fetchJSON('content/news.json').then(function (news) {
       if (newsWrap && news.posts) {
         newsWrap.innerHTML = visibleOnly(news.posts).slice(0, 3).map(function (p) {
-          return '<div class="news-row"><div><h4>' + esc(p.title) + '</h4></div><span class="date">' + esc(p.date) + '</span></div>';
+          return '<div class="news-row"><div><h4>' + esc(p.title) + '</h4></div><span class="date">' + esc(formatDate(p.date)) + '</span></div>';
         }).join('');
       }
     }).catch(function () {});
@@ -155,7 +177,7 @@
     if (listWrap && news.posts) {
       listWrap.innerHTML = visibleOnly(news.posts).map(function (p) {
         var cat = esc(p.category).toLowerCase();
-        return '<div class="news-row" data-category="' + cat + '"><div><span class="cat">' + esc(p.category) + '</span><h4>' + esc(p.title) + '</h4></div><span class="date">' + esc(p.date) + '</span></div>';
+        return '<div class="news-row" data-category="' + cat + '"><div><span class="cat">' + esc(p.category) + '</span><h4>' + esc(p.title) + '</h4></div><span class="date">' + esc(formatDate(p.date)) + '</span></div>';
       }).join('');
     }
 
@@ -348,14 +370,14 @@
         // A story with a full article written in /admin gets its own page;
         // otherwise "Read more" falls back to whatever external link was set.
         var link = (s.body && s.slug) ? ('article.html?slug=' + encodeURIComponent(s.slug)) : (s.url || '#');
-        return '<div class="resource-card">' + thumb + '<span class="filetag">' + esc(s.tag) + '</span><h3>' + esc(s.headline) + '</h3><span class="meta">' + esc(s.date) + '</span><a href="' + esc(link) + '" class="btn btn-outline btn-sm">Read more</a></div>';
+        return '<div class="resource-card">' + thumb + '<span class="filetag">' + esc(s.tag) + '</span><h3>' + esc(s.headline) + '</h3><span class="meta">' + esc(formatDate(s.date)) + '</span><a href="' + esc(link) + '" class="btn btn-outline btn-sm">Read more</a></div>';
       }).join('');
     }
 
     var pressWrap = document.querySelector('[data-cms-list="pressReleases"]');
     if (pressWrap && data.pressReleases) {
       pressWrap.innerHTML = visibleOnly(data.pressReleases).map(function (p) {
-        return renderResourceCard(p.date, p.title, p.summary, '', p.file || '#', true, p.fileLabel || 'Download');
+        return renderResourceCard(formatDate(p.date), p.title, p.summary, '', p.file || '#', true, p.fileLabel || 'Download');
       }).join('');
     }
   }
