@@ -384,6 +384,14 @@
         return renderResourceCard(formatDate(p.date), p.title, p.summary, '', p.file || '#', true, p.fileLabel || 'Download');
       }).join('');
     }
+
+    var videoWrap = document.querySelector('[data-cms-list="videoMessages"]');
+    if (videoWrap && data.videoMessages) {
+      videoWrap.innerHTML = visibleOnly(data.videoMessages).map(function (v) {
+        var thumb = v.image ? '<img class="thumb" src="' + esc(v.image) + '" alt="">' : '';
+        return '<div class="resource-card">' + thumb + '<h3>' + esc(v.title) + '</h3><span class="meta">' + esc(formatDate(v.date)) + '</span><a href="' + esc(v.videoUrl || '#') + '" target="_blank" rel="noopener" class="btn btn-outline btn-sm">Watch video</a></div>';
+      }).join('');
+    }
   }
 
   /* ---------- Hero image swap (every page) ---------- */
