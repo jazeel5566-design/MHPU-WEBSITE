@@ -4,6 +4,13 @@
   "heroHeadlineRed": "demand heard.",
   "slogan": "Decent work, quality care",
   "heroSubtext": "MHPU fights for fair pay, safe staffing and real protection for every nurse, doctor, midwife and health worker in the Maldives — from Male' to the furthest atoll.",
+  "showTicker": true,
+  "ticker": [
+    "PAY SCALE AGREEMENT RATIFIED",
+    "NEW REGIONAL OFFICE — ADDU CITY",
+    "SCHOLARSHIP FUND NOW OPEN",
+    "NIGHT-SHIFT ALLOWANCE CAMPAIGN LIVE"
+  ],
   "pillars": [
     { "title": "Represent", "text": "Free representation in every disciplinary, grievance or dispute case." },
     { "title": "Negotiate", "text": "Direct bargaining with health authorities on pay and conditions." },
