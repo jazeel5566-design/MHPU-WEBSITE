@@ -4,10 +4,10 @@
   "heroLede": "Bargaining updates, active campaigns, and union news from across the Maldives.",
   "posts": [
     {
-      "category": "Union",
-      "title": "Leadership council election dates announced",
-      "date": "1 month ago",
-      "hidden": false
+      "date": "{{now}}",
+      "hidden": false,
+      "category": "Campaigns",
+      "title": "MHPU requests Ministry of Health and Ministry of Homeland Security to address revised expatriate occupation categorization of healthcare professionals"
     }
   ]
 }
