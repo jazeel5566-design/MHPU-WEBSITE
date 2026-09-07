@@ -282,6 +282,11 @@
     setText('[data-cms="ctaHeadline"]', r.ctaHeadline);
     setText('[data-cms="ctaText"]', r.ctaText);
 
+    var ctaSection = document.getElementById('rights-cta-section');
+    if (ctaSection) {
+      ctaSection.style.display = (r.showCta === false) ? 'none' : '';
+    }
+
     var linksWrap = document.querySelector('[data-cms-list="usefulLinks"]');
     if (linksWrap && r.usefulLinks && r.usefulLinks.length) {
       linksWrap.innerHTML = visibleOnly(r.usefulLinks).map(function (link) {
@@ -389,6 +394,11 @@
     if (videoWrap && data.videoMessages) {
       videoWrap.innerHTML = visibleOnly(data.videoMessages).map(function (v) {
         var thumb = v.image ? '<img class="thumb" src="' + esc(v.image) + '" alt="">' : '';
+        // A self-hosted clip plays directly on the page; otherwise fall
+        // back to linking out to wherever the video actually lives.
+        if (v.videoFile) {
+          return '<div class="resource-card">' + thumb + '<h3>' + esc(v.title) + '</h3><span class="meta">' + esc(formatDate(v.date)) + '</span><video controls preload="metadata" style="width:100%;display:block;background:#000;" src="' + esc(v.videoFile) + '"></video></div>';
+        }
         return '<div class="resource-card">' + thumb + '<h3>' + esc(v.title) + '</h3><span class="meta">' + esc(formatDate(v.date)) + '</span><a href="' + esc(v.videoUrl || '#') + '" target="_blank" rel="noopener" class="btn btn-outline btn-sm">Watch video</a></div>';
       }).join('');
     }
