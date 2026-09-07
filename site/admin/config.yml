@@ -16,7 +16,14 @@ backend:
 # Better Decap + Bridge logo (optional)
 logo_url: https://decapbridge.com/decapcms-with-bridge.svg
 # Add site links in Decap CMS (optional)
-site_url: https://glistening-alfajores-c84e54.netlify.app
+site_url: https://mhpu.org
+
+# Editorial workflow — every change is saved as a Draft first, instead of
+# going live immediately. You can save your work, switch to another
+# section or tab, come back later, and only publish when it's actually
+# ready. Adds a "Drafts / In review / Ready" board to the admin home
+# screen for managing this.
+publish_mode: editorial_workflow
 
 media_folder: "site/assets/uploads"
 public_folder: "assets/uploads"
