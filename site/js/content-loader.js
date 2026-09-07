@@ -193,12 +193,44 @@
       }
     }
 
-    // Homepage news preview — first 3 visible posts
+    // Homepage "Latest updates" — pulls the most recent items across
+    // everything (news, petitions, articles, statements, videos), not
+    // just news posts, so this reflects whatever's actually newest
+    // anywhere on the site.
     var newsWrap = document.querySelector('[data-cms-list="news-preview"]');
-    fetchJSON('content/news.json').then(function (news) {
-      if (newsWrap && news.posts) {
-        newsWrap.innerHTML = sortByDateDesc(visibleOnly(news.posts)).slice(0, 3).map(function (p) {
-          return '<div class="news-row"><div><h4>' + esc(p.title) + '</h4></div><span class="date">' + esc(formatDate(p.date)) + '</span></div>';
+    Promise.all([
+      fetchJSON('content/news.json').catch(function () { return {}; }),
+      fetchJSON('content/campaign.json').catch(function () { return {}; }),
+      fetchJSON('content/newsroom.json').catch(function () { return {}; })
+    ]).then(function (results) {
+      var news = results[0] || {};
+      var campaign = results[1] || {};
+      var newsroom = results[2] || {};
+      var combined = [];
+
+      visibleOnly(news.posts).forEach(function (p) {
+        combined.push({ type: 'News', title: p.title, date: p.date, link: 'news.html' });
+      });
+      visibleOnly(campaign.campaigns).forEach(function (c) {
+        combined.push({ type: 'Petition', title: c.headline, date: c.date, link: 'news.html' });
+      });
+      visibleOnly(newsroom.featuredStories).forEach(function (s) {
+        var headline = s.headline || s.headlineDv || '';
+        var hasArticle = !!((s.body || s.bodyDv) && s.slug);
+        var link = hasArticle ? ('article.html?slug=' + encodeURIComponent(s.slug)) : (s.url || 'newsroom.html');
+        combined.push({ type: 'Article', title: headline, date: s.date, link: link });
+      });
+      visibleOnly(newsroom.pressReleases).forEach(function (p) {
+        combined.push({ type: 'Statement', title: p.title, date: p.date, link: p.file || 'newsroom.html' });
+      });
+      visibleOnly(newsroom.videoMessages).forEach(function (v) {
+        combined.push({ type: 'Video', title: v.title, date: v.date, link: v.videoFile || v.videoUrl || 'newsroom.html' });
+      });
+
+      if (newsWrap) {
+        newsWrap.innerHTML = sortByDateDesc(combined).slice(0, 5).map(function (item) {
+          if (!item.title) return '';
+          return '<div class="news-row"><div><span class="cat">' + esc(item.type) + '</span><h4><a href="' + esc(item.link) + '" style="color:inherit;text-decoration:none;">' + esc(item.title) + '</a></h4></div><span class="date">' + esc(formatDate(item.date)) + '</span></div>';
         }).join('');
       }
     }).catch(function () {});
