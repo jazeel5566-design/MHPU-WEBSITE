@@ -345,7 +345,10 @@
     if (featuredWrap && data.featuredStories) {
       featuredWrap.innerHTML = visibleOnly(data.featuredStories).map(function (s) {
         var thumb = s.image ? '<img class="thumb" src="' + esc(s.image) + '" alt="">' : '';
-        return '<div class="resource-card">' + thumb + '<span class="filetag">' + esc(s.tag) + '</span><h3>' + esc(s.headline) + '</h3><span class="meta">' + esc(s.date) + '</span><a href="' + esc(s.url || '#') + '" class="btn btn-outline btn-sm">Read more</a></div>';
+        // A story with a full article written in /admin gets its own page;
+        // otherwise "Read more" falls back to whatever external link was set.
+        var link = (s.body && s.slug) ? ('article.html?slug=' + encodeURIComponent(s.slug)) : (s.url || '#');
+        return '<div class="resource-card">' + thumb + '<span class="filetag">' + esc(s.tag) + '</span><h3>' + esc(s.headline) + '</h3><span class="meta">' + esc(s.date) + '</span><a href="' + esc(link) + '" class="btn btn-outline btn-sm">Read more</a></div>';
       }).join('');
     }
 
