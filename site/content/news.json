@@ -2,18 +2,20 @@
   "heroKicker": "Stay informed",
   "heroHeadline": "What MHPU is fighting for right now.",
   "heroLede": "Bargaining updates, active campaigns, and union news from across the Maldives.",
+  "categories": [
+    { "name": "Bargaining", "hidden": false },
+    { "name": "Campaigns", "hidden": false },
+    { "name": "Union", "hidden": false },
+    { "name": "Development", "hidden": false }
+  ],
   "posts": [
-    {
-      "date": "{{now}}",
-      "hidden": false,
-      "category": "Union",
-      "title": "UPDATE: EXPATRIATE HEALTHCARE PROFESSIONALS’ OCCUPATION CATEGORIZATION CORRECTED"
-    },
-    {
-      "date": "{{now}}",
-      "hidden": false,
-      "category": "Campaigns",
-      "title": "MHPU requests Ministry of Health and Ministry of Homeland Security to address revised expatriate occupation categorization of healthcare professionals"
-    }
+    { "category": "Bargaining", "title": "New pay scale agreement ratified for public hospitals", "date": "2 days ago" },
+    { "category": "Campaigns", "title": "Petition for safe staffing ratios passes 1,200 signatures", "date": "4 days ago" },
+    { "category": "Union", "title": "MHPU opens regional office in Addu City", "date": "1 week ago" },
+    { "category": "Development", "title": "Applications open: 2026 nursing scholarship fund", "date": "2 weeks ago" },
+    { "category": "Campaigns", "title": "Night-shift allowance campaign gathers momentum in regional hospitals", "date": "3 weeks ago" },
+    { "category": "Bargaining", "title": "Talks begin on 2027 national health sector pay framework", "date": "1 month ago" },
+    { "category": "Union", "title": "Leadership council election dates announced", "date": "1 month ago" },
+    { "category": "Development", "title": "New CPD partnership with regional training institute", "date": "6 weeks ago" }
   ]
 }
