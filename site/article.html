@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Article — MHPU</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="assets/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="brand-accent-bar"></div>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<header class="site-header">
+  <div class="navbar">
+    <a href="index.html" class="logo"><img src="assets/mhpu-logo-horizontal.png" alt="Maldives Health Professionals Union" style="height:38px;width:auto;"></a>
+    <nav class="main-nav" aria-label="Primary">
+      <a href="about.html">About</a>
+      <a href="membership.html">Membership</a>
+      <a href="rights.html">Know your rights</a>
+      <a href="news.html">News &amp; campaigns</a>
+      <a href="newsroom.html" class="active">Newsroom</a>
+      <a href="resources.html">Resources</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="membership.html" class="btn btn-red btn-sm">Join now</a>
+      <button class="menu-toggle" aria-label="Open menu" aria-expanded="false"><span></span></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<section style="padding:56px 0 80px;">
+  <div class="wrap" style="max-width:760px;">
+    <p class="crumb"><a href="index.html">Home</a> / <a href="newsroom.html">Newsroom</a> / <span id="article-crumb">Article</span></p>
+
+    <div id="article-content">
+      <p style="font-family:'Source Sans 3',sans-serif;color:var(--muted);">Loading…</p>
+    </div>
+
+    <div id="article-not-found" style="display:none;">
+      <h1 style="font-size:32px;color:var(--ink);margin-bottom:14px;">Story not found</h1>
+      <p style="font-family:'Source Sans 3',sans-serif;color:var(--muted);font-size:16px;line-height:1.6;margin-bottom:20px;">This story may have been removed or the link is incorrect.</p>
+      <a href="newsroom.html" class="btn btn-red">Back to Newsroom</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <a href="index.html" class="logo" style="margin-bottom:14px;"><img src="assets/mhpu-logo-horizontal-white.png" alt="Maldives Health Professionals Union" style="height:34px;width:auto;"></a>
+      <p style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-teal-light);margin-bottom:10px;" data-cms="footerSlogan">Decent work, quality care</p>
+      <p style="max-width:260px;color:#93918A;" data-cms="footerDescription">The Maldives Health Professionals Union represents nurses, doctors, midwives and allied health workers nationwide.</p>
+    </div>
+    <div><h4>Union</h4><a href="about.html">About us</a><a href="about.html#leadership">Leadership</a><a href="contact.html">Contact</a></div>
+    <div><h4>Members</h4><a href="membership.html">Join now</a><a href="rights.html">Your rights</a><a href="contact.html">Advice line</a></div>
+    <div><h4>Resources</h4><a href="resources.html">Guides &amp; forms</a><a href="news.html">News &amp; campaigns</a><a href="newsroom.html">Newsroom</a></div>
+  </div>
+  <div class="foot-bottom"><span>&copy; 2026 Maldives Health Professionals Union. Placeholder content for demonstration.</span><span>Privacy &middot; Terms</span></div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+(function () {
+  function esc(s) {
+    var d = document.createElement('div');
+    d.textContent = s == null ? '' : String(s);
+    return d.innerHTML;
+  }
+
+  function paragraphsFrom(text) {
+    return (text || '').split(/\n\s*\n/).filter(function (p) { return p.trim() !== ''; })
+      .map(function (p) { return '<p style="font-family:\'Source Sans 3\',sans-serif;font-size:16px;line-height:1.7;color:var(--ink);margin-bottom:18px;">' + esc(p.trim()).replace(/\n/g, '<br>') + '</p>'; })
+      .join('');
+  }
+
+  var params = new URLSearchParams(window.location.search);
+  var slug = params.get('slug');
+  var contentEl = document.getElementById('article-content');
+  var notFoundEl = document.getElementById('article-not-found');
+
+  if (!slug) {
+    contentEl.style.display = 'none';
+    notFoundEl.style.display = 'block';
+    return;
+  }
+
+  fetch('content/newsroom.json', { cache: 'no-store' })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      var story = (data.featuredStories || []).find(function (s) { return s.slug === slug && s.hidden !== true; });
+
+      if (!story || !story.body) {
+        contentEl.style.display = 'none';
+        notFoundEl.style.display = 'block';
+        return;
+      }
+
+      document.title = story.headline + ' — MHPU';
+      document.getElementById('article-crumb').textContent = story.headline;
+
+      var html = '';
+      if (story.image) {
+        html += '<img src="' + esc(story.image) + '" alt="" style="width:100%;height:auto;margin-bottom:24px;display:block;">';
+      }
+      if (story.tag) {
+        html += '<span style="background:var(--ink);color:white;font-size:11px;font-weight:700;padding:4px 10px;display:inline-block;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;font-family:\'Source Sans 3\',sans-serif;">' + esc(story.tag) + '</span>';
+      }
+      html += '<h1 style="font-size:36px;line-height:1.1;color:var(--ink);margin-bottom:10px;">' + esc(story.headline) + '</h1>';
+      if (story.date) {
+        html += '<p style="font-family:\'Source Sans 3\',sans-serif;color:var(--muted);font-size:14px;margin-bottom:28px;">' + esc(story.date) + '</p>';
+      }
+      html += paragraphsFrom(story.body);
+
+      contentEl.innerHTML = html;
+    })
+    .catch(function () {
+      contentEl.style.display = 'none';
+      notFoundEl.style.display = 'block';
+    });
+})();
+</script>
+</body>
+</html>
