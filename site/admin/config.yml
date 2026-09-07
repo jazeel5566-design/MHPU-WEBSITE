@@ -365,6 +365,7 @@ collections:
               - { label: "Details", name: "details", widget: "text", required: false }
               - { label: "Hidden (tick to hide this office)", name: "hidden", widget: "boolean", default: false }
           - { label: "Regional reps note", name: "repsNote", widget: "text", required: false }
+          - { label: "Show the 'Regional representatives' section?", name: "showRegionalReps", widget: "boolean", default: true }
 
   # ---------- Newsroom page ----------
   - name: "newsroom-page"
