@@ -379,6 +379,16 @@ collections:
               - { label: "Button text", name: "fileLabel", widget: "string", hint: "e.g. Download statement (PDF)", required: false }
               - { label: "File", name: "file", widget: "file", required: false, hint: "Upload the PDF here. Keep file size under 5MB where possible for faster downloads." }
               - { label: "Hidden (tick to hide this release)", name: "hidden", widget: "boolean", default: false }
+          - label: "Video messages"
+            name: "videoMessages"
+            widget: "list"
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "Title", name: "title", widget: "string", required: false }
+              - { label: "Published date (auto-fills to today when created)", name: "date", widget: "date", format: "YYYY-MM-DD", default: "{{now}}", required: false }
+              - { label: "Thumbnail photo", name: "image", widget: "image", required: false, hint: "Recommended size: at least 800×450px, landscape orientation, JPG format, under 400KB." }
+              - { label: "Video link", name: "videoUrl", widget: "string", required: false, hint: "Paste the full YouTube, Facebook, or other video link here — e.g. https://youtube.com/watch?v=... Opens in a new tab when clicked." }
+              - { label: "Hidden (tick to hide this video)", name: "hidden", widget: "boolean", default: false }
 
   # ---------- Homepage copy ----------
   - name: "home"
