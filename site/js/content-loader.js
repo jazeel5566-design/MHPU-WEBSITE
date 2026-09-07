@@ -67,6 +67,21 @@
     return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
   }
 
+  // Sorts a list newest-first by its real "date" field, so anything just
+  // added (which auto-fills with today's date) naturally lands at the
+  // top — no manual dragging/reordering needed in /admin. Items with a
+  // missing or non-real date (e.g. older free-text dates from before
+  // auto-dating existed) sort to the end rather than breaking the sort.
+  function sortByDateDesc(items) {
+    return (items || []).slice().sort(function (a, b) {
+      var da = new Date(a && a.date).getTime();
+      var db = new Date(b && b.date).getTime();
+      if (isNaN(da)) da = -Infinity;
+      if (isNaN(db)) db = -Infinity;
+      return db - da;
+    });
+  }
+
   /* ---------- Generic page-hero helper ---------- */
   function renderPageHero(data) {
     if (!data) return;
@@ -85,7 +100,7 @@
   /* ---------- Active campaigns (Homepage: first one; News page: all of them) ---------- */
   function applyCampaignBanner(data) {
     if (!data) return;
-    var campaigns = visibleOnly(data.campaigns || []);
+    var campaigns = sortByDateDesc(visibleOnly(data.campaigns || []));
 
     var actionCard = document.getElementById('action-card');
     if (actionCard) {
@@ -141,6 +156,19 @@
     setText('[data-cms="slogan"]', home.slogan);
     setText('[data-cms="heroSubtext"]', home.heroSubtext);
 
+    var tickerEl = document.getElementById('home-ticker');
+    if (tickerEl) {
+      if (home.showTicker === false) {
+        tickerEl.style.display = 'none';
+      } else {
+        tickerEl.style.display = '';
+        var homeTickerWrap = tickerEl.querySelector('[data-cms-list="ticker"]');
+        if (homeTickerWrap && home.ticker) {
+          homeTickerWrap.innerHTML = home.ticker.map(function (t) { return '<span>' + esc(t) + '</span>'; }).join('');
+        }
+      }
+    }
+
     var pillarWrap = document.querySelector('[data-cms-list="pillars"]');
     if (pillarWrap && home.pillars) {
       pillarWrap.innerHTML = visibleOnly(home.pillars).map(function (p) {
@@ -169,7 +197,7 @@
     var newsWrap = document.querySelector('[data-cms-list="news-preview"]');
     fetchJSON('content/news.json').then(function (news) {
       if (newsWrap && news.posts) {
-        newsWrap.innerHTML = visibleOnly(news.posts).slice(0, 3).map(function (p) {
+        newsWrap.innerHTML = sortByDateDesc(visibleOnly(news.posts)).slice(0, 3).map(function (p) {
           return '<div class="news-row"><div><h4>' + esc(p.title) + '</h4></div><span class="date">' + esc(formatDate(p.date)) + '</span></div>';
         }).join('');
       }
@@ -190,9 +218,9 @@
 
     var listWrap = document.querySelector('[data-cms-list="posts"]');
     if (listWrap && news.posts) {
-      var visiblePosts = visibleOnly(news.posts).filter(function (p) {
+      var visiblePosts = sortByDateDesc(visibleOnly(news.posts).filter(function (p) {
         return !hiddenCategories[(p.category || '').toLowerCase()];
-      });
+      }));
       listWrap.innerHTML = visiblePosts.map(function (p) {
         var cat = esc(p.category).toLowerCase();
         return '<div class="news-row" data-category="' + cat + '"><div><span class="cat">' + esc(p.category) + '</span><h4>' + esc(p.title) + '</h4></div><span class="date">' + esc(formatDate(p.date)) + '</span></div>';
@@ -390,7 +418,7 @@
 
     var featuredWrap = document.querySelector('[data-cms-list="featuredStories"]');
     if (featuredWrap && data.featuredStories) {
-      featuredWrap.innerHTML = visibleOnly(data.featuredStories).map(function (s) {
+      featuredWrap.innerHTML = sortByDateDesc(visibleOnly(data.featuredStories)).map(function (s) {
         var thumb = s.image ? '<img class="thumb" src="' + esc(s.image) + '" alt="">' : '';
         // Fall back to the Dhivehi headline/article when there's no
         // English version — this was the bug: checking only the English
@@ -405,14 +433,14 @@
 
     var pressWrap = document.querySelector('[data-cms-list="pressReleases"]');
     if (pressWrap && data.pressReleases) {
-      pressWrap.innerHTML = visibleOnly(data.pressReleases).map(function (p) {
+      pressWrap.innerHTML = sortByDateDesc(visibleOnly(data.pressReleases)).map(function (p) {
         return renderResourceCard(formatDate(p.date), p.title, p.summary, '', p.file || '#', true, p.fileLabel || 'Download');
       }).join('');
     }
 
     var videoWrap = document.querySelector('[data-cms-list="videoMessages"]');
     if (videoWrap && data.videoMessages) {
-      videoWrap.innerHTML = visibleOnly(data.videoMessages).map(function (v) {
+      videoWrap.innerHTML = sortByDateDesc(visibleOnly(data.videoMessages)).map(function (v) {
         var thumb = v.image ? '<img class="thumb" src="' + esc(v.image) + '" alt="">' : '';
         // A self-hosted clip plays directly on the page; otherwise fall
         // back to linking out to wherever the video actually lives.
