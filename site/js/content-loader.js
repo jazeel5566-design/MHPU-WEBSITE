@@ -337,6 +337,25 @@
     return '<div class="resource-card"><span class="filetag">' + esc(filetag) + '</span><h3>' + esc(title) + '</h3><p>' + esc(description) + '</p><span class="meta">' + esc(meta) + '</span><a href="' + esc(url) + '" class="btn btn-outline btn-sm"' + dlAttr + '>' + esc(buttonLabel) + '</a></div>';
   }
 
+  /* ---------- Newsroom ---------- */
+  function renderNewsroom(data) {
+    renderPageHero(data);
+
+    var featuredWrap = document.querySelector('[data-cms-list="featuredStories"]');
+    if (featuredWrap && data.featuredStories) {
+      featuredWrap.innerHTML = visibleOnly(data.featuredStories).map(function (s) {
+        return '<div class="resource-card"><span class="filetag">' + esc(s.tag) + '</span><h3>' + esc(s.headline) + '</h3><span class="meta">' + esc(s.date) + '</span><a href="' + esc(s.url || '#') + '" class="btn btn-outline btn-sm">Read more</a></div>';
+      }).join('');
+    }
+
+    var pressWrap = document.querySelector('[data-cms-list="pressReleases"]');
+    if (pressWrap && data.pressReleases) {
+      pressWrap.innerHTML = visibleOnly(data.pressReleases).map(function (p) {
+        return renderResourceCard(p.date, p.title, p.summary, '', p.file || '#', true, p.fileLabel || 'Download');
+      }).join('');
+    }
+  }
+
   /* ---------- Hero image swap (every page) ---------- */
   // The hero's diagonal red stripe can be replaced with an uploaded photo,
   // per page, from /admin. Falls back to the original stripe pattern
@@ -456,6 +475,8 @@
       fetchJSON('content/contact.json').then(renderContact).catch(function (err) { console.warn('Content load failed:', err); });
     } else if (page === 'resources') {
       fetchJSON('content/resources.json').then(renderResources).catch(function (err) { console.warn('Content load failed:', err); });
+    } else if (page === 'newsroom') {
+      fetchJSON('content/newsroom.json').then(renderNewsroom).catch(function (err) { console.warn('Content load failed:', err); });
     }
   }
 })();
