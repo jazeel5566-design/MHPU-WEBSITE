@@ -42,6 +42,7 @@ collections:
           - { label: "News & Campaigns page", name: "news", widget: "image", required: false, hint: "Recommended size: at least 1600×1000px, landscape orientation, JPG format, under 800KB. Fills half of the page banner." }
           - { label: "Resources page", name: "resources", widget: "image", required: false, hint: "Recommended size: at least 1600×1000px, landscape orientation, JPG format, under 800KB. Fills half of the page banner." }
           - { label: "Contact page", name: "contact", widget: "image", required: false, hint: "Recommended size: at least 1600×1000px, landscape orientation, JPG format, under 800KB. Fills half of the page banner." }
+          - { label: "Newsroom page", name: "newsroom", widget: "image", required: false, hint: "Recommended size: at least 1600×1000px, landscape orientation, JPG format, under 800KB. Fills half of the page banner." }
 
   # ---------- News & campaigns (add / edit only, no reordering) ----------
   - name: "news"
@@ -200,6 +201,7 @@ collections:
           - { label: "News & Campaigns page", name: "news", widget: "boolean", default: true }
           - { label: "Resources page", name: "resources", widget: "boolean", default: true }
           - { label: "Contact page", name: "contact", widget: "boolean", default: true }
+          - { label: "Newsroom page", name: "newsroom", widget: "boolean", default: true }
 
   # ---------- About page ----------
   - name: "about-page"
@@ -339,6 +341,39 @@ collections:
               - { label: "Details", name: "details", widget: "text", required: false }
               - { label: "Hidden (tick to hide this office)", name: "hidden", widget: "boolean", default: false }
           - { label: "Regional reps note", name: "repsNote", widget: "text", required: false }
+
+  # ---------- Newsroom page ----------
+  - name: "newsroom-page"
+    label: "Newsroom Page"
+    files:
+      - name: "newsroom"
+        label: "Newsroom Content"
+        file: "site/content/newsroom.json"
+        fields:
+          - { label: "Page header tag (leave blank to hide it entirely)", name: "heroKicker", widget: "string", required: false }
+          - { label: "Page header headline (leave blank to hide it entirely)", name: "heroHeadline", widget: "string", required: false }
+          - { label: "Page header text", name: "heroLede", widget: "text", required: false }
+          - label: "Featured stories"
+            name: "featuredStories"
+            widget: "list"
+            summary: "{{fields.headline}}"
+            fields:
+              - { label: "Tag", name: "tag", widget: "string", required: false, hint: "e.g. Bargaining, Union, Campaigns" }
+              - { label: "Headline", name: "headline", widget: "string", required: false }
+              - { label: "Date label", name: "date", widget: "string", hint: "e.g. '2 days ago' or '14 March 2026'", required: false }
+              - { label: "Link", name: "url", widget: "string", required: false, hint: "e.g. news.html, or a full https:// link" }
+              - { label: "Hidden (tick to hide this story)", name: "hidden", widget: "boolean", default: false }
+          - label: "Press releases"
+            name: "pressReleases"
+            widget: "list"
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "Title", name: "title", widget: "string", required: false }
+              - { label: "Date", name: "date", widget: "string", hint: "e.g. 30 August 2026", required: false }
+              - { label: "Summary", name: "summary", widget: "text", required: false }
+              - { label: "Button text", name: "fileLabel", widget: "string", hint: "e.g. Download statement (PDF)", required: false }
+              - { label: "File", name: "file", widget: "file", required: false, hint: "Upload the PDF here. Keep file size under 5MB where possible for faster downloads." }
+              - { label: "Hidden (tick to hide this release)", name: "hidden", widget: "boolean", default: false }
 
   # ---------- Homepage copy ----------
   - name: "home"
