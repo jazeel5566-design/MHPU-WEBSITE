@@ -1,0 +1,46 @@
+{
+  "heroKicker": "Newsroom",
+  "heroHeadline": "MHPU in the headlines.",
+  "heroLede": "Featured stories, official statements and press releases from the Maldives Health Professionals Union.",
+  "featuredStories": [
+    {
+      "tag": "Bargaining",
+      "headline": "New pay scale agreement ratified for public hospitals",
+      "date": "2 days ago",
+      "url": "news.html",
+      "hidden": false
+    },
+    {
+      "tag": "Union",
+      "headline": "MHPU opens regional office in Addu City",
+      "date": "1 week ago",
+      "url": "news.html",
+      "hidden": false
+    },
+    {
+      "tag": "Campaigns",
+      "headline": "Petition for safe staffing ratios passes 1,200 signatures",
+      "date": "4 days ago",
+      "url": "news.html",
+      "hidden": false
+    }
+  ],
+  "pressReleases": [
+    {
+      "title": "MHPU statement on safe staffing ratios in outer-island health centres",
+      "date": "30 August 2026",
+      "summary": "The union's official position on minimum nurse-to-patient ratios, submitted to the Ministry of Health.",
+      "fileLabel": "Download statement (PDF)",
+      "file": "",
+      "hidden": false
+    },
+    {
+      "title": "Joint statement with regional health unions on night-shift allowances",
+      "date": "12 August 2026",
+      "summary": "A shared statement calling for standardised night-shift and hardship allowances across public hospitals.",
+      "fileLabel": "Download statement (PDF)",
+      "file": "",
+      "hidden": false
+    }
+  ]
+}

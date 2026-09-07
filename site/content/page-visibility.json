@@ -1,0 +1,10 @@
+{
+  "home": true,
+  "about": true,
+  "membership": true,
+  "rights": true,
+  "news": true,
+  "resources": true,
+  "contact": true,
+  "newsroom": true
+}
