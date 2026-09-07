@@ -344,7 +344,8 @@
     var featuredWrap = document.querySelector('[data-cms-list="featuredStories"]');
     if (featuredWrap && data.featuredStories) {
       featuredWrap.innerHTML = visibleOnly(data.featuredStories).map(function (s) {
-        return '<div class="resource-card"><span class="filetag">' + esc(s.tag) + '</span><h3>' + esc(s.headline) + '</h3><span class="meta">' + esc(s.date) + '</span><a href="' + esc(s.url || '#') + '" class="btn btn-outline btn-sm">Read more</a></div>';
+        var thumb = s.image ? '<img class="thumb" src="' + esc(s.image) + '" alt="">' : '';
+        return '<div class="resource-card">' + thumb + '<span class="filetag">' + esc(s.tag) + '</span><h3>' + esc(s.headline) + '</h3><span class="meta">' + esc(s.date) + '</span><a href="' + esc(s.url || '#') + '" class="btn btn-outline btn-sm">Read more</a></div>';
       }).join('');
     }
 
