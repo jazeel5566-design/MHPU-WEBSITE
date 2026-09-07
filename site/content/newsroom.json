@@ -16,7 +16,16 @@
       "image": "assets/uploads/_adh3167-1623505483045_qwuwj4.jpg"
     }
   ],
-  "pressReleases": [],
+  "pressReleases": [
+    {
+      "date": "{{now}}",
+      "hidden": false,
+      "title": "jfjdgdn",
+      "summary": "xbnmvjvcxxx",
+      "fileLabel": "Download PDF",
+      "file": "https://x.com/maldiveshpu/status/2096893779592798633?s=48"
+    }
+  ],
   "videoMessages": [
     {
       "title": "OSH Act",
