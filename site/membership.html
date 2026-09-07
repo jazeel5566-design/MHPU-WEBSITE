@@ -130,10 +130,20 @@
           <input type="file" id="idFile" name="idFile" required accept="image/*,.pdf">
           <span class="error-msg">Upload a copy of your ID or passport.</span>
         </div>
-        <div class="field">
+        <div class="field full">
           <label for="signatureText">Signature (type your full name) <span class="req">*</span></label>
-          <input type="text" id="signatureText" name="signatureText" required placeholder="Type your full name to sign">
-          <span class="error-msg">Type your full name to sign this application.</span>
+          <input type="text" id="signatureText" name="signatureText" placeholder="Type your full name to sign">
+          <span class="error-msg">Type your full name, or draw your signature below.</span>
+          <div style="margin-top:8px;">
+            <button type="button" id="toggle-signature-mode" style="background:none;border:none;color:var(--red);text-decoration:underline;font-size:13px;cursor:pointer;padding:0;font-family:'Source Sans 3',sans-serif;">Or draw your signature instead</button>
+          </div>
+          <div id="signature-draw-wrap" style="display:none;margin-top:12px;">
+            <canvas id="signature-canvas" width="600" height="180" style="border:1.5px solid var(--line);border-radius:4px;width:100%;max-width:500px;height:150px;touch-action:none;cursor:crosshair;background:white;display:block;"></canvas>
+            <div style="margin-top:8px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
+              <button type="button" id="clear-signature-btn" class="btn btn-outline btn-sm">Clear</button>
+              <button type="button" id="use-typed-signature-btn" style="background:none;border:none;color:var(--muted);text-decoration:underline;font-size:13px;cursor:pointer;padding:0;font-family:'Source Sans 3',sans-serif;">Type your name instead</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -168,6 +178,63 @@
     });
   }
 
+  // ---------- Signature pad (mouse, touch, and stylus, via Pointer Events) ----------
+  var sigCanvas = document.getElementById('signature-canvas');
+  var sigCtx = sigCanvas.getContext('2d');
+  var sigTextInput = document.getElementById('signatureText');
+  var toggleSigBtn = document.getElementById('toggle-signature-mode');
+  var sigDrawWrap = document.getElementById('signature-draw-wrap');
+  var clearSigBtn = document.getElementById('clear-signature-btn');
+  var useTypedBtn = document.getElementById('use-typed-signature-btn');
+  var isDrawing = false;
+  var hasSignatureDrawing = false;
+
+  sigCtx.lineWidth = 2.5;
+  sigCtx.lineCap = 'round';
+  sigCtx.lineJoin = 'round';
+  sigCtx.strokeStyle = '#15181B';
+
+  function sigPointFromEvent(e) {
+    var rect = sigCanvas.getBoundingClientRect();
+    var scaleX = sigCanvas.width / rect.width;
+    var scaleY = sigCanvas.height / rect.height;
+    return { x: (e.clientX - rect.left) * scaleX, y: (e.clientY - rect.top) * scaleY };
+  }
+
+  function clearSignaturePad() {
+    sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+    hasSignatureDrawing = false;
+  }
+
+  sigCanvas.addEventListener('pointerdown', function (e) {
+    isDrawing = true;
+    hasSignatureDrawing = true;
+    var p = sigPointFromEvent(e);
+    sigCtx.beginPath();
+    sigCtx.moveTo(p.x, p.y);
+    sigCanvas.setPointerCapture(e.pointerId);
+  });
+  sigCanvas.addEventListener('pointermove', function (e) {
+    if (!isDrawing) return;
+    var p = sigPointFromEvent(e);
+    sigCtx.lineTo(p.x, p.y);
+    sigCtx.stroke();
+  });
+  sigCanvas.addEventListener('pointerup', function () { isDrawing = false; });
+  sigCanvas.addEventListener('pointercancel', function () { isDrawing = false; });
+
+  toggleSigBtn.addEventListener('click', function () {
+    sigDrawWrap.style.display = 'block';
+    toggleSigBtn.style.display = 'none';
+    sigTextInput.value = '';
+  });
+  useTypedBtn.addEventListener('click', function () {
+    sigDrawWrap.style.display = 'none';
+    toggleSigBtn.style.display = 'inline';
+    clearSignaturePad();
+  });
+  clearSigBtn.addEventListener('click', clearSignaturePad);
+
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -193,6 +260,15 @@
       if (fieldWrap) fieldWrap.classList.toggle('has-error', !ok);
       if (!ok) { valid = false; if (!firstInvalid) firstInvalid = input; }
     });
+
+    // Signature isn't a plain [required] field, since it can be satisfied
+    // two different ways (typed name OR a drawn signature) — checked here
+    // separately.
+    var typedSignature = sigTextInput.value.trim();
+    var signatureProvided = typedSignature !== '' || hasSignatureDrawing;
+    var sigFieldWrap = sigTextInput.closest('.field');
+    if (sigFieldWrap) sigFieldWrap.classList.toggle('has-error', !signatureProvided);
+    if (!signatureProvided) { valid = false; if (!firstInvalid) firstInvalid = sigTextInput; }
 
     if (!valid) {
       alertBox.textContent = 'Please check the highlighted fields and try again.';
@@ -220,9 +296,18 @@
         idFile_base64: idBase64,
         idFile_fileName: idFile.name,
         idFile_mimeType: idFile.type || 'application/octet-stream',
-        signatureText: document.getElementById('signatureText').value.trim(),
         declarationDate: new Date().toISOString().slice(0, 10)
       };
+
+      // Signature: either a typed name, or a drawn signature image —
+      // whichever the applicant actually used.
+      if (typedSignature) {
+        payload.signatureText = typedSignature;
+      } else if (hasSignatureDrawing) {
+        var dataUrl = sigCanvas.toDataURL('image/png');
+        payload.signatureImage_base64 = dataUrl.split(',')[1];
+        payload.signatureText = '(Signature drawn — see attached image)';
+      }
 
       var body = Object.keys(payload)
         .map(function (key) { return encodeURIComponent(key) + '=' + encodeURIComponent(payload[key]); })
