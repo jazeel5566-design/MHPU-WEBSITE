@@ -303,6 +303,7 @@ collections:
               - { label: "Hidden (tick to hide this section)", name: "hidden", widget: "boolean", default: false }
           - { label: "Bottom CTA headline", name: "ctaHeadline", widget: "string", required: false }
           - { label: "Bottom CTA text", name: "ctaText", widget: "text", required: false }
+          - { label: "Show the bottom 'advice line' section?", name: "showCta", widget: "boolean", default: true }
           - label: "Useful links (sidebar buttons)"
             name: "usefulLinks"
             widget: "list"
@@ -387,7 +388,8 @@ collections:
               - { label: "Title", name: "title", widget: "string", required: false }
               - { label: "Published date (auto-fills to today when created)", name: "date", widget: "date", format: "YYYY-MM-DD", default: "{{now}}", required: false }
               - { label: "Thumbnail photo", name: "image", widget: "image", required: false, hint: "Recommended size: at least 800×450px, landscape orientation, JPG format, under 400KB." }
-              - { label: "Video link", name: "videoUrl", widget: "string", required: false, hint: "Paste the full YouTube, Facebook, or other video link here — e.g. https://youtube.com/watch?v=... Opens in a new tab when clicked." }
+              - { label: "Upload a short clip (optional — see important note below)", name: "videoFile", widget: "file", required: false, hint: "IMPORTANT: hard limit of 25MB per file — the site will fail to update if you go over this. A short, TikTok-length clip (15-60 seconds) usually fits IF it's compressed first — most phones can do this when exporting/sharing a video at a lower quality setting. An unedited phone recording is often 40-150MB and will NOT work. If in doubt, use the video link field below instead — that has no size limit at all." }
+              - { label: "Video link (used if no file is uploaded above)", name: "videoUrl", widget: "string", required: false, hint: "Paste the full YouTube, Facebook, or other video link here — e.g. https://youtube.com/watch?v=... Opens in a new tab when clicked." }
               - { label: "Hidden (tick to hide this video)", name: "hidden", widget: "boolean", default: false }
 
   # ---------- Homepage copy ----------
