@@ -30,5 +30,47 @@
        Netlify Identity / Git Gateway are deprecated, so this replaces
        that setup. Nothing else on this page needs to change. -->
   <script src="https://unpkg.com/decap-cms@^3.8.3/dist/decap-cms.js"></script>
+  <script>
+    // Decap re-renders its editing fields dynamically as a single-page
+    // app, and its internal CSS class names aren't something we can
+    // reliably target from outside (they can change between versions).
+    // Instead of guessing at selectors, this finds fields the honest
+    // way — by reading each field's actual label text — and only
+    // switches those specific boxes to right-to-left, leaving every
+    // other (English) field completely untouched.
+    (function () {
+      function applyRtlNearLabel(label) {
+        var container = label.parentElement;
+        var attempts = 0;
+        while (container && attempts < 4) {
+          var field = container.querySelector('textarea, input[type="text"]');
+          if (field) {
+            field.setAttribute('dir', 'rtl');
+            field.style.textAlign = 'right';
+            return;
+          }
+          container = container.parentElement;
+          attempts++;
+        }
+      }
+
+      function scanForDhivehiFields() {
+        document.querySelectorAll('label').forEach(function (label) {
+          if (!label.dataset.rtlChecked && /dhivehi/i.test(label.textContent)) {
+            label.dataset.rtlChecked = 'true';
+            applyRtlNearLabel(label);
+          }
+        });
+      }
+
+      // Both a live observer (for normal use) and a periodic fallback
+      // (in case fields render in a way the observer doesn't catch) —
+      // belt and suspenders, since this runs inside a third-party app
+      // we don't control the internals of.
+      var observer = new MutationObserver(scanForDhivehiFields);
+      observer.observe(document.body, { childList: true, subtree: true });
+      setInterval(scanForDhivehiFields, 1000);
+    })();
+  </script>
 </body>
 </html>
