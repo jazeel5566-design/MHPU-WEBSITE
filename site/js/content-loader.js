@@ -82,34 +82,40 @@
     setText('[data-cms="footerDescription"]', site.footerDescription);
   }
 
-  /* ---------- Active campaign banner (shared by Homepage + News page) ---------- */
-  // One campaign, one place to edit it — whichever page you're on, this
-  // fills in and shows/hides that page's version of the banner using the
-  // exact same data, so the two can never drift out of sync.
-  function applyCampaignBanner(campaign) {
-    if (!campaign) return;
+  /* ---------- Active campaigns (Homepage: first one; News page: all of them) ---------- */
+  function applyCampaignBanner(data) {
+    if (!data) return;
+    var campaigns = visibleOnly(data.campaigns || []);
 
     var actionCard = document.getElementById('action-card');
     if (actionCard) {
-      if (campaign.show === false) {
+      var first = campaigns[0];
+      if (!first) {
         actionCard.style.display = 'none';
       } else {
         actionCard.style.display = '';
-        setText('[data-cms="actionTag"]', campaign.tag);
-        setText('[data-cms="actionHeadline"]', campaign.headline);
-        setText('[data-cms="actionText"]', campaign.text);
+        setText('[data-cms="actionTag"]', first.tag);
+        setText('[data-cms="actionHeadline"]', first.headline);
+        setText('[data-cms="actionText"]', first.text);
       }
     }
 
     var campaignSection = document.getElementById('campaign-banner-section');
     if (campaignSection) {
-      if (campaign.show === false) {
+      if (campaigns.length === 0) {
         campaignSection.style.display = 'none';
       } else {
         campaignSection.style.display = '';
-        setText('[data-cms="campaignTag"]', campaign.tag);
-        setText('[data-cms="campaignHeadline"]', campaign.headline);
-        setText('[data-cms="campaignText"]', campaign.text);
+        var listWrap = campaignSection.querySelector('[data-cms-list="campaigns"]');
+        if (listWrap) {
+          listWrap.innerHTML = campaigns.map(function (c) {
+            return '<div class="card" style="border-color:var(--red);border-width:2px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;">' +
+              '<div><span style="background:var(--red);color:white;font-size:11px;font-weight:700;padding:4px 10px;font-family:\'Source Sans 3\',sans-serif;letter-spacing:.04em;">' + esc(c.tag) + '</span>' +
+              '<h3 style="font-size:24px;margin-top:14px;">' + esc(c.headline) + '</h3>' +
+              '<p>' + esc(c.text) + '</p></div>' +
+              '<a href="#" class="btn btn-red">Add your name</a></div>';
+          }).join('');
+        }
       }
     }
   }
@@ -174,9 +180,20 @@
   function renderNews(news) {
     renderPageHero(news);
 
+    // Build a lookup of which categories are currently hidden, so we can
+    // both exclude their posts from the list and hide their filter chip —
+    // hiding a whole category this way needs no per-post editing at all.
+    var hiddenCategories = {};
+    (news.categories || []).forEach(function (c) {
+      if (c.hidden === true && c.name) hiddenCategories[c.name.toLowerCase()] = true;
+    });
+
     var listWrap = document.querySelector('[data-cms-list="posts"]');
     if (listWrap && news.posts) {
-      listWrap.innerHTML = visibleOnly(news.posts).map(function (p) {
+      var visiblePosts = visibleOnly(news.posts).filter(function (p) {
+        return !hiddenCategories[(p.category || '').toLowerCase()];
+      });
+      listWrap.innerHTML = visiblePosts.map(function (p) {
         var cat = esc(p.category).toLowerCase();
         return '<div class="news-row" data-category="' + cat + '"><div><span class="cat">' + esc(p.category) + '</span><h4>' + esc(p.title) + '</h4></div><span class="date">' + esc(formatDate(p.date)) + '</span></div>';
       }).join('');
@@ -186,6 +203,8 @@
     var chips = document.querySelectorAll('.chip[data-filter]');
     var newsItems = document.querySelectorAll('[data-category]');
     chips.forEach(function (chip) {
+      var filterValue = chip.getAttribute('data-filter');
+      chip.style.display = (filterValue !== 'all' && hiddenCategories[filterValue]) ? 'none' : '';
       chip.addEventListener('click', function () {
         chips.forEach(function (c) { c.classList.remove('active'); });
         chip.classList.add('active');
