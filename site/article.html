@@ -79,6 +79,26 @@
     return d.innerHTML;
   }
 
+  // Same logic as the main site's content-loader.js — kept in sync so a
+  // date reads identically whether shown on a card or on the article
+  // page itself.
+  function formatDate(value) {
+    if (!value) return '';
+    var d = new Date(value);
+    if (isNaN(d.getTime())) return value;
+
+    var now = new Date();
+    var diffDays = Math.floor((now - d) / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return '1 day ago';
+    if (diffDays < 7) return diffDays + ' days ago';
+    if (diffDays < 14) return '1 week ago';
+    if (diffDays < 30) return Math.floor(diffDays / 7) + ' weeks ago';
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
   function paragraphsFrom(text, dir) {
     var alignStyle = dir === 'rtl' ? 'text-align:right;' : '';
     return (text || '').split(/\n\s*\n/).filter(function (p) { return p.trim() !== ''; })
@@ -123,7 +143,7 @@
     }
     html += '<h1 style="font-size:36px;line-height:1.2;color:var(--ink);margin-bottom:10px;font-family:' + fontStack + ';' + (isDv ? 'text-align:right;' : '') + '">' + esc(headline) + '</h1>';
     if (story.date) {
-      html += '<p style="font-family:\'Source Sans 3\',sans-serif;color:var(--muted);font-size:14px;margin-bottom:28px;' + (isDv ? 'text-align:right;' : '') + '">' + esc(story.date) + '</p>';
+      html += '<p style="font-family:\'Source Sans 3\',sans-serif;color:var(--muted);font-size:14px;margin-bottom:28px;' + (isDv ? 'text-align:right;' : '') + '">' + esc(formatDate(story.date)) + '</p>';
     }
     html += paragraphsFrom(body, dir);
 
