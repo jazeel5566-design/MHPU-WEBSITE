@@ -1,27 +1,18 @@
 {
+  "showSendMessage": true,
+  "repsNote": "",
+  "regionalRepsSub": "Your first point of contact on the ground",
   "heroKicker": "Get in touch",
   "heroHeadline": "We're here — every island, every day.",
+  "showRegionalReps": false,
   "heroLede": "Reach the national office, a regional representative, or the 24/7 advice line.",
+  "regionalOffices": [],
+  "showOffices": true,
   "headOffice": {
     "name": "Head office — Hulhumale'",
     "address": "Flat No: 83/01/06, Rabarugas Magu, Hulhumale', Republic of Maldives",
     "phone1": "+960 9921992",
     "phone2": "+960 9949439",
     "email": "maldiveshealthunion@gmail.com"
-  },
-  "regionalOffices": [
-    {
-      "name": "Regional office — Addu City",
-      "details": ""
-    },
-    {
-      "name": "Regional office — Kulhudhuffushi",
-      "details": ""
-    }
-  ],
-  "repsNote": "",
-  "showRegionalReps": true,
-  "showOffices": true,
-  "showSendMessage": true,
-  "regionalRepsSub": "Your first point of contact on the ground"
+  }
 }
