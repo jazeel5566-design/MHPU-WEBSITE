@@ -171,6 +171,7 @@
 
     var pillarsSection = document.getElementById('pillars-section');
     if (pillarsSection) pillarsSection.style.display = (home.showPillars === false) ? 'none' : '';
+    setText('[data-cms="pillarsSub"]', home.pillarsSub);
     var pillarWrap = document.querySelector('[data-cms-list="pillars"]');
     if (pillarWrap && home.pillars) {
       pillarWrap.innerHTML = visibleOnly(home.pillars).map(function (p) {
@@ -180,6 +181,7 @@
 
     var whyJoinSection = document.getElementById('why-join-section');
     if (whyJoinSection) whyJoinSection.style.display = (home.showWhyJoin === false) ? 'none' : '';
+    setText('[data-cms="whyJoinSub"]', home.whyJoinSub);
     var whyJoinWrap = document.querySelector('[data-cms-list="whyJoin"]');
     if (whyJoinWrap && home.whyJoin) {
       whyJoinWrap.innerHTML = visibleOnly(home.whyJoin).map(function (w) {
@@ -251,6 +253,7 @@
 
     var latestNewsSection = document.getElementById('latest-news-section');
     if (latestNewsSection) latestNewsSection.style.display = (news.showLatestNews === false) ? 'none' : '';
+    setText('[data-cms="latestNewsSub"]', news.latestNewsSub);
 
     // Build a lookup of which categories are currently hidden, so we can
     // both exclude their posts from the list and hide their filter chip —
@@ -300,6 +303,7 @@
   function renderLeadership(data) {
     var execSection = document.getElementById('leadership');
     if (execSection) execSection.style.display = (data.showExecutive === false) ? 'none' : '';
+    setText('[data-cms="executiveSub"]', data.executiveSub);
     var execWrap = document.querySelector('[data-cms-list="executive"]');
     if (execWrap && data.executive) {
       execWrap.innerHTML = visibleOnly(data.executive).map(function (m) {
@@ -308,6 +312,7 @@
     }
     var genSection = document.getElementById('general-members-section');
     if (genSection) genSection.style.display = (data.showGeneralMembers === false) ? 'none' : '';
+    setText('[data-cms="generalMembersSub"]', data.generalMembersSub);
     var genWrap = document.querySelector('[data-cms-list="generalMembers"]');
     if (genWrap && data.generalMembers) {
       genWrap.innerHTML = visibleOnly(data.generalMembers).map(function (m) {
@@ -342,6 +347,7 @@
 
     var historySection = document.getElementById('history-section');
     if (historySection) historySection.style.display = (about.showHistory === false) ? 'none' : '';
+    setText('[data-cms="historySub"]', about.historySub);
     var historyWrap = document.querySelector('[data-cms-list="history"]');
     if (historyWrap && about.history) {
       historyWrap.innerHTML = visibleOnly(about.history).map(function (h) {
@@ -360,6 +366,7 @@
 
     var feeSection = document.getElementById('fee-section');
     if (feeSection) feeSection.style.display = (m.showFee === false) ? 'none' : '';
+    setText('[data-cms="feeSub"]', m.feeSub);
     var joinSection = document.getElementById('join');
     if (joinSection) joinSection.style.display = (m.showJoin === false) ? 'none' : '';
 
@@ -444,6 +451,7 @@
     if (repsSection) {
       repsSection.style.display = (c.showRegionalReps === false) ? 'none' : '';
     }
+    setText('[data-cms="regionalRepsSub"]', c.regionalRepsSub);
 
     if (c.headOffice) {
       var ho = c.headOffice;
@@ -467,6 +475,7 @@
     renderPageHero(data);
     var guidesSection = document.getElementById('guides-resources-section');
     if (guidesSection) guidesSection.style.display = (data.showGuides === false) ? 'none' : '';
+    setText('[data-cms="guidesSub"]', data.guidesSub);
     var guidesWrap = document.querySelector('[data-cms-list="guides"]');
     if (guidesWrap && data.guides) {
       guidesWrap.innerHTML = visibleOnly(data.guides).map(function (g) {
@@ -475,6 +484,7 @@
     }
     var campaignSection = document.getElementById('campaign-materials-section');
     if (campaignSection) campaignSection.style.display = (data.showCampaignMaterials === false) ? 'none' : '';
+    setText('[data-cms="campaignMaterialsSub"]', data.campaignMaterialsSub);
     var campaignWrap = document.querySelector('[data-cms-list="campaignMaterials"]');
     if (campaignWrap && data.campaignMaterials) {
       campaignWrap.innerHTML = visibleOnly(data.campaignMaterials).map(function (c) {
@@ -512,6 +522,7 @@
 
     var pressSection = document.getElementById('press-releases-section');
     if (pressSection) pressSection.style.display = (data.showPressReleases === false) ? 'none' : '';
+    setText('[data-cms="pressReleasesSub"]', data.pressReleasesSub);
     var pressWrap = document.querySelector('[data-cms-list="pressReleases"]');
     if (pressWrap && data.pressReleases) {
       pressWrap.innerHTML = sortByDateDesc(visibleOnly(data.pressReleases)).map(function (p) {
