@@ -62,5 +62,6 @@
       "date": "6 weeks ago"
     }
   ],
-  "showLatestNews": true
+  "showLatestNews": true,
+  "latestNewsSub": "Filter by category"
 }

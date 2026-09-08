@@ -22,5 +22,6 @@
   "repsNote": "",
   "showRegionalReps": true,
   "showOffices": true,
-  "showSendMessage": true
+  "showSendMessage": true,
+  "regionalRepsSub": "Your first point of contact on the ground"
 }

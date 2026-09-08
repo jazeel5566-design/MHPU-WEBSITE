@@ -66,5 +66,7 @@
     }
   ],
   "showExecutive": true,
-  "showGeneralMembers": true
+  "showGeneralMembers": true,
+  "executiveSub": "Elected by and from the membership",
+  "generalMembersSub": ""
 }

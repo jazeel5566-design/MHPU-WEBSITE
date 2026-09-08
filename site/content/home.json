@@ -45,5 +45,7 @@
   ],
   "showPillars": true,
   "showWhyJoin": true,
-  "showLatestUpdates": true
+  "showLatestUpdates": true,
+  "pillarsSub": "Four commitments to every member",
+  "whyJoinSub": "Built around what members ask for most"
 }

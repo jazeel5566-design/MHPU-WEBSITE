@@ -70,5 +70,6 @@
   ],
   "showFeaturedArticles": true,
   "showPressReleases": true,
-  "showVideoMessages": true
+  "showVideoMessages": true,
+  "pressReleasesSub": "Official statements from MHPU"
 }

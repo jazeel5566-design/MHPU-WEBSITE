@@ -32,5 +32,6 @@
   "joinSectionSub": "Takes about 3 minutes",
   "declarationText": "I, the undersigned, apply for membership of the MHPU and declare that the foregoing statements are correct. I wish to join MHPU subject to the rule and constitution of the Union. I hereby undertake, if accepted as a member, to abide the rules of the Union and use my best endeavours to promote its objectives and interests.",
   "showFee": true,
-  "showJoin": true
+  "showJoin": true,
+  "feeSub": "One flat rate for every member"
 }
