@@ -99,6 +99,7 @@ collections:
             summary: "{{fields.name}}"
             fields:
               - { label: "Organization name", name: "name", widget: "string", required: false }
+              - { label: "Description (optional — why MHPU is affiliated, what it means for members, etc.)", name: "description", widget: "text", required: false }
               - { label: "Website", name: "url", widget: "string", required: false, hint: "The full link to their website, e.g. https://publicservices.international" }
               - { label: "Logo (optional)", name: "logo", widget: "image", required: false, hint: "Recommended size: at least 200×80px, transparent PNG works best, under 200KB." }
               - { label: "Hidden (tick to hide this one)", name: "hidden", widget: "boolean", default: false }
