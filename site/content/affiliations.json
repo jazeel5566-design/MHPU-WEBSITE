@@ -10,7 +10,8 @@
       "name": "International Council of Nurses (ICN)",
       "url": "https://www.icn.ch",
       "logo": "",
-      "hidden": true
+      "hidden": false
     }
-  ]
+  ],
+  "showAffiliations": true
 }

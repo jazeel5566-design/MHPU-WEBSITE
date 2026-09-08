@@ -1,20 +1,7 @@
 {
-  "joinSectionSub": "Takes about 3 minutes",
-  "declarationText": "I, the undersigned, apply for membership of the MHPU and declare that the foregoing statements are correct. I wish to join MHPU subject to the rule and constitution of the Union. I hereby undertake, if accepted as a member, to abide the rules of the Union and use my best endeavours to promote its objectives and interests.",
-  "ticker": [],
   "heroKicker": "Join MHPU",
-  "joiningFee": {
-    "title": "Joining fee",
-    "price": "MVR 100",
-    "period": "one-time",
-    "features": [
-      "Paid once, at sign-up",
-      "Covers registration and processing"
-    ]
-  },
   "heroHeadline": "One membership. Every protection.",
   "heroLede": "Whichever island you're posted on, membership gives you free case representation, a direct say in national bargaining, and access to CPD and scholarships.",
-  "feeNote": "MVR 100 per month, plus a one-time MVR 100 joining fee at sign-up — the same rate for every profession.",
   "monthlyFee": {
     "tag": "Monthly subscription",
     "title": "Membership fee",
@@ -26,5 +13,24 @@
       "CPD credits & scholarships",
       "Regional rep access"
     ]
-  }
+  },
+  "joiningFee": {
+    "title": "Joining fee",
+    "price": "MVR 100",
+    "period": "one-time",
+    "features": [
+      "Paid once, at sign-up",
+      "Covers registration and processing"
+    ]
+  },
+  "feeNote": "MVR 100 per month, plus a one-time MVR 100 joining fee at sign-up — the same rate for every profession.",
+  "ticker": [
+    "FREE CASE REPRESENTATION FOR ALL MEMBERS",
+    "DIRECT SAY IN NATIONAL BARGAINING",
+    "CPD CREDITS & SCHOLARSHIPS INCLUDED"
+  ],
+  "joinSectionSub": "Takes about 3 minutes",
+  "declarationText": "I, the undersigned, apply for membership of the MHPU and declare that the foregoing statements are correct. I wish to join MHPU subject to the rule and constitution of the Union. I hereby undertake, if accepted as a member, to abide the rules of the Union and use my best endeavours to promote its objectives and interests.",
+  "showFee": true,
+  "showJoin": true
 }

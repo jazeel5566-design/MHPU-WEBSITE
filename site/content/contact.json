@@ -10,9 +10,17 @@
     "email": "maldiveshealthunion@gmail.com"
   },
   "regionalOffices": [
-    { "name": "Regional office — Addu City", "details": "Details to be confirmed." },
-    { "name": "Regional office — Kulhudhuffushi", "details": "Details to be confirmed." }
+    {
+      "name": "Regional office — Addu City",
+      "details": ""
+    },
+    {
+      "name": "Regional office — Kulhudhuffushi",
+      "details": ""
+    }
   ],
-  "repsNote": "Representative names are placeholders pending confirmation of MHPU's actual regional structure.",
-  "showRegionalReps": true
+  "repsNote": "",
+  "showRegionalReps": true,
+  "showOffices": true,
+  "showSendMessage": true
 }
