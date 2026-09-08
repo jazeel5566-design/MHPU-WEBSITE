@@ -196,7 +196,8 @@
       if (affWrap) {
         affWrap.innerHTML = visibleOnly(affiliations.affiliations).map(function (a) {
           var logo = a.logo ? '<img src="' + esc(a.logo) + '" alt="">' : '';
-          return '<div class="affiliation-item">' + logo + '<a href="' + esc(a.url || '#') + '" target="_blank" rel="noopener">' + esc(a.name) + '</a></div>';
+          var description = a.description ? '<p>' + esc(a.description) + '</p>' : '';
+          return '<div class="affiliation-item"><div class="aff-header">' + logo + '<a href="' + esc(a.url || '#') + '" target="_blank" rel="noopener">' + esc(a.name) + '</a></div>' + description + '</div>';
         }).join('');
       }
     }
