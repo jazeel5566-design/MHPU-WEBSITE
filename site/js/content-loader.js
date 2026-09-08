@@ -169,6 +169,8 @@
       }
     }
 
+    var pillarsSection = document.getElementById('pillars-section');
+    if (pillarsSection) pillarsSection.style.display = (home.showPillars === false) ? 'none' : '';
     var pillarWrap = document.querySelector('[data-cms-list="pillars"]');
     if (pillarWrap && home.pillars) {
       pillarWrap.innerHTML = visibleOnly(home.pillars).map(function (p) {
@@ -176,6 +178,8 @@
       }).join('');
     }
 
+    var whyJoinSection = document.getElementById('why-join-section');
+    if (whyJoinSection) whyJoinSection.style.display = (home.showWhyJoin === false) ? 'none' : '';
     var whyJoinWrap = document.querySelector('[data-cms-list="whyJoin"]');
     if (whyJoinWrap && home.whyJoin) {
       whyJoinWrap.innerHTML = visibleOnly(home.whyJoin).map(function (w) {
@@ -183,6 +187,8 @@
       }).join('');
     }
 
+    var affSection = document.getElementById('affiliations-section');
+    if (affSection) affSection.style.display = (affiliations && affiliations.showAffiliations === false) ? 'none' : '';
     if (affiliations && affiliations.affiliations) {
       var affWrap = document.querySelector('[data-cms-list="affiliations"]');
       if (affWrap) {
@@ -192,6 +198,9 @@
         }).join('');
       }
     }
+
+    var latestUpdatesSection = document.getElementById('latest-updates-section');
+    if (latestUpdatesSection) latestUpdatesSection.style.display = (home.showLatestUpdates === false) ? 'none' : '';
 
     // Homepage "Latest updates" — pulls the most recent items across
     // everything (news, petitions, articles, statements, videos), not
@@ -240,6 +249,9 @@
   function renderNews(news) {
     renderPageHero(news);
 
+    var latestNewsSection = document.getElementById('latest-news-section');
+    if (latestNewsSection) latestNewsSection.style.display = (news.showLatestNews === false) ? 'none' : '';
+
     // Build a lookup of which categories are currently hidden, so we can
     // both exclude their posts from the list and hide their filter chip —
     // hiding a whole category this way needs no per-post editing at all.
@@ -286,12 +298,16 @@
   }
 
   function renderLeadership(data) {
+    var execSection = document.getElementById('leadership');
+    if (execSection) execSection.style.display = (data.showExecutive === false) ? 'none' : '';
     var execWrap = document.querySelector('[data-cms-list="executive"]');
     if (execWrap && data.executive) {
       execWrap.innerHTML = visibleOnly(data.executive).map(function (m) {
         return '<div class="team-card">' + avatarHTML(m) + '<h4>' + esc(m.name) + '</h4><p>' + esc(m.role) + '</p></div>';
       }).join('');
     }
+    var genSection = document.getElementById('general-members-section');
+    if (genSection) genSection.style.display = (data.showGeneralMembers === false) ? 'none' : '';
     var genWrap = document.querySelector('[data-cms-list="generalMembers"]');
     if (genWrap && data.generalMembers) {
       genWrap.innerHTML = visibleOnly(data.generalMembers).map(function (m) {
@@ -308,9 +324,14 @@
 
   function renderAbout(about) {
     renderPageHero(about);
+
+    var missionSection = document.getElementById('mission-section');
+    if (missionSection) missionSection.style.display = (about.showMission === false) ? 'none' : '';
     setText('[data-cms="missionPara1"]', about.missionPara1);
     setText('[data-cms="missionPara2"]', about.missionPara2);
 
+    var guidesSection = document.getElementById('guides-section');
+    if (guidesSection) guidesSection.style.display = (about.showGuides === false) ? 'none' : '';
     var guidesWrap = document.querySelector('[data-cms-list="guides-list"]');
     if (guidesWrap && about.guides) {
       guidesWrap.innerHTML = about.guides.map(function (g, i) {
@@ -319,6 +340,8 @@
       }).join('');
     }
 
+    var historySection = document.getElementById('history-section');
+    if (historySection) historySection.style.display = (about.showHistory === false) ? 'none' : '';
     var historyWrap = document.querySelector('[data-cms-list="history"]');
     if (historyWrap && about.history) {
       historyWrap.innerHTML = visibleOnly(about.history).map(function (h) {
@@ -334,6 +357,12 @@
   /* ---------- Membership page ---------- */
   function renderMembership(m) {
     renderPageHero(m);
+
+    var feeSection = document.getElementById('fee-section');
+    if (feeSection) feeSection.style.display = (m.showFee === false) ? 'none' : '';
+    var joinSection = document.getElementById('join');
+    if (joinSection) joinSection.style.display = (m.showJoin === false) ? 'none' : '';
+
     if (m.monthlyFee) {
       setText('[data-cms="monthlyFee-tag"]', m.monthlyFee.tag);
       setText('[data-cms="monthlyFee-title"]', m.monthlyFee.title);
@@ -406,6 +435,11 @@
   function renderContact(c) {
     renderPageHero(c);
 
+    var officesSection = document.getElementById('offices-section');
+    if (officesSection) officesSection.style.display = (c.showOffices === false) ? 'none' : '';
+    var sendMessageSection = document.getElementById('send-message-section');
+    if (sendMessageSection) sendMessageSection.style.display = (c.showSendMessage === false) ? 'none' : '';
+
     var repsSection = document.getElementById('regional-reps-section');
     if (repsSection) {
       repsSection.style.display = (c.showRegionalReps === false) ? 'none' : '';
@@ -421,7 +455,8 @@
     var regWrap = document.querySelector('[data-cms-list="regionalOffices"]');
     if (regWrap && c.regionalOffices) {
       regWrap.innerHTML = visibleOnly(c.regionalOffices).map(function (o) {
-        return '<div class="office-row"><h4>' + esc(o.name) + '</h4><p>' + esc(o.details) + '</p></div>';
+        var details = o.details ? '<p>' + esc(o.details) + '</p>' : '';
+        return '<div class="office-row"><h4>' + esc(o.name) + '</h4>' + details + '</div>';
       }).join('');
     }
     setText('[data-cms="repsNote"]', c.repsNote);
@@ -430,12 +465,16 @@
   /* ---------- Resources page ---------- */
   function renderResources(data) {
     renderPageHero(data);
+    var guidesSection = document.getElementById('guides-resources-section');
+    if (guidesSection) guidesSection.style.display = (data.showGuides === false) ? 'none' : '';
     var guidesWrap = document.querySelector('[data-cms-list="guides"]');
     if (guidesWrap && data.guides) {
       guidesWrap.innerHTML = visibleOnly(data.guides).map(function (g) {
         return renderResourceCard(g.filetag, g.title, g.description, g.meta, g.file, true, 'Download');
       }).join('');
     }
+    var campaignSection = document.getElementById('campaign-materials-section');
+    if (campaignSection) campaignSection.style.display = (data.showCampaignMaterials === false) ? 'none' : '';
     var campaignWrap = document.querySelector('[data-cms-list="campaignMaterials"]');
     if (campaignWrap && data.campaignMaterials) {
       campaignWrap.innerHTML = visibleOnly(data.campaignMaterials).map(function (c) {
@@ -454,6 +493,8 @@
   function renderNewsroom(data) {
     renderPageHero(data);
 
+    var featuredSection = document.getElementById('featured-articles-section');
+    if (featuredSection) featuredSection.style.display = (data.showFeaturedArticles === false) ? 'none' : '';
     var featuredWrap = document.querySelector('[data-cms-list="featuredStories"]');
     if (featuredWrap && data.featuredStories) {
       featuredWrap.innerHTML = sortByDateDesc(visibleOnly(data.featuredStories)).map(function (s) {
@@ -469,6 +510,8 @@
       }).join('');
     }
 
+    var pressSection = document.getElementById('press-releases-section');
+    if (pressSection) pressSection.style.display = (data.showPressReleases === false) ? 'none' : '';
     var pressWrap = document.querySelector('[data-cms-list="pressReleases"]');
     if (pressWrap && data.pressReleases) {
       pressWrap.innerHTML = sortByDateDesc(visibleOnly(data.pressReleases)).map(function (p) {
@@ -476,6 +519,8 @@
       }).join('');
     }
 
+    var videoSection = document.getElementById('video-messages-section');
+    if (videoSection) videoSection.style.display = (data.showVideoMessages === false) ? 'none' : '';
     var videoWrap = document.querySelector('[data-cms-list="videoMessages"]');
     if (videoWrap && data.videoMessages) {
       videoWrap.innerHTML = sortByDateDesc(visibleOnly(data.videoMessages)).map(function (v) {
