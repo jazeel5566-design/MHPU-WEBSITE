@@ -4,7 +4,8 @@
       "name": "Public Services International (PSI)",
       "url": "https://publicservices.international",
       "logo": "",
-      "hidden": false
+      "hidden": false,
+      "description": "\"PSI is a global trade union federation representing over 30 million public service workers — including health workers — across 150+ countries. Through PSI, MHPU connects with health unions worldwide to share strategy and strengthen advocacy for safe staffing and fair conditions.\""
     }
   ],
   "showAffiliations": true
