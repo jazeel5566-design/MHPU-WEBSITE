@@ -1,6 +1,6 @@
 {
   "heroHeadlineRed": "demand heard.",
-  "showLatestUpdates": false,
+  "showLatestUpdates": true,
   "showTicker": true,
   "pillars": [
     {
@@ -30,7 +30,7 @@
     "SCHOLARSHIP FUND NOW OPEN",
     "NIGHT-SHIFT ALLOWANCE CAMPAIGN LIVE"
   ],
-  "showPillars": true,
+  "showPillars": false,
   "heroKicker": "Maldives Health Professionals Union",
   "whyJoinSub": "",
   "whyJoin": [
@@ -51,7 +51,7 @@
     }
   ],
   "heroSubtext": "MHPU fights for fair pay, safe staffing and real protection for every nurse, doctor, midwife and health worker in the Maldives — from Male' to the furthest atoll.",
-  "showWhyJoin": false,
+  "showWhyJoin": true,
   "pillarsSub": "",
   "heroHeadlinePlain": "Health workers united. ",
   "slogan": "Decent work, quality care"
