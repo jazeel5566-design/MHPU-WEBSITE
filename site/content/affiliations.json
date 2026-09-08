@@ -5,12 +5,6 @@
       "url": "https://publicservices.international",
       "logo": "",
       "hidden": false
-    },
-    {
-      "name": "International Council of Nurses (ICN)",
-      "url": "https://www.icn.ch",
-      "logo": "",
-      "hidden": true
     }
   ],
   "showAffiliations": true
