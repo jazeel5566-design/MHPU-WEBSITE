@@ -6,6 +6,13 @@
       "text": "1,240 members have already added their name. Join them today.",
       "date": "",
       "hidden": false
+    },
+    {
+      "date": "{{now}}",
+      "hidden": false,
+      "tag": "Sign up",
+      "headline": "Petition to test the website",
+      "text": "no discription"
     }
   ]
 }
