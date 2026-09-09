@@ -74,6 +74,11 @@
       "hidden": false
     },
     {
+      "hidden": false,
+      "year": "2021",
+      "text": "Overtime Pay Protection — A Major Win — When changes to overtime pay regulations introduced during the COVID-19 pandemic threatened to leave healthcare and other essential workers working beyond their hours without pay, MHPU immediately mobilised to protect workers’ wages. Direct action by MHPU members led to the reversal of the policy within 24 hours, protecting overtime pay for workers across the civil service."
+    },
+    {
       "year": "20th September 2020",
       "text": "Black Ribbon Campaign — Launched a nationwide campaign advocating for the establishment of structured job classifications and a fair State Pay Framework for healthcare workers.",
       "hidden": false
@@ -87,11 +92,6 @@
       "year": "10th September 2019",
       "text": "Founded by a small group of laboratory technologists with a vision to unite healthcare workers and advance their rights, welfare, and professional interests.",
       "hidden": false
-    },
-    {
-      "hidden": false,
-      "year": "2021",
-      "text": "OT reversal "
     }
   ],
   "showGuides": true,
