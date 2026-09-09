@@ -1,7 +1,7 @@
 {
   "heroHeadlineRed": "Quality Care",
   "showLatestUpdates": true,
-  "showTicker": false,
+  "showTicker": true,
   "pillars": [
     {
       "title": "Represent",
@@ -24,12 +24,7 @@
       "hidden": true
     }
   ],
-  "ticker": [
-    "-",
-    "-",
-    "-",
-    "-"
-  ],
+  "ticker": [],
   "showPillars": false,
   "heroKicker": "Maldives Health Professionals Union",
   "whyJoinSub": "",
