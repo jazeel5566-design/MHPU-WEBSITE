@@ -9,13 +9,28 @@
   "showMission": true,
   "history": [
     {
-      "year": "10th September 2019",
-      "text": "Founded by a small group of laboratory technologists with a vision to unite healthcare workers and advance their rights, welfare, and professional interests.",
-      "hidden": false
+      "hidden": false,
+      "year": "02nd January 2024",
+      "text": "Industrial Relations & OSH Acts — Legislative Milestone — The Industrial Relations and Occupational Safety & Health Bills were ratified by the President, becoming Acts and strengthening the legal framework for workers’ rights and workplace safety."
     },
     {
-      "year": "20th September 2020",
-      "text": "Black Ribbon Campaign — Launched a nationwide campaign advocating for the establishment of structured job classifications and a fair State Pay Framework for healthcare workers.",
+      "hidden": false,
+      "text": "IR & OSH Bills — A Collective Advocacy Win — Following sustained advocacy by MHPU and other Maldivian unions since 2019, Parliament passed the Industrial Relations and Occupational Safety & Health Bills, strengthening the legal framework for workers’ rights and workplace safety.",
+      "year": "18th December 2023"
+    },
+    {
+      "hidden": false,
+      "year": "17 September 2023",
+      "text": "A worker with an undergraduate degree holds an equivalent position— A Major Win — Following MHPU’s pressure  the President’s Office directed the Civil Service Commission to place undergraduate degree holders in their designated positions(PS7) under the new Pay Framework, benefiting qualified civil servants across the public service, including healthcare workers."
+    },
+    {
+      "hidden": false,
+      "year": "01st May 2023",
+      "text": "Healthcare Job Structure Campaign — Secured the implementation of job structures for technical healthcare workers, marking a major milestone in MHPU’s campaign, while advocacy for support staff continued.\n\nOvertime Campaign — Launched a campaign against the 10% overtime cap introduced under the new Pay Framework, advocating for fair compensation for healthcare workers required to work beyond the cap due to staffing shortages."
+    },
+    {
+      "year": "08th May 2022",
+      "text": "Thaareeheh Hoadhan & Support Staff Matter Campaigns — Launched weekly online picketing campaigns to intensify the job structure campaign and advocate for the inclusion of healthcare support staff in the new job structures.",
       "hidden": false
     },
     {
@@ -24,14 +39,14 @@
       "hidden": false
     },
     {
-      "year": "08th May 2022",
-      "text": "Thaareeheh Hoadhan & Support Staff Matter Campaigns — Launched weekly online picketing campaigns to intensify the job structure campaign and advocate for the inclusion of healthcare support staff in the new job structures.",
+      "year": "20th September 2020",
+      "text": "Black Ribbon Campaign — Launched a nationwide campaign advocating for the establishment of structured job classifications and a fair State Pay Framework for healthcare workers.",
       "hidden": false
     },
     {
-      "hidden": false,
-      "year": "01st May 2023",
-      "text": "Healthcare Job Structure Campaign — Secured the implementation of job structures for technical healthcare workers, marking a major milestone in MHPU’s campaign, while advocacy for support staff continued.\n\nOvertime Campaign — Launched a campaign against the 10% overtime cap introduced under the new Pay Framework, advocating for fair compensation for healthcare workers required to work beyond the cap due to staffing shortages."
+      "year": "10th September 2019",
+      "text": "Founded by a small group of laboratory technologists with a vision to unite healthcare workers and advance their rights, welfare, and professional interests.",
+      "hidden": false
     },
     {
       "hidden": false,
@@ -67,20 +82,6 @@
       "hidden": false,
       "year": "27th October 2024",
       "text": "Occupational Safety & Health Advocacy Campaign — Launched a workplace-focused campaign to promote safer and healthier working environments and strengthen awareness of occupational safety and health rights."
-    },
-    {
-      "hidden": false,
-      "text": "IR & OSH Bills — A Collective Advocacy Win — Following sustained advocacy by MHPU and other Maldivian unions since 2019, Parliament passed the Industrial Relations and Occupational Safety & Health Bills, strengthening the legal framework for workers’ rights and workplace safety.",
-      "year": "18th December 2023"
-    },
-    {
-      "hidden": false,
-      "year": "02nd January 2024",
-      "text": "Industrial Relations & OSH Acts — Legislative Milestone — The Industrial Relations and Occupational Safety & Health Bills were ratified by the President, becoming Acts and strengthening the legal framework for workers’ rights and workplace safety."
-    },
-    {
-      "hidden": false,
-      "year": "17 September 2023"
     }
   ],
   "showGuides": true,
