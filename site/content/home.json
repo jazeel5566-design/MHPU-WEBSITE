@@ -6,22 +6,22 @@
     {
       "title": "Represent",
       "text": "Free representation in every disciplinary, grievance or dispute case.",
-      "hidden": true
+      "hidden": false
     },
     {
       "title": "Negotiate",
       "text": "Direct bargaining with health authorities on pay and conditions.",
-      "hidden": true
+      "hidden": false
     },
     {
       "title": "Protect",
       "text": "Pushing for enforceable safe-staffing and safety standards.",
-      "hidden": true
+      "hidden": false
     },
     {
       "title": "Develop",
       "text": "CPD access, scholarships and career pathways for members.",
-      "hidden": true
+      "hidden": false
     }
   ],
   "ticker": [],
@@ -48,6 +48,6 @@
   "heroSubtext": "Maldives Health Professionals Union is the labour federation representing and advocating for the rights, welfare, and professional interests of both local and expatriate healthcare workers, including professional and support cadres, working across the Maldives.",
   "showWhyJoin": true,
   "pillarsSub": "",
-  "heroHeadlinePlain": "Decent Work - ",
+  "heroHeadlinePlain": "Decent Work",
   "slogan": ""
 }
