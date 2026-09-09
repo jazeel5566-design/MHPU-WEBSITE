@@ -1,12 +1,13 @@
 {
   "home": [
-    "assets/uploads/mhpu_featured.jpg"
+    "assets/uploads/mhpu_featured.jpg",
+    "assets/uploads/images.jpeg"
   ],
   "about": "assets/uploads/mhpu_featured.jpg",
-  "membership": "assets/uploads/_adh3167-1623505483045_qwuwj4.jpg",
-  "rights": "assets/uploads/file_esikqy.jpg",
-  "news": "assets/uploads/7b56230d-88db-417e-8489-ce1dbf6192e9.webp",
-  "resources": "assets/uploads/whatsapp-image-2026-09-04-at-15.49.54.jpeg",
+  "membership": "",
+  "rights": "",
+  "news": "",
+  "resources": "",
   "contact": "assets/uploads/images.jpeg",
-  "newsroom": "assets/uploads/_adh3167-1623505483045_qwuwj4.jpg"
+  "newsroom": ""
 }
