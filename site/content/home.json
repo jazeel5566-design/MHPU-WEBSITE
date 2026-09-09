@@ -1,7 +1,7 @@
 {
   "heroHeadlineRed": "Quality Care",
   "showLatestUpdates": true,
-  "showTicker": true,
+  "showTicker": false,
   "pillars": [
     {
       "title": "Represent",
