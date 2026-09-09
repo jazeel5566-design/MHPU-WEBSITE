@@ -205,6 +205,9 @@ collections:
               - { label: "Tag", name: "tag", widget: "string", required: false, hint: "e.g. 'Take action' or 'Active campaign'" }
               - { label: "Headline", name: "headline", widget: "string", required: false }
               - { label: "Description", name: "text", widget: "text", required: false }
+              - { label: "Petition ID (used behind the scenes to tell signatures apart — lowercase, no spaces, e.g. safe-staffing-2026)", name: "slug", widget: "string", required: false }
+              - { label: "Signature count (a real number you've checked — not automatic)", name: "signatureCount", widget: "number", required: false, value_type: "int" }
+              - { label: "Count as of (auto-fills to today — update whenever you refresh the count above)", name: "countAsOfDate", widget: "date", format: "YYYY-MM-DD", default: "{{now}}", required: false }
               - { label: "Published date (auto-fills to today when created — newest shows first)", name: "date", widget: "date", format: "YYYY-MM-DD", default: "{{now}}", required: false }
               - { label: "Hidden (tick to hide this campaign)", name: "hidden", widget: "boolean", default: false }
 
