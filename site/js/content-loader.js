@@ -123,13 +123,85 @@
         campaignSection.style.display = '';
         var listWrap = campaignSection.querySelector('[data-cms-list="campaigns"]');
         if (listWrap) {
-          listWrap.innerHTML = campaigns.map(function (c) {
-            return '<div class="card" style="border-color:var(--red);border-width:2px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;">' +
+          listWrap.innerHTML = campaigns.map(function (c, i) {
+            // The count is a real number someone checked and typed in —
+            // shown as a dated snapshot rather than implying a live,
+            // automatically-updating tally (which this site can't
+            // reliably do, and a fake "live" number would be worse than
+            // an honest periodic one).
+            var countLine = (c.signatureCount !== undefined && c.signatureCount !== null && c.signatureCount !== '')
+              ? '<p style="font-family:\'Source Sans 3\',sans-serif;font-size:13px;color:var(--muted);margin-top:8px;font-weight:600;">' + esc(c.signatureCount) + ' people have signed' + (c.countAsOfDate ? ' as of ' + esc(formatDate(c.countAsOfDate)) : '') + '.</p>'
+              : '';
+            var petitionKey = c.slug || c.headline || ('petition-' + i);
+            return '<div class="card" style="border-color:var(--red);border-width:2px;">' +
+              '<div style="display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;">' +
               '<div><span style="background:var(--red);color:white;font-size:11px;font-weight:700;padding:4px 10px;font-family:\'Source Sans 3\',sans-serif;letter-spacing:.04em;">' + esc(c.tag) + '</span>' +
               '<h3 style="font-size:24px;margin-top:14px;">' + esc(c.headline) + '</h3>' +
-              '<p>' + esc(c.text) + '</p></div>' +
-              '<a href="#" class="btn btn-red">Add your name</a></div>';
+              '<p>' + esc(c.text) + '</p>' + countLine + '</div>' +
+              '<button type="button" class="btn btn-red petition-toggle-btn" data-index="' + i + '">Add your name</button>' +
+              '</div>' +
+              '<div class="petition-form-wrap" id="petition-form-wrap-' + i + '" style="display:none;margin-top:20px;border-top:1px solid var(--line);padding-top:20px;">' +
+              '<div class="form-alert" id="petition-alert-' + i + '" role="status" aria-live="polite"></div>' +
+              '<form class="petition-sign-form" data-petition-key="' + esc(petitionKey) + '" data-index="' + i + '" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;margin-top:10px;">' +
+              '<div class="field" style="flex:1;min-width:180px;margin-bottom:0;"><label style="position:absolute;left:-9999px;">Full name</label><input type="text" name="sig-name" required placeholder="Your full name"></div>' +
+              '<div class="field" style="flex:1;min-width:180px;margin-bottom:0;"><label style="position:absolute;left:-9999px;">Email</label><input type="email" name="sig-email" required placeholder="Your email address"></div>' +
+              '<button type="submit" class="btn btn-red btn-sm">Sign</button>' +
+              '</form></div></div>';
           }).join('');
+
+          // Toggle buttons — reveal the sign form for that specific card.
+          listWrap.querySelectorAll('.petition-toggle-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+              var idx = btn.getAttribute('data-index');
+              var wrap = document.getElementById('petition-form-wrap-' + idx);
+              if (wrap) wrap.style.display = (wrap.style.display === 'none') ? 'block' : 'none';
+            });
+          });
+
+          // Submit handlers — same shared Apps Script backend as the
+          // membership and contact forms, routed via form-type.
+          var PETITION_APPSCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCsmvzFfNQwkmO-c05AXBgr96DHXB01W_r1o5zpRbPrNlCJ1BOhKsUcENEbmjWT35X/exec";
+          listWrap.querySelectorAll('.petition-sign-form').forEach(function (form) {
+            form.addEventListener('submit', function (e) {
+              e.preventDefault();
+              var idx = form.getAttribute('data-index');
+              var petitionKey = form.getAttribute('data-petition-key');
+              var nameInput = form.querySelector('[name="sig-name"]');
+              var emailInput = form.querySelector('[name="sig-email"]');
+              var alertBox = document.getElementById('petition-alert-' + idx);
+              var submitBtn = form.querySelector('[type="submit"]');
+
+              var nameOk = nameInput.value.trim() !== '';
+              var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value.trim());
+              if (!nameOk || !emailOk) {
+                if (alertBox) { alertBox.textContent = 'Please enter your full name and a valid email address.'; alertBox.className = 'form-alert error show'; }
+                return;
+              }
+
+              submitBtn.disabled = true;
+              var body = 'form-type=petition&petition=' + encodeURIComponent(petitionKey) +
+                '&name=' + encodeURIComponent(nameInput.value.trim()) +
+                '&email=' + encodeURIComponent(emailInput.value.trim());
+
+              function showSigned() {
+                form.style.display = 'none';
+                if (alertBox) {
+                  alertBox.textContent = "Thank you — your signature has been added.";
+                  alertBox.className = 'form-alert success show';
+                }
+              }
+
+              // mode: 'no-cors' — see membership.html for why this is used
+              // and why both outcomes below show success (the browser
+              // can't reliably read the response either way).
+              fetch(PETITION_APPSCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body
+              }).then(showSigned).catch(showSigned);
+            });
+          });
         }
       }
     }
