@@ -1,37 +1,85 @@
 {
-  "heroKicker": "Who we are",
-  "heroHeadline": "Built by health workers, for health workers.",
-  "heroLede": "MHPU has represented nursing, medical, midwifery and allied health staff across the Maldives for over three decades — independent, member-led, and accountable to the people who do the work.",
-  "missionPara1": "MHPU exists to make sure no health professional in the Maldives faces an unsafe workplace, an unfair dispute, or a stalled career alone. We represent members in individual cases, bargain collectively on pay and conditions, and campaign publicly for safer, better-resourced health services — from Male' hospitals to the smallest island health centre.",
-  "missionPara2": "We are independent of any single employer or political party, funded by member subscriptions, and governed by an elected council of working health professionals.",
-  "guides": [
-    "Independence — no employer or political control over union decisions.",
-    "Solidarity — every member has equal standing, regardless of role or island.",
-    "Accountability — leadership is elected and answers directly to members."
-  ],
-  "history": [
-    {
-      "year": "1993",
-      "text": "Founded by a small group of nurses and doctors in Male' seeking a collective voice on pay and safety."
-    },
-    {
-      "year": "2008",
-      "text": "First national collective agreement covering public hospital nursing staff."
-    },
-    {
-      "year": "2016",
-      "text": "Regional representative network extended to cover all inhabited atolls."
-    },
-    {
-      "year": "2026",
-      "text": "Over 4,200 members and an active regional office in Addu City."
-    }
-  ],
   "generalMembersNote": "Committee roles (registered nurse, physician, workplace, etc.) to be added once confirmed. Elections are held every three years, open to all active members.",
   "ctaHeadline": "Want to get involved?",
-  "ctaText": "Members can stand for regional representative roles, join a bargaining committee, or help organise in their workplace.",
+  "missionPara1": "To ensure healthy and safe work environment, and enable professional development and career enhancement for healthcare worker.",
+  "missionPara2": "",
+  "historySub": "Three decades of representation",
+  "heroKicker": "Who we are",
+  "heroHeadline": "Built by healthcare workers, for healthcare workers.",
   "showMission": true,
+  "history": [
+    {
+      "year": "10th September 2019",
+      "text": "Founded by a small group of laboratory technologists with a vision to unite healthcare workers and advance their rights, welfare, and professional interests.",
+      "hidden": false
+    },
+    {
+      "year": "20th September 2020",
+      "text": "Black Ribbon Campaign — Launched a nationwide campaign advocating for the establishment of structured job classifications and a fair State Pay Framework for healthcare workers.",
+      "hidden": false
+    },
+    {
+      "year": "01st December 2021",
+      "text": "MHPU affiliated with Public Services International (PSI), the global union federation representing workers in public services.",
+      "hidden": false
+    },
+    {
+      "year": "08th May 2022",
+      "text": "Thaareeheh Hoadhan & Support Staff Matter Campaigns — Launched weekly online picketing campaigns to intensify the job structure campaign and advocate for the inclusion of healthcare support staff in the new job structures.",
+      "hidden": false
+    },
+    {
+      "hidden": false,
+      "year": "01st May 2023",
+      "text": "Healthcare Job Structure Campaign — Secured the implementation of job structures for technical healthcare workers, marking a major milestone in MHPU’s campaign, while advocacy for support staff continued.\n\nOvertime Campaign — Launched a campaign against the 10% overtime cap introduced under the new Pay Framework, advocating for fair compensation for healthcare workers required to work beyond the cap due to staffing shortages."
+    },
+    {
+      "hidden": false,
+      "year": "1st May 2024",
+      "text": "Launch of “Heyriyaa” — Launched MHPU’s union advocacy television programme Heyriyaa in collaboration with NTV, providing a platform to advocate for workers’ rights and discuss wider issues affecting workers, their families, and society, including social justice, public accountability, occupational safety, healthcare, resource management, and good governance."
+    },
+    {
+      "hidden": false,
+      "year": "15th January 2025",
+      "text": "Maternity Policy Reform Campaign — Launched a campaign to reform the existing maternity policy by addressing gaps in provisions for fostering and adoption, fertility and related medical treatments, pregnancy and infant loss, workplace childcare facilities, and other family-friendly workplace measures."
+    },
+    {
+      "hidden": false,
+      "year": "03rd March 2025",
+      "text": "Overtime Campaign Escalation — Escalated the overtime campaign to daily online picketing, intensifying calls for fair compensation for healthcare workers working beyond the prescribed overtime limit."
+    },
+    {
+      "hidden": false,
+      "text": "Overtime Campaign — A Major Win — Following MHPU’s campaign, the Public Sector Pay Framework Standards were amended to ensure work on public holidays is paid as overtime without counting toward the overtime cap.",
+      "year": "20th March 2025"
+    },
+    {
+      "hidden": false,
+      "year": "06th August 2025",
+      "text": "MHPU registered as a trade federation under the Industrial Relations Act"
+    },
+    {
+      "hidden": false,
+      "year": "01st November 2025",
+      "text": "Public Sector Pay Framework — A Major Win — MHPU’s advocacy contributed to the extension of the Pay Framework to local workers across the public sector, including healthcare support staff and other public service workers."
+    },
+    {
+      "hidden": false
+    },
+    {
+      "hidden": false
+    },
+    {
+      "hidden": false
+    }
+  ],
   "showGuides": true,
+  "heroLede": "Maldives Health Professionals Union is the labour federation representing and advocating for the rights, welfare, and professional interests of both local and expatriate healthcare workers, including professional and support cadres, working across the Maldives.",
+  "guides": [
+    "Independence — Maintaining independent union decision-making, free from employer or political influence.",
+    "Solidarity — Standing together to protect the rights, dignity, and welfare of all healthcare workers, with every member treated equally regardless of role, profession, nationality, or island.",
+    "Accountability — Ensuring union leadership is elected by the members and remains transparent, responsible, and accountable to them."
+  ],
   "showHistory": true,
-  "historySub": "Three decades of representation"
+  "ctaText": "Members can stand for regional representative roles, join a bargaining committee, or help organise in their workplace."
 }
