@@ -24,13 +24,8 @@
       "hidden": true
     }
   ],
-  "ticker": [
-    "-",
-    "-",
-    "-",
-    "-"
-  ],
-  "showPillars": false,
+  "ticker": [],
+  "showPillars": true,
   "heroKicker": "Maldives Health Professionals Union",
   "whyJoinSub": "",
   "whyJoin": [
