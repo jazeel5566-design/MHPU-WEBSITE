@@ -4,23 +4,23 @@
   "showTicker": true,
   "pillars": [
     {
-      "title": "Represent",
-      "text": "Free representation in every disciplinary, grievance or dispute case.",
+      "title": "Decent Work and Fair Pay",
+      "text": "Fair wages, safe conditions, reasonable workloads, and dignified employment for every healthcare worker.",
       "hidden": false
     },
     {
-      "title": "Negotiate",
-      "text": "Direct bargaining with health authorities on pay and conditions.",
+      "title": "Rights & Protection",
+      "text": "Defending healthcare workers from discrimination, harassment, intimidation, and unfair treatment.",
       "hidden": false
     },
     {
-      "title": "Protect",
-      "text": "Pushing for enforceable safe-staffing and safety standards.",
+      "title": "Quality Care & Safety",
+      "text": "Fighting for the staffing, resources, and standards needed for safe, quality healthcare.",
       "hidden": false
     },
     {
-      "title": "Develop",
-      "text": "CPD access, scholarships and career pathways for members.",
+      "title": "Voice, Recognition & Growth",
+      "text": "Ensuring healthcare workers are heard in policies and decisions that affect their work, while promoting professional recognition, career progression, development, and equal opportunity.",
       "hidden": false
     }
   ],
