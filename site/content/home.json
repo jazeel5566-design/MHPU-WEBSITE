@@ -6,22 +6,22 @@
     {
       "title": "Represent",
       "text": "Free representation in every disciplinary, grievance or dispute case.",
-      "hidden": true
+      "hidden": false
     },
     {
       "title": "Negotiate",
       "text": "Direct bargaining with health authorities on pay and conditions.",
-      "hidden": true
+      "hidden": false
     },
     {
       "title": "Protect",
       "text": "Pushing for enforceable safe-staffing and safety standards.",
-      "hidden": true
+      "hidden": false
     },
     {
       "title": "Develop",
       "text": "CPD access, scholarships and career pathways for members.",
-      "hidden": true
+      "hidden": false
     }
   ],
   "ticker": [],
