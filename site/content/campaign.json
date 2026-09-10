@@ -9,7 +9,7 @@
     },
     {
       "date": "{{now}}",
-      "hidden": false,
+      "hidden": true,
       "tag": "Sign up",
       "headline": "Petition to test the website",
       "text": "no discription"
