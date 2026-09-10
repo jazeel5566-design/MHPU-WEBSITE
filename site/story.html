@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Photo Story — MHPU</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="assets/favicon-32.png">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #000; height: 100%; overflow: hidden; }
+  body { font-family: 'Source Sans 3', sans-serif; }
+
+  #viewer { position: relative; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; }
+
+  #slide-img { max-width: 92vw; max-height: 100vh; object-fit: contain; display: block; user-select: none; -webkit-user-select: none; }
+
+  .top-bar { position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: flex-start; padding: 20px 24px; background: linear-gradient(to bottom, rgba(0,0,0,.65), rgba(0,0,0,0)); z-index: 5; pointer-events: none; }
+  .top-bar > * { pointer-events: auto; }
+  .story-tag { background: #B91C24; color: white; font-size: 11px; font-weight: 700; padding: 4px 10px; letter-spacing: .04em; text-transform: uppercase; }
+  .story-title { color: white; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px; margin-top: 8px; max-width: 70vw; }
+  #close-link { color: white; text-decoration: none; font-size: 28px; line-height: 1; opacity: .85; }
+  #close-link:hover { opacity: 1; }
+
+  .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,.4); border: none; color: white; width: 52px; height: 52px; border-radius: 50%; font-size: 22px; cursor: pointer; z-index: 5; display: flex; align-items: center; justify-content: center; }
+  .nav-btn:hover { background: rgba(0,0,0,.65); }
+  #prev-btn { left: 18px; }
+  #next-btn { right: 18px; }
+
+  #counter { position: absolute; bottom: 22px; left: 0; right: 0; text-align: center; color: rgba(255,255,255,.85); font-size: 13px; z-index: 5; }
+
+  #empty-state { color: white; text-align: center; padding: 40px; font-family: 'Source Sans 3', sans-serif; }
+  #empty-state a { color: #7FC7E0; }
+
+  @media (max-width: 640px) {
+    .nav-btn { width: 42px; height: 42px; font-size: 18px; }
+    .story-title { font-size: 15px; max-width: 60vw; }
+  }
+</style>
+</head>
+<body>
+
+<div id="viewer">
+  <img id="slide-img" src="" alt="" style="display:none;">
+  <div id="empty-state" style="display:none;">
+    <p>This story couldn't be found, or has no photos yet.</p>
+    <p style="margin-top:14px;"><a href="index.html">Back to MHPU homepage</a></p>
+  </div>
+
+  <div class="top-bar">
+    <div>
+      <span class="story-tag" id="tag-label"></span>
+      <div class="story-title" id="title-label"></div>
+    </div>
+    <a href="index.html" id="close-link" aria-label="Close">&times;</a>
+  </div>
+
+  <button type="button" class="nav-btn" id="prev-btn" aria-label="Previous photo">&#8249;</button>
+  <button type="button" class="nav-btn" id="next-btn" aria-label="Next photo">&#8250;</button>
+  <div id="counter"></div>
+</div>
+
+<script>
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  var slug = params.get('slug');
+  var images = [];
+  var current = 0;
+
+  var imgEl = document.getElementById('slide-img');
+  var emptyEl = document.getElementById('empty-state');
+  var counterEl = document.getElementById('counter');
+  var prevBtn = document.getElementById('prev-btn');
+  var nextBtn = document.getElementById('next-btn');
+  var tagLabel = document.getElementById('tag-label');
+  var titleLabel = document.getElementById('title-label');
+
+  function showEmpty() {
+    imgEl.style.display = 'none';
+    prevBtn.style.display = 'none';
+    nextBtn.style.display = 'none';
+    counterEl.style.display = 'none';
+    emptyEl.style.display = 'block';
+  }
+
+  function render() {
+    if (!images.length) { showEmpty(); return; }
+    imgEl.src = images[current];
+    imgEl.style.display = 'block';
+    counterEl.textContent = (current + 1) + ' / ' + images.length;
+    prevBtn.style.display = images.length > 1 ? 'flex' : 'none';
+    nextBtn.style.display = images.length > 1 ? 'flex' : 'none';
+  }
+
+  function goPrev() { current = (current - 1 + images.length) % images.length; render(); }
+  function goNext() { current = (current + 1) % images.length; render(); }
+
+  prevBtn.addEventListener('click', goPrev);
+  nextBtn.addEventListener('click', goNext);
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft') goPrev();
+    if (e.key === 'ArrowRight') goNext();
+  });
+
+  // Basic swipe support for mobile.
+  var touchStartX = null;
+  document.getElementById('viewer').addEventListener('touchstart', function (e) {
+    touchStartX = e.touches[0].clientX;
+  });
+  document.getElementById('viewer').addEventListener('touchend', function (e) {
+    if (touchStartX === null) return;
+    var dx = e.changedTouches[0].clientX - touchStartX;
+    if (dx > 50) goPrev();
+    else if (dx < -50) goNext();
+    touchStartX = null;
+  });
+
+  if (!slug) { showEmpty(); return; }
+
+  fetch('content/photo-stories.json', { cache: 'no-store' })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      var story = (data.stories || []).find(function (s) { return s.slug === slug && s.hidden !== true; });
+      if (!story) { showEmpty(); return; }
+
+      images = (story.images || []).filter(function (i) { return !!i; });
+      if (!images.length) { showEmpty(); return; }
+
+      document.title = (story.title || 'Photo Story') + ' — MHPU';
+      tagLabel.textContent = story.tag || '';
+      tagLabel.style.display = story.tag ? 'inline-block' : 'none';
+      titleLabel.textContent = story.title || '';
+
+      render();
+    })
+    .catch(showEmpty);
+})();
+</script>
+</body>
+</html>
