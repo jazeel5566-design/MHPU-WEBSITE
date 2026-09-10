@@ -297,6 +297,7 @@ footer.site-footer a:hover{color:white;}
 
 /* ---------- Utility ---------- */
 .split{display:grid;grid-template-columns:1fr 1fr;gap:60px;}
+.stacked-rows{display:flex;flex-direction:column;gap:48px;}
 .center-head{text-align:center;max-width:640px;margin:0 auto 48px;}
 .center-head p{font-family:'Source Sans 3',sans-serif;text-transform:none;color:var(--muted);font-size:15px;margin-top:14px;}
 
@@ -315,6 +316,7 @@ footer.site-footer a:hover{color:white;}
   .team-grid{grid-template-columns:repeat(2,1fr);}
   .resource-grid{grid-template-columns:repeat(2,1fr);}
   .split{grid-template-columns:1fr;gap:36px;}
+  .stacked-rows{gap:36px;}
   footer.site-footer .wrap{grid-template-columns:1fr 1fr;}
 }
 @media (max-width:760px){
