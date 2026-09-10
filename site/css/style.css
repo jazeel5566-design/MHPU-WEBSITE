@@ -184,6 +184,15 @@ section{padding:80px 0;}
 .affiliation-item a:hover{color:var(--red);text-decoration:underline;}
 .affiliation-item p{font-family:'Source Sans 3',sans-serif;text-transform:none;color:var(--muted);font-size:14px;line-height:1.6;margin-top:8px;max-width:440px;}
 
+/* Photo stories — homepage thumbnails */
+.story-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.story-card{position:relative;display:block;aspect-ratio:4/5;overflow:hidden;background:var(--ink);text-decoration:none;}
+.story-card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s ease;}
+.story-card:hover img{transform:scale(1.05);}
+.story-card .story-tag{position:absolute;top:14px;left:14px;background:var(--red);color:white;font-size:11px;font-weight:700;padding:4px 10px;font-family:'Source Sans 3',sans-serif;letter-spacing:.04em;text-transform:uppercase;z-index:2;}
+.story-card .story-title{position:absolute;bottom:0;left:0;right:0;padding:36px 16px 14px;background:linear-gradient(to top, rgba(0,0,0,.75), rgba(0,0,0,0));color:white;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;line-height:1.25;z-index:2;}
+@media (max-width:900px){.story-grid{grid-template-columns:1fr;}}
+
 /* ---------- News list ---------- */
 .news-row{display:flex;justify-content:space-between;align-items:center;padding:22px 24px;border-bottom:1px solid var(--line);gap:20px;flex-wrap:wrap;}
 .news-row:last-child{border-bottom:none;}
