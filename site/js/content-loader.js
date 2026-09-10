@@ -144,7 +144,7 @@
               '<div class="form-alert" id="petition-alert-' + i + '" role="status" aria-live="polite"></div>' +
               '<form class="petition-sign-form" data-petition-key="' + esc(petitionKey) + '" data-index="' + i + '" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;margin-top:10px;">' +
               '<div class="field" style="flex:1;min-width:180px;margin-bottom:0;"><label style="position:absolute;left:-9999px;">Full name</label><input type="text" name="sig-name" required placeholder="Your full name"></div>' +
-              '<div class="field" style="flex:1;min-width:180px;margin-bottom:0;"><label style="position:absolute;left:-9999px;">Email</label><input type="email" name="sig-email" required placeholder="Your email address"></div>' +
+              '<div class="field" style="flex:1;min-width:180px;margin-bottom:0;"><label style="position:absolute;left:-9999px;">Phone number</label><input type="tel" name="sig-phone" required placeholder="Your phone number"></div>' +
               '<button type="submit" class="btn btn-red btn-sm">Sign</button>' +
               '</form></div></div>';
           }).join('');
@@ -167,21 +167,25 @@
               var idx = form.getAttribute('data-index');
               var petitionKey = form.getAttribute('data-petition-key');
               var nameInput = form.querySelector('[name="sig-name"]');
-              var emailInput = form.querySelector('[name="sig-email"]');
+              var phoneInput = form.querySelector('[name="sig-phone"]');
               var alertBox = document.getElementById('petition-alert-' + idx);
               var submitBtn = form.querySelector('[type="submit"]');
 
+              // Phone formats vary a lot (with/without country code, spaces,
+              // dashes) — this just checks for at least 5 digits somewhere,
+              // rather than enforcing one rigid format that could reject
+              // valid numbers.
               var nameOk = nameInput.value.trim() !== '';
-              var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value.trim());
-              if (!nameOk || !emailOk) {
-                if (alertBox) { alertBox.textContent = 'Please enter your full name and a valid email address.'; alertBox.className = 'form-alert error show'; }
+              var phoneOk = /\d{5,}/.test(phoneInput.value.replace(/[\s-]/g, ''));
+              if (!nameOk || !phoneOk) {
+                if (alertBox) { alertBox.textContent = 'Please enter your full name and a valid phone number.'; alertBox.className = 'form-alert error show'; }
                 return;
               }
 
               submitBtn.disabled = true;
               var body = 'form-type=petition&petition=' + encodeURIComponent(petitionKey) +
                 '&name=' + encodeURIComponent(nameInput.value.trim()) +
-                '&email=' + encodeURIComponent(emailInput.value.trim());
+                '&phone=' + encodeURIComponent(phoneInput.value.trim());
 
               function showSigned() {
                 form.style.display = 'none';
