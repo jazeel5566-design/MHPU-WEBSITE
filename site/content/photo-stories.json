@@ -14,6 +14,19 @@
       ],
       "date": "",
       "hidden": false
+    },
+    {
+      "date": "{{now}}",
+      "hidden": false,
+      "tag": "Campaign",
+      "slug": "Overtime-campaign",
+      "title": "Overtime campaign",
+      "thumbnail": "assets/uploads/469782880_18052767382956328_3479111468897241380_n.jpg",
+      "images": [
+        "assets/uploads/469881689_18052767370956328_2464119052130046204_n.jpg",
+        "assets/uploads/469590016_18052767376956328_5661973038412927736_n.jpg",
+        "assets/uploads/img-c274137935fcc5d8e99938fbb340032f-v-1-.jpg"
+      ]
     }
   ]
 }
