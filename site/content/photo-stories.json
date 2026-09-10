@@ -27,6 +27,19 @@
         "assets/uploads/469590016_18052767376956328_5661973038412927736_n.jpg",
         "assets/uploads/img-c274137935fcc5d8e99938fbb340032f-v-1-.jpg"
       ]
+    },
+    {
+      "date": "{{now}}",
+      "hidden": false,
+      "tag": "Campaign",
+      "title": "thareekheh hoadhan",
+      "slug": "thareekheh-hoadhan",
+      "thumbnail": "assets/uploads/2022-mhpu-1.jpeg",
+      "images": [
+        "assets/uploads/2022-mhpu.jpg",
+        "assets/uploads/2022-mhpu99.jpg",
+        "assets/uploads/2021-mayday-9090.jpg"
+      ]
     }
   ]
 }
