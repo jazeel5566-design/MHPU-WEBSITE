@@ -40,6 +40,21 @@
         "assets/uploads/2022-mhpu99.jpg",
         "assets/uploads/2021-mayday-9090.jpg"
       ]
+    },
+    {
+      "date": "{{now}}",
+      "hidden": false,
+      "tag": "MayDay Rally",
+      "title": "MayDay Rally 2023",
+      "slug": "MayDay-Rally-2023",
+      "thumbnail": "assets/uploads/469590016_18052767376956328_5661973038412927736_n.jpg",
+      "images": [
+        "assets/uploads/469590016_18052767376956328_5661973038412927736_n.jpg",
+        "assets/uploads/469782880_18052767382956328_3479111468897241380_n.jpg",
+        "assets/uploads/469801088_18052767400956328_1567898436707265181_n.jpg",
+        "assets/uploads/469805354_18052767205956328_722352723081115356_n.jpg",
+        "assets/uploads/469881689_18052767370956328_2464119052130046204_n.jpg"
+      ]
     }
   ]
 }
