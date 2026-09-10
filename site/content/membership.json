@@ -10,7 +10,7 @@
   "joiningFee": {
     "title": "Joining fee",
     "price": "MVR 100",
-    "period": "one-time",
+    "period": " one-time",
     "features": [
       "Paid once, at sign-up",
       "Covers registration and processing"
