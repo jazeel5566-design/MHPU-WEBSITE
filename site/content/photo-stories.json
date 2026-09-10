@@ -12,11 +12,11 @@
         "assets/uploads/2020-black-ribbon-112.jpg",
         "assets/uploads/469590016_18052767376956328_5661973038412927736_n.jpg"
       ],
-      "date": "",
+      "date": "2026-09-10",
       "hidden": false
     },
     {
-      "date": "{{now}}",
+      "date": "2026-09-10",
       "hidden": false,
       "tag": "Campaign",
       "slug": "Overtime-campaign",
@@ -29,7 +29,7 @@
       ]
     },
     {
-      "date": "{{now}}",
+      "date": "2026-09-10",
       "hidden": false,
       "tag": "Campaign",
       "title": "thareekheh hoadhan",
@@ -42,7 +42,7 @@
       ]
     },
     {
-      "date": "{{now}}",
+      "date": "2026-09-10",
       "hidden": false,
       "tag": "MayDay Rally",
       "title": "MayDay Rally 2023",
