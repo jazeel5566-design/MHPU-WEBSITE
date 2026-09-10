@@ -104,6 +104,31 @@ collections:
               - { label: "Logo (optional)", name: "logo", widget: "image", required: false, hint: "Recommended size: at least 200×80px, transparent PNG works best, under 200KB." }
               - { label: "Hidden (tick to hide this one)", name: "hidden", widget: "boolean", default: false }
 
+  # ---------- Photo Stories ----------
+  - name: "photo-stories"
+    label: "Photo Stories"
+    files:
+      - name: "photo-stories"
+        label: "Photo Stories Content"
+        file: "site/content/photo-stories.json"
+        fields:
+          - { label: "Show 'Photo stories' section on the homepage?", name: "showPhotoStories", widget: "boolean", default: true }
+          - label: "Stories"
+            name: "stories"
+            widget: "list"
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "Tag", name: "tag", widget: "string", required: false, hint: "e.g. Campaigns, Union, Bargaining" }
+              - { label: "Title", name: "title", widget: "string", required: false }
+              - { label: "Story ID (used in the link — lowercase, no spaces, e.g. safe-staffing-rally-male)", name: "slug", widget: "string", required: false }
+              - { label: "Thumbnail photo (shown on the homepage tile)", name: "thumbnail", widget: "image", required: false, hint: "Recommended size: at least 800×1000px, portrait orientation, JPG format, under 500KB." }
+              - label: "Photos in this story (shown as a full-screen slideshow)"
+                name: "images"
+                widget: "list"
+                field: { label: "Photo", name: "image", widget: "image" }
+              - { label: "Published date (auto-fills to today when created — newest shows first)", name: "date", widget: "date", format: "YYYY-MM-DD", default: "{{now}}", required: false }
+              - { label: "Hidden (tick to hide this story)", name: "hidden", widget: "boolean", default: false }
+
   # ---------- Leadership & committee ----------
   - name: "leadership"
     label: "Leadership & Committee"
