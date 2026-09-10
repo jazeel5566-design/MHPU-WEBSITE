@@ -212,7 +212,7 @@
   }
 
   /* ---------- Homepage ---------- */
-  function renderHome(home, affiliations) {
+  function renderHome(home, affiliations, photoStories) {
     setText('[data-cms="heroKicker"]', home.heroKicker);
 
     var headlineEl = document.querySelector('[data-cms="heroHeadline"]');
@@ -278,9 +278,23 @@
       }
     }
 
+    // Photo stories — the 3 most recent, newest first. Each thumbnail
+    // opens the full-screen slideshow viewer in a new tab.
+    var storiesSection = document.getElementById('photo-stories-section');
+    if (storiesSection) storiesSection.style.display = (photoStories && photoStories.showPhotoStories === false) ? 'none' : '';
+    if (photoStories && photoStories.stories) {
+      var storyWrap = document.querySelector('[data-cms-list="photoStories"]');
+      if (storyWrap) {
+        var topStories = sortByDateDesc(visibleOnly(photoStories.stories)).slice(0, 3);
+        storyWrap.innerHTML = topStories.map(function (s) {
+          var thumb = s.thumbnail ? '<img src="' + esc(s.thumbnail) + '" alt="">' : '';
+          return '<a class="story-card" href="story.html?slug=' + encodeURIComponent(s.slug || '') + '" target="_blank" rel="noopener">' + thumb + '<span class="story-tag">' + esc(s.tag) + '</span><span class="story-title">' + esc(s.title) + '</span></a>';
+        }).join('');
+      }
+    }
+
     var latestUpdatesSection = document.getElementById('latest-updates-section');
     if (latestUpdatesSection) latestUpdatesSection.style.display = (home.showLatestUpdates === false) ? 'none' : '';
-
     // Homepage "Latest updates" — pulls the most recent items across
     // everything (news, petitions, articles, statements, videos), not
     // just news posts, so this reflects whatever's actually newest
@@ -725,8 +739,8 @@
 
   function loadPageContent(page) {
     if (page === 'home') {
-      Promise.all([fetchJSON('content/home.json'), fetchJSON('content/affiliations.json')])
-        .then(function (results) { renderHome(results[0], results[1]); })
+      Promise.all([fetchJSON('content/home.json'), fetchJSON('content/affiliations.json'), fetchJSON('content/photo-stories.json')])
+        .then(function (results) { renderHome(results[0], results[1], results[2]); })
         .catch(function (err) { console.warn('Content load failed:', err); });
     } else if (page === 'news') {
       fetchJSON('content/news.json').then(renderNews).catch(function (err) { console.warn('Content load failed:', err); });
