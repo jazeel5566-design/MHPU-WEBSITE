@@ -2,9 +2,9 @@
   "home": true,
   "about": true,
   "membership": true,
-  "rights": true,
-  "news": true,
-  "resources": true,
+  "rights": false,
+  "news": false,
+  "resources": false,
   "contact": true,
-  "newsroom": true
+  "newsroom": false
 }
