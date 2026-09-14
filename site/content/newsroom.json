@@ -19,7 +19,7 @@
     }
   ],
   "showFeaturedArticles": false,
-  "showVideoMessages": false,
+  "showVideoMessages": true,
   "heroKicker": "Newsroom",
   "heroHeadline": "MHPU in the headlines.",
   "pressReleases": [
