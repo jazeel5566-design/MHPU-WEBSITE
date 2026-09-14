@@ -3,7 +3,7 @@
   "about": true,
   "membership": true,
   "rights": false,
-  "news": false,
+  "news": true,
   "resources": false,
   "contact": true,
   "newsroom": true
