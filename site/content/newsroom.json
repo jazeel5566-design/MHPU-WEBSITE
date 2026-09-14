@@ -7,12 +7,10 @@
   "heroHeadline": "MHPU in the headlines.",
   "pressReleases": [
     {
-      "title": "ޞިއްޙީ ޚިދުމަތްތެރިންނަށް މީސްމީޑިއާގައި ފުރައްސާރަ އާއި ގަނާކުރާ މިންވަރު އިތުރުވަމުންދާ މައްސަލައިގައި ކަންބޮޑުވުން ފާޅުކުރުން",
-      "date": "2026-07-01",
-      "summary": "",
-      "fileLabel": "Download statement (PDF)",
-      "file": "assets/uploads/statement-on-harrassment-of-hcws-on-social-media.pdf",
-      "hidden": false
+      "date": "2026-09-07",
+      "hidden": false,
+      "title": "UPDATE: EXPATRIATE HEALTHCARE PROFESSIONALS’ OCCUPATION CATEGORIZATION CORRECTED",
+      "file": "assets/uploads/statement-on-xpat-port-issue-resolved.pdf"
     },
     {
       "date": "2026-08-04",
@@ -20,6 +18,14 @@
       "title": "Tribunal Overturns Unlawful Disciplinary Action Against MHPU Member, Affirming Workers’ Right to Organize",
       "summary": "The Employment Tribunal has declared the disciplinary action taken against an MHPU member null and void, ruling that it violated the Employment Act.\nThe case involved a staff member who created a Viber group for colleagues to discuss workplace concerns and unionization efforts. The hospital took disciplinary action against the employee, claiming the activities were against institutional interests.\nThe Tribunal’s decision, issued on 30 July 2026, affirms that employees have the right to organize and raise collective concerns.\nWe thank the Public Interest Law Centre for providing pro bono legal representation and reaffirm MHPU’s commitment to protecting the rights of all members.\nMHPU remains steadfast in protecting the rights of its members and will continue to challenge any unlawful action taken against employees for exercising their lawful labour and union rights.",
       "file": "assets/uploads/statement-on-winning-the-tribunal-case.pdf"
+    },
+    {
+      "title": "MHPU Stands Against Social Media Harassment of Healthcare Workers",
+      "date": "2026-07-01",
+      "summary": "",
+      "fileLabel": "Download statement (PDF)",
+      "file": "assets/uploads/statement-on-harrassment-of-hcws-on-social-media.pdf",
+      "hidden": false
     }
   ],
   "pressReleasesSub": "Official statements from MHPU",
