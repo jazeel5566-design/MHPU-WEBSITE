@@ -12,7 +12,14 @@
       "hidden": false
     }
   ],
-  "posts": [],
+  "posts": [
+    {
+      "date": "2026-08-28",
+      "hidden": false,
+      "category": "Union",
+      "title": "MHPU Raises Concerns Over Healthcare Professionals Being Reclassified as Non-Professionals"
+    }
+  ],
   "showLatestNews": true,
   "latestNewsSub": "Filter by category"
 }
