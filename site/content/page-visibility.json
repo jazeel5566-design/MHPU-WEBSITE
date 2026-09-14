@@ -6,5 +6,5 @@
   "news": false,
   "resources": false,
   "contact": true,
-  "newsroom": false
+  "newsroom": true
 }
