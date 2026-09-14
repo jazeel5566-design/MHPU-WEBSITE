@@ -519,7 +519,7 @@
     function startAutoRotate() {
       if (autoTimer) clearInterval(autoTimer);
       if (urls.length > 1) {
-        autoTimer = setInterval(function () { setImage(i + 1); }, 30000);
+        autoTimer = setInterval(function () { setImage(i + 1); }, 5000);
       }
     }
 
