@@ -1,25 +1,16 @@
 {
   "showNewsAndUpdates": true,
-  "featuredStories": [],
-  "newsAndUpdates": [
+  "featuredStories": [
     {
       "date": "2026-08-28",
       "hidden": false,
-      "tag": "Update",
+      "url": "https://x.com/MaldivesHPU/status/2093332507802636691?s=20",
       "headline": "MHPU Raises Concerns Over Healthcare Professionals Being Reclassified as Non-Professionals",
-      "url": "https://x.com/MaldivesHPU/status/2093332507802636691?s=20"
-    },
-    {
-      "date": "2026-08-29",
-      "hidden": false,
-      "tag": "Update",
-      "body": "",
-      "headline": "MHPU submit official letters to Ministry of Health and Ministry of Homeland Regarding the Concerns Over Healthcare Professionals Being Reclassified as Non-Professionals",
-      "url": "https://x.com/MaldivesHPU/status/2093740230897811477?s=20"
+      "tag": "Update"
     }
   ],
   "videoMessages": [],
-  "showFeaturedArticles": true,
+  "showFeaturedArticles": false,
   "showVideoMessages": true,
   "heroKicker": "Newsroom",
   "heroHeadline": "MHPU in the headlines.",
@@ -28,14 +19,13 @@
       "date": "2026-09-07",
       "hidden": false,
       "title": "UPDATE: EXPATRIATE HEALTHCARE PROFESSIONALS’ OCCUPATION CATEGORIZATION CORRECTED",
-      "file": "assets/uploads/statement-on-xpat-port-issue-resolved.pdf",
-      "summary": "MHPU’s advocacy and campaign has led to the correction of the occupation categorization of affected expatriate healthcare workers in the Xpat Portal."
+      "file": "assets/uploads/statement-on-xpat-port-issue-resolved.pdf"
     },
     {
       "date": "2026-08-04",
       "hidden": false,
       "title": "Tribunal Overturns Unlawful Disciplinary Action Against MHPU Member, Affirming Workers’ Right to Organize",
-      "summary": "The Employment Tribunal has declared the disciplinary action taken against an MHPU member null and void, ruling that it violated the Employment Act.\n\nThe case involved a staff member who created a Viber group for colleagues to discuss workplace concerns and unionization efforts.",
+      "summary": "The Employment Tribunal has declared the disciplinary action taken against an MHPU member null and void, ruling that it violated the Employment Act.\nThe case involved a staff member who created a Viber group for colleagues to discuss workplace concerns and unionization efforts. The hospital took disciplinary action against the employee, claiming the activities were against institutional interests.\nThe Tribunal’s decision, issued on 30 July 2026, affirms that employees have the right to organize and raise collective concerns.\nWe thank the Public Interest Law Centre for providing pro bono legal representation and reaffirm MHPU’s commitment to protecting the rights of all members.\nMHPU remains steadfast in protecting the rights of its members and will continue to challenge any unlawful action taken against employees for exercising their lawful labour and union rights.",
       "file": "assets/uploads/statement-on-winning-the-tribunal-case.pdf"
     },
     {
