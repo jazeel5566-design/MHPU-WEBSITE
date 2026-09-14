@@ -97,119 +97,6 @@
     setText('[data-cms="footerDescription"]', site.footerDescription);
   }
 
-  /* ---------- Active campaigns (Homepage: first one; News page: all of them) ---------- */
-  function applyCampaignBanner(data) {
-    if (!data) return;
-    var campaigns = sortByDateDesc(visibleOnly(data.campaigns || []));
-
-    var actionCard = document.getElementById('action-card');
-    if (actionCard) {
-      var first = campaigns[0];
-      if (!first) {
-        actionCard.style.display = 'none';
-      } else {
-        actionCard.style.display = '';
-        setText('[data-cms="actionTag"]', first.tag);
-        setText('[data-cms="actionHeadline"]', first.headline);
-        setText('[data-cms="actionText"]', first.text);
-      }
-    }
-
-    var campaignSection = document.getElementById('campaign-banner-section');
-    if (campaignSection) {
-      if (campaigns.length === 0) {
-        campaignSection.style.display = 'none';
-      } else {
-        campaignSection.style.display = '';
-        var listWrap = campaignSection.querySelector('[data-cms-list="campaigns"]');
-        if (listWrap) {
-          listWrap.innerHTML = campaigns.map(function (c, i) {
-            // The count is a real number someone checked and typed in —
-            // shown as a dated snapshot rather than implying a live,
-            // automatically-updating tally (which this site can't
-            // reliably do, and a fake "live" number would be worse than
-            // an honest periodic one).
-            var countLine = (c.signatureCount !== undefined && c.signatureCount !== null && c.signatureCount !== '')
-              ? '<p style="font-family:\'Source Sans 3\',sans-serif;font-size:13px;color:var(--muted);margin-top:8px;font-weight:600;">' + esc(c.signatureCount) + ' people have signed' + (c.countAsOfDate ? ' as of ' + esc(formatDate(c.countAsOfDate)) : '') + '.</p>'
-              : '';
-            var petitionKey = c.slug || c.headline || ('petition-' + i);
-            return '<div class="card" style="border-color:var(--red);border-width:2px;">' +
-              '<div style="display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;">' +
-              '<div><span style="background:var(--red);color:white;font-size:11px;font-weight:700;padding:4px 10px;font-family:\'Source Sans 3\',sans-serif;letter-spacing:.04em;">' + esc(c.tag) + '</span>' +
-              '<h3 style="font-size:24px;margin-top:14px;">' + esc(c.headline) + '</h3>' +
-              '<p>' + esc(c.text) + '</p>' + countLine + '</div>' +
-              '<button type="button" class="btn btn-red petition-toggle-btn" data-index="' + i + '">Add your name</button>' +
-              '</div>' +
-              '<div class="petition-form-wrap" id="petition-form-wrap-' + i + '" style="display:none;margin-top:20px;border-top:1px solid var(--line);padding-top:20px;">' +
-              '<div class="form-alert" id="petition-alert-' + i + '" role="status" aria-live="polite"></div>' +
-              '<form class="petition-sign-form" data-petition-key="' + esc(petitionKey) + '" data-index="' + i + '" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;margin-top:10px;">' +
-              '<div class="field" style="flex:1;min-width:180px;margin-bottom:0;"><label style="position:absolute;left:-9999px;">Full name</label><input type="text" name="sig-name" required placeholder="Your full name"></div>' +
-              '<div class="field" style="flex:1;min-width:180px;margin-bottom:0;"><label style="position:absolute;left:-9999px;">Phone number</label><input type="tel" name="sig-phone" required placeholder="Your phone number"></div>' +
-              '<button type="submit" class="btn btn-red btn-sm">Sign</button>' +
-              '</form></div></div>';
-          }).join('');
-
-          // Toggle buttons — reveal the sign form for that specific card.
-          listWrap.querySelectorAll('.petition-toggle-btn').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-              var idx = btn.getAttribute('data-index');
-              var wrap = document.getElementById('petition-form-wrap-' + idx);
-              if (wrap) wrap.style.display = (wrap.style.display === 'none') ? 'block' : 'none';
-            });
-          });
-
-          // Submit handlers — same shared Apps Script backend as the
-          // membership and contact forms, routed via form-type.
-          var PETITION_APPSCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCsmvzFfNQwkmO-c05AXBgr96DHXB01W_r1o5zpRbPrNlCJ1BOhKsUcENEbmjWT35X/exec";
-          listWrap.querySelectorAll('.petition-sign-form').forEach(function (form) {
-            form.addEventListener('submit', function (e) {
-              e.preventDefault();
-              var idx = form.getAttribute('data-index');
-              var petitionKey = form.getAttribute('data-petition-key');
-              var nameInput = form.querySelector('[name="sig-name"]');
-              var phoneInput = form.querySelector('[name="sig-phone"]');
-              var alertBox = document.getElementById('petition-alert-' + idx);
-              var submitBtn = form.querySelector('[type="submit"]');
-
-              // Phone formats vary a lot (with/without country code, spaces,
-              // dashes) — this just checks for at least 5 digits somewhere,
-              // rather than enforcing one rigid format that could reject
-              // valid numbers.
-              var nameOk = nameInput.value.trim() !== '';
-              var phoneOk = /\d{5,}/.test(phoneInput.value.replace(/[\s-]/g, ''));
-              if (!nameOk || !phoneOk) {
-                if (alertBox) { alertBox.textContent = 'Please enter your full name and a valid phone number.'; alertBox.className = 'form-alert error show'; }
-                return;
-              }
-
-              submitBtn.disabled = true;
-              var body = 'form-type=petition&petition=' + encodeURIComponent(petitionKey) +
-                '&name=' + encodeURIComponent(nameInput.value.trim()) +
-                '&phone=' + encodeURIComponent(phoneInput.value.trim());
-
-              function showSigned() {
-                form.style.display = 'none';
-                if (alertBox) {
-                  alertBox.textContent = "Thank you — your signature has been added.";
-                  alertBox.className = 'form-alert success show';
-                }
-              }
-
-              // mode: 'no-cors' — see membership.html for why this is used
-              // and why both outcomes below show success (the browser
-              // can't reliably read the response either way).
-              fetch(PETITION_APPSCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: body
-              }).then(showSigned).catch(showSigned);
-            });
-          });
-        }
-      }
-    }
-  }
 
   /* ---------- Homepage ---------- */
   function renderHome(home, affiliations, photoStories) {
@@ -296,26 +183,13 @@
     var latestUpdatesSection = document.getElementById('latest-updates-section');
     if (latestUpdatesSection) latestUpdatesSection.style.display = (home.showLatestUpdates === false) ? 'none' : '';
     // Homepage "Latest updates" — pulls the most recent items across
-    // everything (news, petitions, articles, statements, videos), not
-    // just news posts, so this reflects whatever's actually newest
-    // anywhere on the site.
+    // Newsroom's content types (articles, statements, videos), so this
+    // reflects whatever's actually newest.
     var newsWrap = document.querySelector('[data-cms-list="news-preview"]');
-    Promise.all([
-      fetchJSON('content/news.json').catch(function () { return {}; }),
-      fetchJSON('content/campaign.json').catch(function () { return {}; }),
-      fetchJSON('content/newsroom.json').catch(function () { return {}; })
-    ]).then(function (results) {
-      var news = results[0] || {};
-      var campaign = results[1] || {};
-      var newsroom = results[2] || {};
+    fetchJSON('content/newsroom.json').catch(function () { return {}; }).then(function (newsroom) {
+      newsroom = newsroom || {};
       var combined = [];
 
-      visibleOnly(news.posts).forEach(function (p) {
-        combined.push({ type: 'News', title: p.title, date: p.date, link: 'news.html' });
-      });
-      visibleOnly(campaign.campaigns).forEach(function (c) {
-        combined.push({ type: 'Petition', title: c.headline, date: c.date, link: 'news.html' });
-      });
       visibleOnly(newsroom.featuredStories).forEach(function (s) {
         var headline = s.headline || s.headlineDv || '';
         var hasArticle = !!((s.body || s.bodyDv) && s.slug);
@@ -339,49 +213,6 @@
   }
 
   /* ---------- News & campaigns page ---------- */
-  function renderNews(news) {
-    renderPageHero(news);
-
-    var latestNewsSection = document.getElementById('latest-news-section');
-    if (latestNewsSection) latestNewsSection.style.display = (news.showLatestNews === false) ? 'none' : '';
-    setText('[data-cms="latestNewsSub"]', news.latestNewsSub);
-
-    // Build a lookup of which categories are currently hidden, so we can
-    // both exclude their posts from the list and hide their filter chip —
-    // hiding a whole category this way needs no per-post editing at all.
-    var hiddenCategories = {};
-    (news.categories || []).forEach(function (c) {
-      if (c.hidden === true && c.name) hiddenCategories[c.name.toLowerCase()] = true;
-    });
-
-    var listWrap = document.querySelector('[data-cms-list="posts"]');
-    if (listWrap && news.posts) {
-      var visiblePosts = sortByDateDesc(visibleOnly(news.posts).filter(function (p) {
-        return !hiddenCategories[(p.category || '').toLowerCase()];
-      }));
-      listWrap.innerHTML = visiblePosts.map(function (p) {
-        var cat = esc(p.category).toLowerCase();
-        return '<div class="news-row" data-category="' + cat + '"><div><span class="cat">' + esc(p.category) + '</span><h4>' + esc(p.title) + '</h4></div><span class="date">' + esc(formatDate(p.date)) + '</span></div>';
-      }).join('');
-    }
-
-    // Re-bind the category filter chips now that rows were rebuilt.
-    var chips = document.querySelectorAll('.chip[data-filter]');
-    var newsItems = document.querySelectorAll('[data-category]');
-    chips.forEach(function (chip) {
-      var filterValue = chip.getAttribute('data-filter');
-      chip.style.display = (filterValue !== 'all' && hiddenCategories[filterValue]) ? 'none' : '';
-      chip.addEventListener('click', function () {
-        chips.forEach(function (c) { c.classList.remove('active'); });
-        chip.classList.add('active');
-        var filter = chip.getAttribute('data-filter');
-        newsItems.forEach(function (item) {
-          var cat = item.getAttribute('data-category');
-          item.style.display = (filter === 'all' || filter === cat) ? '' : 'none';
-        });
-      });
-    });
-  }
 
   /* ---------- About / leadership page ---------- */
   function avatarHTML(person) {
@@ -594,11 +425,22 @@
   function renderNewsroom(data) {
     renderPageHero(data);
 
+    // Build a lookup of which categories are currently hidden — same
+    // pattern used on the old News page — so their items disappear from
+    // whichever of the three sections they appear in.
+    var hiddenCategories = {};
+    (data.categories || []).forEach(function (c) {
+      if (c.hidden === true && c.name) hiddenCategories[c.name.toLowerCase()] = true;
+    });
+    function notHiddenCategory(item) {
+      return !hiddenCategories[(item.tag || '').toLowerCase()];
+    }
+
     var featuredSection = document.getElementById('featured-articles-section');
     if (featuredSection) featuredSection.style.display = (data.showFeaturedArticles === false) ? 'none' : '';
     var featuredWrap = document.querySelector('[data-cms-list="featuredStories"]');
     if (featuredWrap && data.featuredStories) {
-      featuredWrap.innerHTML = sortByDateDesc(visibleOnly(data.featuredStories)).map(function (s) {
+      featuredWrap.innerHTML = sortByDateDesc(visibleOnly(data.featuredStories).filter(notHiddenCategory)).map(function (s) {
         var thumb = s.image ? '<img class="thumb" src="' + esc(s.image) + '" alt="">' : '';
         // Fall back to the Dhivehi headline/article when there's no
         // English version — this was the bug: checking only the English
@@ -616,7 +458,7 @@
     setText('[data-cms="pressReleasesSub"]', data.pressReleasesSub);
     var pressWrap = document.querySelector('[data-cms-list="pressReleases"]');
     if (pressWrap && data.pressReleases) {
-      pressWrap.innerHTML = sortByDateDesc(visibleOnly(data.pressReleases)).map(function (p) {
+      pressWrap.innerHTML = sortByDateDesc(visibleOnly(data.pressReleases).filter(notHiddenCategory)).map(function (p) {
         return renderResourceCard(formatDate(p.date), p.title, p.summary, '', p.file || '#', true, p.fileLabel || 'Download');
       }).join('');
     }
@@ -625,7 +467,7 @@
     if (videoSection) videoSection.style.display = (data.showVideoMessages === false) ? 'none' : '';
     var videoWrap = document.querySelector('[data-cms-list="videoMessages"]');
     if (videoWrap && data.videoMessages) {
-      videoWrap.innerHTML = sortByDateDesc(visibleOnly(data.videoMessages)).map(function (v) {
+      videoWrap.innerHTML = sortByDateDesc(visibleOnly(data.videoMessages).filter(notHiddenCategory)).map(function (v) {
         var thumb = v.image ? '<img class="thumb" src="' + esc(v.image) + '" alt="">' : '';
         // A self-hosted clip plays directly on the page; otherwise fall
         // back to linking out to wherever the video actually lives.
@@ -725,7 +567,6 @@
 
     fetchJSON('content/hero-images.json').then(applyHeroImage).catch(function () {});
     fetchJSON('content/site.json').then(renderSiteFooter).catch(function () {});
-    fetchJSON('content/campaign.json').then(applyCampaignBanner).catch(function () {});
 
     fetchJSON('content/page-visibility.json').then(function (visibility) {
       var visible = applyPageVisibility(visibility);
@@ -742,8 +583,6 @@
       Promise.all([fetchJSON('content/home.json'), fetchJSON('content/affiliations.json'), fetchJSON('content/photo-stories.json')])
         .then(function (results) { renderHome(results[0], results[1], results[2]); })
         .catch(function (err) { console.warn('Content load failed:', err); });
-    } else if (page === 'news') {
-      fetchJSON('content/news.json').then(renderNews).catch(function (err) { console.warn('Content load failed:', err); });
     } else if (page === 'about') {
       fetchJSON('content/leadership.json').then(renderLeadership).catch(function (err) { console.warn('Content load failed:', err); });
       fetchJSON('content/about.json').then(renderAbout).catch(function (err) { console.warn('Content load failed:', err); });
