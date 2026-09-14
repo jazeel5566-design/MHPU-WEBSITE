@@ -5,7 +5,7 @@
   "categories": [
     {
       "name": "Bargaining",
-      "hidden": true
+      "hidden": false
     },
     {
       "name": "Campaigns",
@@ -17,7 +17,7 @@
     },
     {
       "name": "Development",
-      "hidden": true
+      "hidden": false
     }
   ],
   "posts": [
