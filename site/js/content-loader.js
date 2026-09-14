@@ -190,6 +190,12 @@
       newsroom = newsroom || {};
       var combined = [];
 
+      visibleOnly(newsroom.newsAndUpdates).forEach(function (n) {
+        var headline = n.headline || n.headlineDv || '';
+        var hasArticle = !!((n.body || n.bodyDv) && n.slug);
+        var link = hasArticle ? ('article.html?slug=' + encodeURIComponent(n.slug)) : (n.url || 'newsroom.html');
+        combined.push({ type: 'News', title: headline, date: n.date, link: link });
+      });
       visibleOnly(newsroom.featuredStories).forEach(function (s) {
         var headline = s.headline || s.headlineDv || '';
         var hasArticle = !!((s.body || s.bodyDv) && s.slug);
