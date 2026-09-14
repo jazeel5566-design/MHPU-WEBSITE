@@ -1,5 +1,12 @@
 {
-  "featuredStories": [],
+  "featuredStories": [
+    {
+      "date": "2026-08-28",
+      "hidden": false,
+      "url": "https://x.com/MaldivesHPU/status/2093332507802636691?s=20",
+      "headline": "MHPU Raises Concerns Over Healthcare Professionals Being Reclassified as Non-Professionals"
+    }
+  ],
   "videoMessages": [],
   "showFeaturedArticles": true,
   "showVideoMessages": true,
