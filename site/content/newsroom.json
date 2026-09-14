@@ -1,14 +1,6 @@
 {
   "showNewsAndUpdates": true,
-  "featuredStories": [
-    {
-      "date": "2026-08-28",
-      "hidden": false,
-      "url": "",
-      "headline": "",
-      "tag": "Update"
-    }
-  ],
+  "featuredStories": [],
   "newsAndUpdates": [
     {
       "date": "2026-08-28",
