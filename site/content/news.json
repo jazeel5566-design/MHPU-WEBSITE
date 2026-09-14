@@ -12,11 +12,11 @@
       "hidden": false
     },
     {
-      "hidden": false,
+      "hidden": true,
       "name": "Bargaining"
     },
     {
-      "hidden": false,
+      "hidden": true,
       "name": "Development"
     }
   ],
