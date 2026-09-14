@@ -38,5 +38,11 @@
   ],
   "pressReleasesSub": "Official statements from MHPU",
   "showPressReleases": true,
-  "heroLede": "Featured articles, official statements and press releases from the Maldives Health Professionals Union."
+  "heroLede": "Featured articles, official statements and press releases from the Maldives Health Professionals Union.",
+  "categories": [
+    {
+      "hidden": false,
+      "name": "NEWS AND UPDATES"
+    }
+  ]
 }
