@@ -5,11 +5,11 @@
   "categories": [
     {
       "name": "Campaigns",
-      "hidden": false
+      "hidden": true
     },
     {
       "name": "Union",
-      "hidden": false
+      "hidden": true
     }
   ],
   "posts": [],
