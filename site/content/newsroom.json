@@ -10,7 +10,14 @@
       "url": "https://x.com/MaldivesHPU/status/2093332507802636691?s=20"
     }
   ],
-  "videoMessages": [],
+  "videoMessages": [
+    {
+      "date": "2025-11-28",
+      "hidden": false,
+      "title": "Does your office have a Workplace Safety and Health Officer as required under the OSH Act?",
+      "videoUrl": "https://www.instagram.com/reel/DRmvCTbk285/?utm_source=ig_web_copy_link&stkn=MzRlODBiNWFlZA=="
+    }
+  ],
   "showFeaturedArticles": false,
   "showVideoMessages": false,
   "heroKicker": "Newsroom",
