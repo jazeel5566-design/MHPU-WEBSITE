@@ -11,7 +11,7 @@
   ],
   "videoMessages": [],
   "showFeaturedArticles": false,
-  "showVideoMessages": true,
+  "showVideoMessages": false,
   "heroKicker": "Newsroom",
   "heroHeadline": "MHPU in the headlines.",
   "pressReleases": [
