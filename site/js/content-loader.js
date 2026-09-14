@@ -425,22 +425,24 @@
   function renderNewsroom(data) {
     renderPageHero(data);
 
-    // Build a lookup of which categories are currently hidden — same
-    // pattern used on the old News page — so their items disappear from
-    // whichever of the three sections they appear in.
-    var hiddenCategories = {};
-    (data.categories || []).forEach(function (c) {
-      if (c.hidden === true && c.name) hiddenCategories[c.name.toLowerCase()] = true;
-    });
-    function notHiddenCategory(item) {
-      return !hiddenCategories[(item.tag || '').toLowerCase()];
+    var newsUpdatesSection = document.getElementById('news-updates-section');
+    if (newsUpdatesSection) newsUpdatesSection.style.display = (data.showNewsAndUpdates === false) ? 'none' : '';
+    var newsUpdatesWrap = document.querySelector('[data-cms-list="newsAndUpdates"]');
+    if (newsUpdatesWrap && data.newsAndUpdates) {
+      newsUpdatesWrap.innerHTML = sortByDateDesc(visibleOnly(data.newsAndUpdates)).map(function (s) {
+        var thumb = s.image ? '<img class="thumb" src="' + esc(s.image) + '" alt="">' : '';
+        var headline = s.headline || s.headlineDv || '';
+        var hasArticle = !!((s.body || s.bodyDv) && s.slug);
+        var link = hasArticle ? ('article.html?slug=' + encodeURIComponent(s.slug)) : (s.url || '#');
+        return '<div class="resource-card">' + thumb + '<span class="filetag">' + esc(s.tag) + '</span><h3>' + esc(headline) + '</h3><span class="meta">' + esc(formatDate(s.date)) + '</span><a href="' + esc(link) + '" class="btn btn-outline btn-sm">Read more</a></div>';
+      }).join('');
     }
 
     var featuredSection = document.getElementById('featured-articles-section');
     if (featuredSection) featuredSection.style.display = (data.showFeaturedArticles === false) ? 'none' : '';
     var featuredWrap = document.querySelector('[data-cms-list="featuredStories"]');
     if (featuredWrap && data.featuredStories) {
-      featuredWrap.innerHTML = sortByDateDesc(visibleOnly(data.featuredStories).filter(notHiddenCategory)).map(function (s) {
+      featuredWrap.innerHTML = sortByDateDesc(visibleOnly(data.featuredStories)).map(function (s) {
         var thumb = s.image ? '<img class="thumb" src="' + esc(s.image) + '" alt="">' : '';
         // Fall back to the Dhivehi headline/article when there's no
         // English version — this was the bug: checking only the English
@@ -458,7 +460,7 @@
     setText('[data-cms="pressReleasesSub"]', data.pressReleasesSub);
     var pressWrap = document.querySelector('[data-cms-list="pressReleases"]');
     if (pressWrap && data.pressReleases) {
-      pressWrap.innerHTML = sortByDateDesc(visibleOnly(data.pressReleases).filter(notHiddenCategory)).map(function (p) {
+      pressWrap.innerHTML = sortByDateDesc(visibleOnly(data.pressReleases)).map(function (p) {
         return renderResourceCard(formatDate(p.date), p.title, p.summary, '', p.file || '#', true, p.fileLabel || 'Download');
       }).join('');
     }
@@ -467,7 +469,7 @@
     if (videoSection) videoSection.style.display = (data.showVideoMessages === false) ? 'none' : '';
     var videoWrap = document.querySelector('[data-cms-list="videoMessages"]');
     if (videoWrap && data.videoMessages) {
-      videoWrap.innerHTML = sortByDateDesc(visibleOnly(data.videoMessages).filter(notHiddenCategory)).map(function (v) {
+      videoWrap.innerHTML = sortByDateDesc(visibleOnly(data.videoMessages)).map(function (v) {
         var thumb = v.image ? '<img class="thumb" src="' + esc(v.image) + '" alt="">' : '';
         // A self-hosted clip plays directly on the page; otherwise fall
         // back to linking out to wherever the video actually lives.
