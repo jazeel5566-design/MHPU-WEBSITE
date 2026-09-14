@@ -370,13 +370,22 @@ collections:
           - { label: "Page header tag (leave blank to hide it entirely)", name: "heroKicker", widget: "string", required: false }
           - { label: "Page header headline (leave blank to hide it entirely)", name: "heroHeadline", widget: "string", required: false }
           - { label: "Page header text", name: "heroLede", widget: "text", required: false }
-          - label: "Categories (add as many as you need — hide one to remove its items from the Newsroom page)"
-            name: "categories"
+          - { label: "Show 'News and updates' section?", name: "showNewsAndUpdates", widget: "boolean", default: true }
+          - label: "News and updates"
+            name: "newsAndUpdates"
             widget: "list"
-            summary: "{{fields.name}}"
+            summary: "{{fields.headline}}"
             fields:
-              - { label: "Category name", name: "name", widget: "string", required: false, hint: "Must match the Tag typed on articles, releases, or videos below exactly (not case-sensitive)." }
-              - { label: "Hidden (tick to hide this whole category)", name: "hidden", widget: "boolean", default: false }
+              - { label: "Tag", name: "tag", widget: "string", required: false, hint: "e.g. Bargaining, Union, Campaigns" }
+              - { label: "Thumbnail photo", name: "image", widget: "image", required: false, hint: "Recommended size: at least 800×450px, landscape orientation, JPG format, under 400KB." }
+              - { label: "Headline", name: "headline", widget: "string", required: false }
+              - { label: "Published date (auto-fills to today when created)", name: "date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, default: "{{now}}", required: false }
+              - { label: "Write the full article here (leave blank if you're just linking elsewhere instead)", name: "body", widget: "text", required: false, hint: "Leave a blank line between paragraphs. If this is filled in, the story gets its own page on the site and 'Read more' opens that instead of the link below." }
+              - { label: "Dhivehi headline", name: "headlineDv", widget: "string", required: false, hint: "Type normally in Thaana — no special setup needed. Leave blank if there's no Dhivehi version of this story yet." }
+              - { label: "Dhivehi article text", name: "bodyDv", widget: "text", required: false, hint: "Same as above, in Dhivehi. Leave a blank line between paragraphs. If both this and the Dhivehi headline are filled in, a language switch button appears on the article page automatically." }
+              - { label: "Article web address (only needed if writing a full article above)", name: "slug", widget: "string", required: false, hint: "Lowercase, no spaces — e.g. new-pay-scale-agreement. This becomes part of the page's URL." }
+              - { label: "Link (only used if no full article is written above)", name: "url", widget: "string", required: false, hint: "e.g. newsroom.html, or a full https:// link" }
+              - { label: "Hidden (tick to hide this item)", name: "hidden", widget: "boolean", default: false }
           - { label: "Show 'Featured articles' section?", name: "showFeaturedArticles", widget: "boolean", default: true }
           - label: "Featured articles"
             name: "featuredStories"
@@ -400,7 +409,6 @@ collections:
             widget: "list"
             summary: "{{fields.title}}"
             fields:
-              - { label: "Tag", name: "tag", widget: "string", required: false, hint: "e.g. Bargaining, Union, Campaigns" }
               - { label: "Title", name: "title", widget: "string", required: false }
               - { label: "Published date (auto-fills to today when created)", name: "date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, default: "{{now}}", required: false }
               - { label: "Summary", name: "summary", widget: "text", required: false }
@@ -413,7 +421,6 @@ collections:
             widget: "list"
             summary: "{{fields.title}}"
             fields:
-              - { label: "Tag", name: "tag", widget: "string", required: false, hint: "e.g. Bargaining, Union, Campaigns" }
               - { label: "Title", name: "title", widget: "string", required: false }
               - { label: "Published date (auto-fills to today when created)", name: "date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, default: "{{now}}", required: false }
               - { label: "Thumbnail photo", name: "image", widget: "image", required: false, hint: "Recommended size: at least 800×450px, landscape orientation, JPG format, under 400KB." }
