@@ -28,7 +28,7 @@
       "videoUrl": "https://www.instagram.com/reel/DRmvCTbk285/?utm_source=ig_web_copy_link&stkn=MzRlODBiNWFlZA=="
     }
   ],
-  "showFeaturedArticles": false,
+  "showFeaturedArticles": true,
   "showVideoMessages": true,
   "heroKicker": "Newsroom",
   "heroHeadline": "MHPU in the headlines.",
