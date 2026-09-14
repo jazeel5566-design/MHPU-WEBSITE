@@ -46,43 +46,9 @@ collections:
           - { label: "About page", name: "about", widget: "image", required: false, hint: "Recommended size: at least 1600×1000px, landscape orientation, JPG format, under 800KB. Fills half of the page banner." }
           - { label: "Membership page", name: "membership", widget: "image", required: false, hint: "Recommended size: at least 1600×1000px, landscape orientation, JPG format, under 800KB. Fills half of the page banner." }
           - { label: "Know Your Rights page", name: "rights", widget: "image", required: false, hint: "Recommended size: at least 1600×1000px, landscape orientation, JPG format, under 800KB. Fills half of the page banner." }
-          - { label: "News & Campaigns page", name: "news", widget: "image", required: false, hint: "Recommended size: at least 1600×1000px, landscape orientation, JPG format, under 800KB. Fills half of the page banner." }
           - { label: "Resources page", name: "resources", widget: "image", required: false, hint: "Recommended size: at least 1600×1000px, landscape orientation, JPG format, under 800KB. Fills half of the page banner." }
           - { label: "Contact page", name: "contact", widget: "image", required: false, hint: "Recommended size: at least 1600×1000px, landscape orientation, JPG format, under 800KB. Fills half of the page banner." }
           - { label: "Newsroom page", name: "newsroom", widget: "image", required: false, hint: "Recommended size: at least 1600×1000px, landscape orientation, JPG format, under 800KB. Fills half of the page banner." }
-
-  # ---------- News & campaigns (add / edit only, no reordering) ----------
-  - name: "news"
-    label: "News & Campaigns"
-    files:
-      - name: "news"
-        label: "News & Campaign Posts"
-        file: "site/content/news.json"
-        fields:
-          - { label: "Page header tag (leave blank to hide it entirely)", name: "heroKicker", widget: "string", required: false }
-          - { label: "Page header headline (leave blank to hide it entirely)", name: "heroHeadline", widget: "string", required: false }
-          - { label: "Page header text", name: "heroLede", widget: "text", required: false }
-          - { label: "Show 'Latest news' section?", name: "showLatestNews", widget: "boolean", default: true }
-          - { label: "'Latest news' subtitle text (leave blank to hide it)", name: "latestNewsSub", widget: "string", required: false }
-          - label: "News categories (hide one to remove it from the filter buttons and hide its posts from the list)"
-            name: "categories"
-            widget: "list"
-            summary: "{{fields.name}}"
-            fields:
-              - { label: "Category name", name: "name", widget: "string", required: false, hint: "Must match one of the category names used on posts below exactly (Bargaining, Campaigns, Union, Development)." }
-              - { label: "Hidden (tick to hide this whole category)", name: "hidden", widget: "boolean", default: false }
-          - label: "News posts"
-            name: "posts"
-            widget: "list"
-            summary: "{{fields.category}} — {{fields.title}}"
-            fields:
-              - label: "Category"
-                name: "category"
-                widget: "select"
-                options: ["Bargaining", "Campaigns", "Union", "Development"]
-              - { label: "Headline", name: "title", widget: "string", required: false }
-              - { label: "Published date (auto-fills to today when created)", name: "date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, default: "{{now}}", required: false }
-              - { label: "Hidden (tick to hide this post)", name: "hidden", widget: "boolean", default: false }
 
   # ---------- Affiliations ----------
   - name: "affiliations"
@@ -207,34 +173,11 @@ collections:
               - { label: "Title", name: "title", widget: "string", required: false }
               - { label: "Description", name: "description", widget: "text", required: false }
               - { label: "Meta line", name: "meta", widget: "string", required: false }
-              - { label: "Link destination", name: "url", widget: "string", hint: "A file path (upload via the Media Library and paste its path), or a page like contact.html / news.html", required: false }
+              - { label: "Link destination", name: "url", widget: "string", hint: "A file path (upload via the Media Library and paste its path), or a page like contact.html / newsroom.html", required: false }
               - { label: "Is this a file download?", name: "download", widget: "boolean", default: false }
               - { label: "Button text", name: "buttonLabel", widget: "string", hint: "e.g. Download, Open form, View updates", required: false }
               - { label: "Hidden (tick to hide this item)", name: "hidden", widget: "boolean", default: false }
           - { label: "Footer note", name: "footerNote", widget: "text", required: false }
-
-  # ---------- Active campaigns (Homepage shows the first one; News page shows all of them) ----------
-  - name: "campaign"
-    label: "Active Campaigns"
-    files:
-      - name: "campaign"
-        label: "Campaigns / Petitions"
-        file: "site/content/campaign.json"
-        description: "Add as many active campaigns or petitions as you need. The Homepage's 'Take action' card always shows the first one in this list that isn't hidden. The News & Campaigns page shows all of them, in order."
-        fields:
-          - label: "Campaigns"
-            name: "campaigns"
-            widget: "list"
-            summary: "{{fields.headline}}"
-            fields:
-              - { label: "Tag", name: "tag", widget: "string", required: false, hint: "e.g. 'Take action' or 'Active campaign'" }
-              - { label: "Headline", name: "headline", widget: "string", required: false }
-              - { label: "Description", name: "text", widget: "text", required: false }
-              - { label: "Petition ID (used behind the scenes to tell signatures apart — lowercase, no spaces, e.g. safe-staffing-2026)", name: "slug", widget: "string", required: false }
-              - { label: "Signature count (a real number you've checked — not automatic)", name: "signatureCount", widget: "number", required: false, value_type: "int" }
-              - { label: "Count as of (auto-fills to today — update whenever you refresh the count above)", name: "countAsOfDate", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, default: "{{now}}", required: false }
-              - { label: "Published date (auto-fills to today when created — newest shows first)", name: "date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, default: "{{now}}", required: false }
-              - { label: "Hidden (tick to hide this campaign)", name: "hidden", widget: "boolean", default: false }
 
   # ---------- Site-wide (footer, shared across every page) ----------
   - name: "site"
@@ -261,7 +204,6 @@ collections:
           - { label: "About page", name: "about", widget: "boolean", default: true }
           - { label: "Membership page", name: "membership", widget: "boolean", default: true }
           - { label: "Know Your Rights page", name: "rights", widget: "boolean", default: true }
-          - { label: "News & Campaigns page", name: "news", widget: "boolean", default: true }
           - { label: "Resources page", name: "resources", widget: "boolean", default: true }
           - { label: "Contact page", name: "contact", widget: "boolean", default: true }
           - { label: "Newsroom page", name: "newsroom", widget: "boolean", default: true }
@@ -428,6 +370,13 @@ collections:
           - { label: "Page header tag (leave blank to hide it entirely)", name: "heroKicker", widget: "string", required: false }
           - { label: "Page header headline (leave blank to hide it entirely)", name: "heroHeadline", widget: "string", required: false }
           - { label: "Page header text", name: "heroLede", widget: "text", required: false }
+          - label: "Categories (add as many as you need — hide one to remove its items from the Newsroom page)"
+            name: "categories"
+            widget: "list"
+            summary: "{{fields.name}}"
+            fields:
+              - { label: "Category name", name: "name", widget: "string", required: false, hint: "Must match the Tag typed on articles, releases, or videos below exactly (not case-sensitive)." }
+              - { label: "Hidden (tick to hide this whole category)", name: "hidden", widget: "boolean", default: false }
           - { label: "Show 'Featured articles' section?", name: "showFeaturedArticles", widget: "boolean", default: true }
           - label: "Featured articles"
             name: "featuredStories"
@@ -442,7 +391,7 @@ collections:
               - { label: "Dhivehi headline", name: "headlineDv", widget: "string", required: false, hint: "Type normally in Thaana — no special setup needed. Leave blank if there's no Dhivehi version of this story yet." }
               - { label: "Dhivehi article text", name: "bodyDv", widget: "text", required: false, hint: "Same as above, in Dhivehi. Leave a blank line between paragraphs. If both this and the Dhivehi headline are filled in, a language switch button appears on the article page automatically." }
               - { label: "Article web address (only needed if writing a full article above)", name: "slug", widget: "string", required: false, hint: "Lowercase, no spaces — e.g. new-pay-scale-agreement. This becomes part of the page's URL." }
-              - { label: "Link (only used if no full article is written above)", name: "url", widget: "string", required: false, hint: "e.g. news.html, or a full https:// link" }
+              - { label: "Link (only used if no full article is written above)", name: "url", widget: "string", required: false, hint: "e.g. newsroom.html, or a full https:// link" }
               - { label: "Hidden (tick to hide this article)", name: "hidden", widget: "boolean", default: false }
           - { label: "Show 'Press releases' section?", name: "showPressReleases", widget: "boolean", default: true }
           - { label: "'Press releases' subtitle text (leave blank to hide it)", name: "pressReleasesSub", widget: "string", required: false }
@@ -451,6 +400,7 @@ collections:
             widget: "list"
             summary: "{{fields.title}}"
             fields:
+              - { label: "Tag", name: "tag", widget: "string", required: false, hint: "e.g. Bargaining, Union, Campaigns" }
               - { label: "Title", name: "title", widget: "string", required: false }
               - { label: "Published date (auto-fills to today when created)", name: "date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, default: "{{now}}", required: false }
               - { label: "Summary", name: "summary", widget: "text", required: false }
@@ -463,6 +413,7 @@ collections:
             widget: "list"
             summary: "{{fields.title}}"
             fields:
+              - { label: "Tag", name: "tag", widget: "string", required: false, hint: "e.g. Bargaining, Union, Campaigns" }
               - { label: "Title", name: "title", widget: "string", required: false }
               - { label: "Published date (auto-fills to today when created)", name: "date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, default: "{{now}}", required: false }
               - { label: "Thumbnail photo", name: "image", widget: "image", required: false, hint: "Recommended size: at least 800×450px, landscape orientation, JPG format, under 400KB." }
