@@ -5,11 +5,19 @@
   "categories": [
     {
       "name": "Campaigns",
-      "hidden": true
+      "hidden": false
     },
     {
       "name": "Union",
-      "hidden": true
+      "hidden": false
+    },
+    {
+      "hidden": false,
+      "name": "Bargaining"
+    },
+    {
+      "hidden": false,
+      "name": "Development"
     }
   ],
   "posts": [],
