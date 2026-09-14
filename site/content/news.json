@@ -4,19 +4,11 @@
   "heroLede": "Bargaining updates, active campaigns, and union news from across the Maldives.",
   "categories": [
     {
-      "name": "Bargaining",
-      "hidden": false
-    },
-    {
       "name": "Campaigns",
       "hidden": false
     },
     {
       "name": "Union",
-      "hidden": false
-    },
-    {
-      "name": "Development",
       "hidden": false
     }
   ],
