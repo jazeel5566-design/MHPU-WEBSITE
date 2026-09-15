@@ -2,7 +2,7 @@
   "home": true,
   "about": true,
   "membership": true,
-  "rights": true,
+  "rights": false,
   "news": true,
   "resources": false,
   "contact": true,
