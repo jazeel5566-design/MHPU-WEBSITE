@@ -1,28 +1,35 @@
 {
+  "campaignMaterialsSub": "Share and print",
+  "guidesSub": "Start here",
+  "footerNote": "",
   "heroKicker": "Guides & downloads",
-  "heroHeadline": "Everything in one place.",
-  "heroLede": "Handbooks, procedure guides and forms — the practical documents members ask for most.",
+  "heroHeadline": "Resources That Matter",
+  "showGuides": true,
+  "heroLede": "Important laws, regulations, official links, and professional resources — all in one place for healthcare workers.",
   "guides": [
     {
       "filetag": "PDF",
       "title": "Member handbook",
       "description": "An overview of your rights, benefits and how to get support as an MHPU member.",
       "meta": "4 pages · updated 2026",
-      "file": "resources/member-handbook.pdf"
+      "file": "resources/member-handbook.pdf",
+      "hidden": true
     },
     {
       "filetag": "PDF",
       "title": "Grievance & disciplinary procedure guide",
       "description": "Step-by-step guidance on what to do — and what to expect — if you're facing a formal process.",
       "meta": "3 pages · updated 2026",
-      "file": "resources/grievance-procedure-guide.pdf"
+      "file": "resources/grievance-procedure-guide.pdf",
+      "hidden": true
     },
     {
-      "filetag": "PDF",
-      "title": "Membership application form (sample)",
-      "description": "A printable version of the membership application, for offline or paper-based sign-up.",
-      "meta": "1 page · updated 2026",
-      "file": "resources/membership-application-form.pdf"
+      "filetag": "",
+      "title": "Membership application form",
+      "description": "Join MHPU and stand together for fair treatment, safe workplaces, and better working conditions",
+      "meta": "",
+      "file": "https://mhpu.org/membership#join",
+      "hidden": false
     }
   ],
   "campaignMaterials": [
@@ -33,7 +40,8 @@
       "meta": "2 pages · updated 2026",
       "url": "resources/safe-staffing-briefing.pdf",
       "download": true,
-      "buttonLabel": "Download"
+      "buttonLabel": "Download",
+      "hidden": true
     },
     {
       "filetag": "FORM",
@@ -42,7 +50,8 @@
       "meta": "Online form",
       "url": "contact.html",
       "download": false,
-      "buttonLabel": "Open form"
+      "buttonLabel": "Open form",
+      "hidden": true
     },
     {
       "filetag": "LINK",
@@ -51,12 +60,9 @@
       "meta": "External reference",
       "url": "news.html",
       "download": false,
-      "buttonLabel": "View updates"
+      "buttonLabel": "View updates",
+      "hidden": true
     }
   ],
-  "footerNote": "",
-  "showGuides": true,
-  "showCampaignMaterials": true,
-  "guidesSub": "Start here",
-  "campaignMaterialsSub": "Share and print"
+  "showCampaignMaterials": true
 }
