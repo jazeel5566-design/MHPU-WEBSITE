@@ -14,7 +14,7 @@ export default async function CaseAdmin({ params }: { params: Promise<{ id: stri
   await requireRole(["ADMIN", "CASEWORKER"], "/admin");
   const { id } = await params;
   const [c, staff] = await Promise.all([
-    db.case.findUnique({ where: { id }, include: { member: true, messages: { include: { author: { select: { name: true, role: true } } }, orderBy: { createdAt: "asc" } } } }),
+    db.case.findUnique({ where: { id }, include: { member: true, messages: { include: { author: { select: { name: true, role: true, title: true } } }, orderBy: { createdAt: "asc" } } } }),
     db.user.findMany({ where: { role: { in: ["ADMIN", "CASEWORKER"] }, active: true }, select: { id: true, name: true } }),
   ]);
   if (!c) notFound();
@@ -29,7 +29,7 @@ export default async function CaseAdmin({ params }: { params: Promise<{ id: stri
             <div key={m.id} className={`flex gap-3 ${m.internal ? "opacity-90" : ""}`}>
               <Avatar name={m.author.name} className={m.author.role === "MEMBER" ? "bg-coral-100 text-coral-700" : ""} />
               <div className={`flex-1 rounded-2xl px-4 py-3 text-sm ${m.internal ? "border border-dashed border-amber-300 bg-amber-50" : m.author.role === "MEMBER" ? "border border-line bg-white" : "bg-brand-50"}`}>
-                <div className="mb-1 flex items-center gap-2 text-xs font-semibold text-muted">{m.internal && <Lock className="size-3" />}{m.author.name}{m.internal && " · internal note"} · {formatDateTime(m.createdAt)}</div>
+                <div className="mb-1 flex items-center gap-2 text-xs font-semibold text-muted">{m.internal && <Lock className="size-3" />}{m.author.name}{m.author.title && ` · ${m.author.title}`}{m.internal && " · internal note"} · {formatDateTime(m.createdAt)}</div>
                 <div className="whitespace-pre-wrap">{m.body}</div>
               </div>
             </div>

@@ -45,6 +45,7 @@ async function main() {
   const hash = await bcrypt.hash("mhpu1234", 10);
   const mkUser = (email: string, name: string, role: string) => db.user.create({ data: { email, name, role, passwordHash: hash } });
   const admin = await mkUser("admin@mhpu.mv", "Aishath Shiuna", "ADMIN");
+  await db.user.update({ where: { id: admin.id }, data: { title: "General Secretary" } });
   const editor = await mkUser("editor@mhpu.mv", "Ibrahim Nasih", "EDITOR");
   const author = await mkUser("author@mhpu.mv", "Mariyam Zeena", "AUTHOR");
   const caseworker = await mkUser("caseworker@mhpu.mv", "Hassan Rasheed", "CASEWORKER");

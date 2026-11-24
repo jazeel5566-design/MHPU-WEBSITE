@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const [lang, user] = await Promise.all([getLang(), getCurrentUser()]);
-  const post = await db.post.findFirst({ where: { slug, ...livePosts(["PUBLIC", "MEMBERS"]) }, include: { author: { select: { name: true } } } });
+  const post = await db.post.findFirst({ where: { slug, ...livePosts(["PUBLIC", "MEMBERS"]) }, include: { author: { select: { name: true, title: true } } } });
   if (!post) notFound();
 
   const canRead = post.visibility === "PUBLIC" || !!user?.member || user?.role === "ADMIN";
@@ -43,7 +43,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         <h1 className={`mt-4 text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl ${isDv ? "dv-text" : ""}`}>{pick(lang, post.title, post.titleDv)}</h1>
         {post.excerpt && <p className="mt-4 text-xl leading-relaxed text-muted">{pick(lang, post.excerpt, post.excerptDv)}</p>}
         <div className="mt-6 flex flex-wrap items-center gap-4 border-y border-line py-4 text-sm text-muted">
-          <span className="font-semibold text-ink">{post.author.name}</span>
+          <span><span className="font-semibold text-ink">{post.author.name}</span>{post.author.title && <span>, {post.author.title}</span>}</span>
           <span>{formatDate(post.publishedAt ?? post.publishAt, { day: "numeric", month: "long", year: "numeric" })}</span>
           <span className="inline-flex items-center gap-1"><Clock className="size-4" /> {readingTime(body)} min read</span>
         </div>

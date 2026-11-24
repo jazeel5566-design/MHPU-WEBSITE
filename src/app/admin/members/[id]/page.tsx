@@ -13,7 +13,7 @@ export default async function MemberDetail({ params }: { params: Promise<{ id: s
   const user = await requireRole(["ADMIN", "CASEWORKER"], "/admin");
   const { id } = await params;
   const [m, affiliates, s] = await Promise.all([
-    db.member.findUnique({ where: { id }, include: { user: { select: { id: true, email: true, lastLoginAt: true } }, payments: { orderBy: { paidAt: "desc" }, take: 12 }, cases: { orderBy: { createdAt: "desc" } } } }),
+    db.member.findUnique({ where: { id }, include: { user: { select: { id: true, email: true, lastLoginAt: true, title: true } }, payments: { orderBy: { paidAt: "desc" }, take: 12 }, cases: { orderBy: { createdAt: "desc" } } } }),
     db.affiliate.findMany({ select: { id: true, name: true } }),
     getSettings(),
   ]);
@@ -26,7 +26,7 @@ export default async function MemberDetail({ params }: { params: Promise<{ id: s
       <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
         <div className="space-y-6">
           <Card><CardHeader title="Member details" desc={isAdmin ? undefined : "Read-only for caseworkers"} /><div className="p-5">
-            <MemberEditForm readOnly={!isAdmin} affiliates={affiliates} m={{ ...m, duesPaidUntil: m.duesPaidUntil?.toISOString().slice(0, 10) ?? "" }} />
+            <MemberEditForm readOnly={!isAdmin} affiliates={affiliates} m={{ ...m, duesPaidUntil: m.duesPaidUntil?.toISOString().slice(0, 10) ?? "", userTitle: m.user?.title ?? null, hasLogin: !!m.user }} />
           </div></Card>
           <Card>
             <CardHeader title={`Cases (${m.cases.length})`} />

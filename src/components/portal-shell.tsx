@@ -19,7 +19,7 @@ const ACCENT = {
 export function PortalShell({ portal, groups, user, children, switcher }: {
   portal: keyof typeof ACCENT;
   groups: NavGroup[];
-  user: { name: string; role: string; email: string };
+  user: { name: string; role: string; email: string; title?: string | null };
   children: React.ReactNode;
   switcher?: { href: string; label: string }[];
 }) {
@@ -65,7 +65,7 @@ export function PortalShell({ portal, groups, user, children, switcher }: {
           <Avatar name={user.name} />
           <div className="min-w-0 flex-1">
             <div className="truncate text-sm font-semibold">{user.name}</div>
-            <div className="truncate text-xs text-muted">{ROLE_LABELS[user.role as Role] ?? user.role}</div>
+            <div className="truncate text-xs text-muted" title={ROLE_LABELS[user.role as Role] ?? user.role}>{user.title || ROLE_LABELS[user.role as Role] || user.role}</div>
           </div>
           <form action={logout}>
             <button className="grid size-9 place-items-center rounded-lg text-muted hover:bg-sand-100 hover:text-ink" aria-label="Sign out" title="Sign out"><LogOut className="size-4" /></button>
