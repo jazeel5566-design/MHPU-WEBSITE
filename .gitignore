@@ -52,3 +52,4 @@ storage/applications/*
 !storage/applications/.gitkeep
 .pgdata/
 .env.production*
+.admin-credentials.txt
