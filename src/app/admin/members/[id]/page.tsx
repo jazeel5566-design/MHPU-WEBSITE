@@ -8,10 +8,15 @@ import { CASE_TYPES, labelOf } from "@/lib/constants";
 import { formatDate, formatDateTime, mvr } from "@/lib/utils";
 import { Card, CardHeader, PageHeader, StatusBadge } from "@/components/ui";
 import { MemberEditForm, PaymentForm, ResetPasswordForm } from "@/components/admin/forms";
+import { deleteMember } from "@/app/actions/admin";
+import { SubmitButton } from "@/components/submit-button";
+import { Notice } from "@/components/ui";
+import { Trash2 } from "lucide-react";
 
-export default async function MemberDetail({ params }: { params: Promise<{ id: string }> }) {
+export default async function MemberDetail({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ error?: string }> }) {
   const user = await requireRole(["ADMIN", "CASEWORKER"], "/admin");
   const { id } = await params;
+  const { error } = await searchParams;
   const [m, affiliates, s] = await Promise.all([
     db.member.findUnique({ where: { id }, include: { user: { select: { id: true, email: true, lastLoginAt: true, title: true } }, payments: { orderBy: { paidAt: "desc" }, take: 12 }, cases: { orderBy: { createdAt: "desc" } } } }),
     db.affiliate.findMany({ select: { id: true, name: true } }),
@@ -23,6 +28,7 @@ export default async function MemberDetail({ params }: { params: Promise<{ id: s
     <div>
       <Link href="/admin/members" className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-brand-700"><ArrowLeft className="size-4 rtl:rotate-180" /> Members</Link>
       <PageHeader kicker={m.membershipNo} title={m.fullName} desc={`${m.profession} · ${m.employer} · joined ${formatDate(m.joinedAt)}`} actions={<StatusBadge status={m.status} />} />
+      {error && <div className="mb-4"><Notice tone="red">{error}</Notice></div>}
       <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
         <div className="space-y-6">
           <Card><CardHeader title="Member details" desc={isAdmin ? undefined : "Read-only for caseworkers"} /><div className="p-5">
@@ -52,6 +58,17 @@ export default async function MemberDetail({ params }: { params: Promise<{ id: s
             </ul>
           </Card>
           {isAdmin && m.user && <Card><CardHeader title="Portal login" desc={m.user.email} /><div className="p-5"><ResetPasswordForm userId={m.user.id} /></div></Card>}
+          {isAdmin && (
+            <Card className="border-red-200">
+              <CardHeader title="Delete member" desc="Removes the member record, portal login, cases, dues history, event RSVPs and ballot votes. To keep their history, set Status to Resigned instead." />
+              <form action={deleteMember} className="p-5">
+                <input type="hidden" name="id" value={m.id} />
+                <SubmitButton variant="danger" size="sm" confirm={`Permanently delete ${m.fullName} (${m.membershipNo}) and all their records? This can't be undone.`}>
+                  <Trash2 className="size-4" /> Delete member permanently
+                </SubmitButton>
+              </form>
+            </Card>
+          )}
         </div>
       </div>
     </div>

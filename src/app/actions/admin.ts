@@ -252,6 +252,56 @@ export async function updateStaff(fd: FormData) {
   revalidatePath("/admin/users");
 }
 
+/** Permanently delete a staff account. Blocked when the person has authored
+ *  articles or case messages (that history must stay attributed) — deactivate instead. */
+export async function deleteStaff(fd: FormData) {
+  const admin = await requireRole([...ADMIN], "/admin");
+  const id = str(fd, "id");
+  const back = (q: string) => redirect(`/admin/users?${q}`);
+  if (id === admin.id) back("error=" + encodeURIComponent("You can't delete your own account."));
+  const u = await db.user.findUnique({ where: { id }, include: { _count: { select: { posts: true, caseMessages: true } }, member: { select: { id: true } } } });
+  if (!u) back("error=" + encodeURIComponent("Account not found."));
+  if (u!.member) back("error=" + encodeURIComponent(`${u!.name} is a member — delete them from their member record instead.`));
+  if (u!.role === "ADMIN" && (await db.user.count({ where: { role: "ADMIN", active: true } })) <= 1) back("error=" + encodeURIComponent("You can't delete the last administrator."));
+  const { posts, caseMessages } = u!._count;
+  if (posts || caseMessages) {
+    const what = [posts && `${posts} article${posts > 1 ? "s" : ""}`, caseMessages && `${caseMessages} case message${caseMessages > 1 ? "s" : ""}`].filter(Boolean).join(" and ");
+    back("error=" + encodeURIComponent(`${u!.name} has written ${what}, so the account can't be deleted without losing that history. Untick "Active" to deactivate it instead — they won't be able to sign in.`));
+  }
+  await db.$transaction([
+    db.case.updateMany({ where: { assigneeId: id }, data: { assigneeId: null } }),
+    db.post.updateMany({ where: { reviewerId: id }, data: { reviewerId: null } }),
+    db.media.updateMany({ where: { uploadedById: id }, data: { uploadedById: null } }),
+    db.auditLog.updateMany({ where: { userId: id }, data: { userId: null } }),
+    db.user.delete({ where: { id } }),
+  ]);
+  await audit(admin.id, "user_delete", "User", id, `${u!.email} (${u!.role})`);
+  back("deleted=" + encodeURIComponent(u!.name));
+}
+
+/** Permanently delete a member: their record, portal login, cases, dues history, RSVPs and votes. */
+export async function deleteMember(fd: FormData) {
+  const admin = await requireRole([...ADMIN], "/admin");
+  const id = str(fd, "id");
+  const m = await db.member.findUnique({ where: { id }, include: { user: { select: { id: true, role: true, _count: { select: { posts: true } } } } } });
+  if (!m) redirect("/admin/members");
+  if (m!.user && m!.user.id === admin.id) redirect(`/admin/members/${id}?error=` + encodeURIComponent("You can't delete your own member record while signed in with it."));
+  if (m!.user && (m!.user.role !== "MEMBER" || m!.user._count.posts > 0)) {
+    redirect(`/admin/members/${id}?error=` + encodeURIComponent("This member's login is also a staff account. Change it to Member (or remove its articles) in Staff & roles first."));
+  }
+  await db.$transaction(async (tx) => {
+    await tx.application.updateMany({ where: { memberId: id }, data: { memberId: null } });
+    await tx.member.delete({ where: { id } }); // cascades: cases (+messages), payments, RSVPs, votes
+    if (m!.user) {
+      await tx.caseMessage.deleteMany({ where: { authorId: m!.user.id } });
+      await tx.auditLog.updateMany({ where: { userId: m!.user.id }, data: { userId: null } });
+      await tx.user.delete({ where: { id: m!.user.id } });
+    }
+  });
+  await audit(admin.id, "member_delete", "Member", id, `${m!.membershipNo} ${m!.fullName}`);
+  redirect("/admin/members?deleted=" + encodeURIComponent(`${m!.fullName} (${m!.membershipNo})`));
+}
+
 // ─── Settings & inbox ───────────────────────────────────────────────
 
 export async function saveSettings(_: AState, fd: FormData): Promise<AState> {
@@ -259,7 +309,7 @@ export async function saveSettings(_: AState, fd: FormData): Promise<AState> {
   const keys = Object.keys(DEFAULT_SETTINGS);
   await db.$transaction(
     keys.map((key) => {
-      const value = key === "alertEnabled" ? (fd.get(key) === "on" ? "true" : "false") : str(fd, key);
+      const value = key === "alertEnabled" || key === "dhivehiEnabled" ? (fd.get(key) === "on" ? "true" : "false") : str(fd, key);
       return db.setting.upsert({ where: { key }, update: { value }, create: { key, value } });
     }),
   );
