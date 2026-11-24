@@ -14,7 +14,7 @@ import { Notice } from "@/components/ui";
 import { Trash2 } from "lucide-react";
 
 export default async function MemberDetail({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ error?: string }> }) {
-  const user = await requireRole(["ADMIN", "CASEWORKER"], "/admin");
+  const user = await requireRole(["ADMIN", "CASEWORKER", "TREASURER"], "/admin");
   const { id } = await params;
   const { error } = await searchParams;
   const [m, affiliates, s] = await Promise.all([
@@ -46,10 +46,10 @@ export default async function MemberDetail({ params, searchParams }: { params: P
           <Card>
             <CardHeader title="Contact & identity" />
             <dl className="divide-y divide-line text-sm">
-              {[["Email", m.email], ["Phone", m.phone], ["Address", m.address ?? "—"], ["ID / passport", m.idNumber], ["Nationality", m.nationality], ["Location", [m.island, m.atoll].filter(Boolean).join(", ")], ["Last login", formatDateTime(m.user?.lastLoginAt)]].map(([k, v]) => <div key={k} className="flex justify-between gap-3 px-5 py-2.5"><dt className="text-muted">{k}</dt><dd className="break-all text-end font-medium">{v}</dd></div>)}
+              {[["Email", m.email], ["Phone", m.phone], ["Address", m.address ?? "—"], ["ID / passport", isAdmin ? m.idNumber : m.idNumber.replace(/.(?=.{3})/g, "•")], ["Nationality", m.nationality], ["Location", [m.island, m.atoll].filter(Boolean).join(", ")], ["Last login", formatDateTime(m.user?.lastLoginAt)], ["Automatic payment", m.autopay ? `On · ${m.autopayMonths} month(s)${m.autopayCardLabel ? ` · ${m.autopayCardLabel}` : " · pay link by SMS"}` : "Off"]].map(([k, v]) => <div key={k} className="flex justify-between gap-3 px-5 py-2.5"><dt className="text-muted">{k}</dt><dd className="break-all text-end font-medium">{v}</dd></div>)}
             </dl>
           </Card>
-          {isAdmin && <Card><CardHeader title="Record a dues payment" /><div className="p-5"><PaymentForm memberId={m.id} dues={Number(s.monthlyDues) || 100} /></div></Card>}
+          {(isAdmin || user.role === "TREASURER") && <Card><CardHeader title="Record a dues payment" /><div className="p-5"><PaymentForm memberId={m.id} dues={Number(s.monthlyDues) || 100} /></div></Card>}
           <Card>
             <CardHeader title="Payment history" />
             <ul className="divide-y divide-line text-sm">

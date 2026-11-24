@@ -178,7 +178,15 @@ export async function saveEvent(_: EState, fd: FormData): Promise<EState> {
     capacity: str(fd, "capacity") ? Number(str(fd, "capacity")) : null,
     cpdHours: str(fd, "cpdHours") ? Number(str(fd, "cpdHours")) : null,
     published: fd.get("published") === "on",
+    meetingUrl: null as string | null,
   };
+  const rawMeet = str(fd, "meetingUrl");
+  if (rawMeet) {
+    const { cleanMeetingUrl } = await import("@/lib/meetings");
+    data.meetingUrl = cleanMeetingUrl(rawMeet);
+    if (!data.meetingUrl) return { error: "The meeting link must be a full https:// link, e.g. https://meet.google.com/abc-defg-hij" };
+    data.isOnline = true;
+  }
   const e = id ? await db.event.update({ where: { id }, data }) : await db.event.create({ data });
   await audit(user.id, id ? "event_update" : "event_create", "Event", e.id, e.title);
   revalidateContent();

@@ -41,7 +41,7 @@ export async function approveApplication(_: AState, fd: FormData): Promise<AStat
 
   const pw = tempPassword();
   const membershipNo = await nextMembershipNo();
-  const affiliateId = optStr(fd, "affiliateId");
+  const affiliateId = optStr(fd, "affiliateId") ?? app.affiliateId;
   const nationality = /^maldives$/i.test(app.country.trim()) ? "Maldivian" : app.country;
   await db.$transaction(async (tx) => {
     const user = await tx.user.create({ data: { email: app.email, name: app.fullName, role: "MEMBER", passwordHash: await bcrypt.hash(pw, 10) } });
@@ -105,7 +105,7 @@ export async function updateMember(_: AState, fd: FormData): Promise<AState> {
 }
 
 export async function recordPayment(_: AState, fd: FormData): Promise<AState> {
-  const admin = await requireRole([...ADMIN], "/admin");
+  const admin = await requireRole(["ADMIN", "TREASURER"], "/admin");
   const memberId = str(fd, "memberId");
   const amount = Number(str(fd, "amount"));
   const months = Math.max(1, Number(str(fd, "months")) || 1);
@@ -204,17 +204,17 @@ export async function saveAffiliate(_: AState, fd: FormData): Promise<AState> {
   const name = str(fd, "name");
   const shortName = str(fd, "shortName");
   if (!name || !shortName) return { error: "Name and short name are required." };
-  const data = { name, shortName, nameDv: optStr(fd, "nameDv"), description: optStr(fd, "description"), website: optStr(fd, "website"), memberCount: Number(str(fd, "memberCount")) || 0 };
+  const data = { name, shortName, nameDv: optStr(fd, "nameDv"), description: optStr(fd, "description"), website: optStr(fd, "website"), workplace: optStr(fd, "workplace"), active: fd.get("active") === "on", memberCount: Number(str(fd, "memberCount")) || 0 };
   const a = id ? await db.affiliate.update({ where: { id }, data }) : await db.affiliate.create({ data });
   await audit(admin.id, id ? "affiliate_update" : "affiliate_create", "Affiliate", a.id, name);
-  revalidatePath("/admin/affiliates");
-  revalidatePath("/about");
+  revalidatePath("/", "layout");
   return { ok: true, message: "Saved." };
 }
 
 export async function deleteAffiliate(fd: FormData) {
   const admin = await requireRole([...ADMIN], "/admin");
   const id = str(fd, "id");
+  if (await db.election.count({ where: { affiliateId: id } })) return; // keep unions that have election history
   await db.member.updateMany({ where: { affiliateId: id }, data: { affiliateId: null } });
   await db.affiliate.delete({ where: { id } });
   await audit(admin.id, "affiliate_delete", "Affiliate", id);
@@ -340,7 +340,7 @@ export async function saveSettings(_: AState, fd: FormData): Promise<AState> {
   const keys = Object.keys(DEFAULT_SETTINGS);
   await db.$transaction(
     keys.map((key) => {
-      const value = key === "alertEnabled" || key === "dhivehiEnabled" ? (fd.get(key) === "on" ? "true" : "false") : str(fd, key);
+      const value = ["alertEnabled", "dhivehiEnabled", "paymentsEnabled", "smsEnabled", "remindersEnabled"].includes(key) ? (fd.get(key) === "on" ? "true" : "false") : str(fd, key);
       return db.setting.upsert({ where: { key }, update: { value }, create: { key, value } });
     }),
   );

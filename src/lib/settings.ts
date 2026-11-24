@@ -15,6 +15,19 @@ export const DEFAULT_SETTINGS = {
   instagram: "",
   x: "",
   dhivehiEnabled: "true",
+  // Online payments (keys live in env vars BML_API_KEY / BML_MODE)
+  paymentsEnabled: "false",
+  paymentProvider: "TEST", // TEST | BML
+  // SMS (credentials live in env vars DHIRAAGU_SMS_USERNAME / DHIRAAGU_SMS_PASSWORD)
+  smsEnabled: "false",
+  smsProvider: "TEST", // TEST | DHIRAAGU
+  // Automatic dues reminders (run daily)
+  remindersEnabled: "false",
+  reminderDaysBefore: "7",
+  reminderRepeatDays: "14",
+  reminderMaxOverdue: "3",
+  reminderUpcomingText: "MHPU: Dear {name}, your union dues ({membershipNo}) are due on {dueDate}. Pay online at {payLink} or contact us on {hotline}.",
+  reminderOverdueText: "MHPU: Dear {name}, your union dues ({membershipNo}) are overdue since {dueDate}. Please pay at {payLink} to stay in good standing. Help: {hotline}.",
   alertEnabled: "false",
   alertText: "",
   alertLink: "",

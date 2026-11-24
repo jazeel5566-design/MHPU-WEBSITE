@@ -95,7 +95,7 @@ export default async function PublicLayout({ children }: { children: React.React
               <NewsletterForm label={t(lang, "subscribe")} />
             </div>
           </div>
-          <FooterCol title="Union" links={[["/about", "About MHPU"], ["/about#affiliates", "Affiliated unions"], ["/resources?category=CONSTITUTION", "Constitution"]]} />
+          <FooterCol title="Union" links={[["/about", "About MHPU"], ["/about#affiliates", "Workplace unions"], ["/resources?category=CONSTITUTION", "Constitution"]]} />
           <FooterCol title="Members" links={[["/join", "Join MHPU"], ["/get-help", "Get help at work"], ["/login", "Member portal"], ["/verify", "Verify a membership"]]} />
           <div>
             <div className="mb-3 text-sm font-semibold text-white">Contact</div>

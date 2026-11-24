@@ -17,7 +17,7 @@ const TIMELINE = [
 export default async function AboutPage() {
   const photos = await getSitePhotos();
   const lang = await getLang();
-  const affiliates = await db.affiliate.findMany({ orderBy: { memberCount: "desc" } });
+  const affiliates = await db.affiliate.findMany({ where: { active: true }, include: { _count: { select: { members: true } } }, orderBy: { name: "asc" } });
   return (
     <>
       <PageHero kicker="About us" title="The united voice of Maldivian healthcare workers" desc="MHPU is a national trade union federation that brings together health-worker unions and individual members across public and private healthcare." image={photos.about} />
@@ -57,15 +57,16 @@ export default async function AboutPage() {
 
       {affiliates.length > 0 && (
       <section id="affiliates" className="mx-auto max-w-7xl scroll-mt-24 px-4 py-16">
-        <SectionHead kicker="Federation" title="Affiliated unions" action={<ButtonLink href="/contact" variant="outline">Affiliate your union</ButtonLink>} />
+        <SectionHead kicker="Federation" title="Workplace unions" action={<ButtonLink href="/contact" variant="outline">Register your workplace union</ButtonLink>} />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {affiliates.map((a) => (
             <Card key={a.id} className="p-6">
               <div className="flex items-start justify-between gap-3">
                 <span className="grid size-12 place-items-center rounded-2xl bg-brand-700 text-sm font-extrabold text-white">{a.shortName.slice(0, 4)}</span>
-                <span className="inline-flex items-center gap-1 text-xs font-semibold text-muted"><Users className="size-3.5" /> {a.memberCount.toLocaleString()}</span>
+                {a._count.members > 0 && <span className="inline-flex items-center gap-1 text-xs font-semibold text-muted"><Users className="size-3.5" /> {a._count.members.toLocaleString()}</span>}
               </div>
               <h3 className="mt-4 font-bold">{pick(lang, a.name, a.nameDv)}</h3>
+              {a.workplace && <p className="mt-0.5 text-sm font-medium text-brand-700">{a.workplace}</p>}
               {a.description && <p className="mt-1 text-sm text-muted">{a.description}</p>}
             </Card>
           ))}

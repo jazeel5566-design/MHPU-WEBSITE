@@ -1,4 +1,5 @@
 import { requireMember } from "@/lib/auth";
+import { db } from "@/lib/db";
 import { formatDate } from "@/lib/utils";
 import { Card, CardHeader, PageHeader } from "@/components/ui";
 import { ProfileForm, PasswordForm } from "@/components/members/forms";
@@ -7,6 +8,7 @@ export const metadata = { title: "Profile" };
 
 export default async function ProfilePage() {
   const { member } = await requireMember();
+  const union = member.affiliateId ? await db.affiliate.findUnique({ where: { id: member.affiliateId }, select: { name: true } }) : null;
   return (
     <div>
       <PageHeader title="Profile & security" desc="Keep your contact and workplace details current so we can reach you." />
@@ -19,7 +21,7 @@ export default async function ProfilePage() {
           <Card>
             <CardHeader title="Membership record" desc="Contact the office to change these." />
             <dl className="divide-y divide-line text-sm">
-              {[["Name", member.fullName], ["Membership no.", member.membershipNo], ["ID / passport", member.idNumber.replace(/.(?=.{3})/g, "•")], ["Nationality", member.nationality], ["Profession", member.profession], ["Joined", formatDate(member.joinedAt)]].map(([k, v]) => (
+              {[["Name", member.fullName], ["Membership no.", member.membershipNo], ["Workplace union", union?.name ?? "—"], ["ID / passport", member.idNumber.replace(/.(?=.{3})/g, "•")], ["Nationality", member.nationality], ["Profession", member.profession], ["Joined", formatDate(member.joinedAt)]].map(([k, v]) => (
                 <div key={k} className="flex justify-between gap-3 px-5 py-3"><dt className="text-muted">{k}</dt><dd className="text-end font-semibold">{v}</dd></div>
               ))}
             </dl>

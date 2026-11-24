@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { str } from "@/lib/utils";
 import { saveIdDocument, saveSignature } from "@/lib/storage";
+import { matchWorkplaceUnion } from "@/lib/workplace";
 
 export type FormState = { ok?: boolean; error?: string; message?: string };
 
@@ -45,6 +46,7 @@ const joinSchema = z.object({
   atoll: z.string().optional(),
   island: z.string().trim().optional(),
   category: z.string().optional(),
+  affiliateId: z.string().optional(),
   referredBy: z.string().trim().optional(),
   declarationDate: z.string().min(1, "Enter the date"),
   consent: z.literal("on", { message: "Please confirm the declaration to continue" }),
@@ -60,6 +62,12 @@ export async function applyToJoin(_: FormState, fd: FormData): Promise<FormState
   if (!signature) return { error: "Please sign in the signature box before submitting." };
 
   const { consent, declarationDate, ...data } = r.data;
+  // Every member comes through a workplace union: required whenever unions are listed on the form.
+  const unionCount = await db.affiliate.count({ where: { active: true } });
+  // The workplace union is picked automatically from the hospital/company entered.
+  // If that workplace has no union, the applicant joins MHPU directly.
+  const unions = unionCount ? await db.affiliate.findMany({ where: { active: true }, select: { id: true, name: true, workplace: true } }) : [];
+  data.affiliateId = matchWorkplaceUnion(data.employer, unions)?.id;
   const existing = await db.application.findFirst({ where: { OR: [{ email: data.email }, { idNumber: data.idNumber }], status: "PENDING" } });
   if (existing) return { error: `We already have a pending application for these details (reference ${existing.reference}). We'll be in touch soon.` };
   const member = await db.member.findFirst({ where: { OR: [{ email: data.email }, { idNumber: data.idNumber }] } });
@@ -81,7 +89,7 @@ export async function applyToJoin(_: FormState, fd: FormData): Promise<FormState
       ...data, reference, idDocFile, signatureFile, consent: consent === "on",
       declarationDate: new Date(declarationDate),
       profession: data.profession || null, atoll: data.atoll || null, island: data.island || null,
-      category: data.category || null, referredBy: data.referredBy || null,
+      category: data.category || null, referredBy: data.referredBy || null, affiliateId: data.affiliateId || null,
     },
   });
   revalidatePath("/admin", "layout");

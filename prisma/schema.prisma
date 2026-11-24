@@ -43,9 +43,13 @@ model Affiliate {
   description String?
   memberCount Int      @default(0)
   website     String?
+  workplace   String? // hospital / facility this workplace union represents
+  active      Boolean  @default(true) // listed on the membership form
   createdAt   DateTime @default(now())
 
-  members Member[]
+  members      Member[]
+  applications Application[]
+  elections    Election[]
 }
 
 model Member {
@@ -68,6 +72,11 @@ model Member {
   joinedAt       DateTime  @default(now())
   duesPaidUntil  DateTime?
   isRep          Boolean   @default(false) // workplace representative
+  autopay          Boolean   @default(false) // automatic dues payment switched on by the member
+  autopayMonths    Int       @default(1) // months paid per automatic payment
+  autopayToken     String? // saved-card token from the payment gateway (never the card number)
+  autopayCardLabel String? // e.g. "Visa •••• 4242" for display
+  autopayConsentAt DateTime?
   notes          String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
@@ -81,6 +90,11 @@ model Member {
   payments   Payment[]
   rsvps      EventRsvp[]
   votes      Vote[]
+  paymentIntents PaymentIntent[]
+  candidacies    ElectionCandidate[]
+  electionVoters ElectionVoter[]
+  attendances    EventAttendance[]
+  smsMessages    SmsMessage[]
 }
 
 model Application {
@@ -98,6 +112,8 @@ model Application {
   atoll           String?
   island          String?
   category        String? // segment chosen on the join page
+  affiliateId     String? // workplace union chosen on the form
+  affiliate       Affiliate? @relation(fields: [affiliateId], references: [id], onDelete: SetNull)
   referredBy      String?
   idDocFile       String? // private file: copy of ID / passport
   signatureFile   String? // private file: drawn signature (PNG)
@@ -188,9 +204,23 @@ model Event {
   capacity    Int?
   cpdHours    Float?
   published   Boolean  @default(true)
+  meetingUrl  String? // e.g. Google Meet link; only shown to signed-in members
   createdAt   DateTime @default(now())
 
-  rsvps EventRsvp[]
+  rsvps       EventRsvp[]
+  attendances EventAttendance[]
+}
+
+/** Who clicked "Join meeting" (online attendance record). */
+model EventAttendance {
+  id       String   @id @default(cuid())
+  eventId  String
+  event    Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  memberId String
+  member   Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  joinedAt DateTime @default(now())
+
+  @@unique([eventId, memberId])
 }
 
 model EventRsvp {
@@ -342,4 +372,106 @@ model AuditLog {
   entityId  String?
   detail    String?
   createdAt DateTime @default(now())
+}
+
+// ─── Workplace union elections (secret ballot) ──────────────────────
+// ElectionVoter records WHO voted; ElectionVote records WHAT was chosen.
+// The two are never linked (random UUIDs, no timestamps on votes), so a
+// ballot cannot be traced back to a member.
+
+model Election {
+  id               String    @id @default(cuid())
+  title            String
+  description      String?
+  affiliateId      String? // workplace union; null = all MHPU members
+  affiliate        Affiliate? @relation(fields: [affiliateId], references: [id], onDelete: Restrict)
+  opensAt          DateTime
+  closesAt         DateTime
+  requireDuesPaid  Boolean   @default(true) // only members with dues up to date may vote
+  resultsPublished Boolean   @default(false)
+  createdAt        DateTime  @default(now())
+
+  positions ElectionPosition[]
+  voters    ElectionVoter[]
+}
+
+model ElectionPosition {
+  id         String   @id @default(cuid())
+  electionId String
+  election   Election @relation(fields: [electionId], references: [id], onDelete: Cascade)
+  title      String // e.g. President
+  seats      Int      @default(1) // how many people are elected to this position
+  order      Int      @default(0)
+
+  candidates ElectionCandidate[]
+  votes      ElectionVote[]
+}
+
+model ElectionCandidate {
+  id         String           @id @default(cuid())
+  positionId String
+  position   ElectionPosition @relation(fields: [positionId], references: [id], onDelete: Cascade)
+  memberId   String
+  member     Member           @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  statement  String?
+
+  votes ElectionVote[]
+
+  @@unique([positionId, memberId])
+}
+
+model ElectionVoter {
+  id         String   @id @default(uuid())
+  electionId String
+  election   Election @relation(fields: [electionId], references: [id], onDelete: Cascade)
+  memberId   String
+  member     Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  votedAt    DateTime @default(now())
+
+  @@unique([electionId, memberId])
+}
+
+model ElectionVote {
+  id          String            @id @default(uuid())
+  positionId  String
+  position    ElectionPosition  @relation(fields: [positionId], references: [id], onDelete: Cascade)
+  candidateId String
+  candidate   ElectionCandidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+}
+
+// ─── Online dues payments ───────────────────────────────────────────
+
+model PaymentIntent {
+  id          String    @id @default(uuid())
+  memberId    String
+  member      Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  months      Int
+  amount      Float // MVR
+  provider    String // BML | TEST
+  auto        Boolean   @default(false) // created by auto-pay (charged or sent as a pay link)
+  providerRef String? // gateway transaction id
+  status      String    @default("PENDING") // PENDING | PAID | FAILED | CANCELLED | EXPIRED
+  paymentId   String? // Payment created when confirmed
+  createdAt   DateTime  @default(now())
+  paidAt      DateTime?
+}
+
+// ─── SMS ────────────────────────────────────────────────────────────
+
+model SmsMessage {
+  id          String   @id @default(cuid())
+  to          String // normalised, e.g. 9607771234
+  body        String
+  kind        String   @default("MANUAL") // MANUAL | DUES_UPCOMING | DUES_OVERDUE | MEETING | PAYMENT_RECEIPT
+  status      String // SENT | FAILED | TEST
+  provider    String // DHIRAAGU | TEST
+  providerRef String?
+  error       String?
+  batchId     String?
+  memberId    String?
+  member      Member?  @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  sentById    String?
+  createdAt   DateTime @default(now())
+
+  @@index([memberId, kind, createdAt])
 }

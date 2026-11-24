@@ -33,7 +33,9 @@ export default async function EventsPage({ searchParams }: { searchParams: Promi
           <div className="space-y-3">
             {events.map((e) => (
               <EventCard key={e.id} e={e} lang={lang} action={
-                e.visibility === "MEMBERS"
+                e.meetingUrl
+                  ? <ButtonLink href="/members/events" size="sm" variant="secondary">Members: join online from the portal</ButtonLink>
+                  : e.visibility === "MEMBERS"
                   ? <ButtonLink href="/members/events" size="sm" variant="secondary">RSVP in member portal</ButtonLink>
                   : <ButtonLink href="/members/events" size="sm" variant="outline">Members: RSVP</ButtonLink>
               } />

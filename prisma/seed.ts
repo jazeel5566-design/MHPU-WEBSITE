@@ -37,7 +37,7 @@ async function main() {
     throw new Error("Refusing to load demo data into a non-local database. (Set ALLOW_REMOTE_SEED=yes to override.)");
   }
   console.log("Resetting database…");
-  for (const m of ["vote", "ballotOption", "ballot", "caseMessage", "case", "payment", "eventRsvp", "event", "petitionSignature", "campaign", "post", "resource", "media", "member", "application", "affiliate", "auditLog", "contactMessage", "subscriber", "setting", "user"] as const) {
+  for (const m of ["electionVote", "electionVoter", "electionCandidate", "electionPosition", "election", "paymentIntent", "smsMessage", "eventAttendance", "vote", "ballotOption", "ballot", "caseMessage", "case", "payment", "eventRsvp", "event", "petitionSignature", "campaign", "post", "resource", "media", "member", "application", "affiliate", "auditLog", "contactMessage", "subscriber", "setting", "user"] as const) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (db[m] as any).deleteMany();
   }
@@ -49,16 +49,20 @@ async function main() {
   const editor = await mkUser("editor@mhpu.mv", "Ibrahim Nasih", "EDITOR");
   const author = await mkUser("author@mhpu.mv", "Mariyam Zeena", "AUTHOR");
   const caseworker = await mkUser("caseworker@mhpu.mv", "Hassan Rasheed", "CASEWORKER");
+  const treasurer = await mkUser("treasurer@mhpu.mv", "Fathimath Rifa", "TREASURER");
+  await db.user.update({ where: { id: treasurer.id }, data: { title: "Treasurer" } });
 
-  // ── Affiliates (placeholder names) ──
-  const affs = await Promise.all([
-    { name: "Nurses & Midwives Chapter", shortName: "NMC", description: "Staff nurses, nurse specialists and midwives in public and private facilities.", memberCount: 1840 },
-    { name: "Medical & Dental Officers Chapter", shortName: "MDOC", description: "Medical officers, specialists, consultants and dental surgeons.", memberCount: 420 },
-    { name: "Allied Health Professionals Chapter", shortName: "AHPC", description: "Laboratory, imaging, pharmacy, physiotherapy and rehabilitation staff.", memberCount: 610 },
-    { name: "Community & Public Health Chapter", shortName: "CPHC", description: "Island health centre staff, community health workers and public-health officers.", memberCount: 530 },
-    { name: "Health Support Staff Chapter", shortName: "HSSC", description: "Administrative, attendant, transport and support services staff.", memberCount: 380 },
-    { name: "Expatriate Health Workers Network", shortName: "EHWN", description: "Representing internationally recruited health professionals working in the Maldives.", memberCount: 960 },
-  ].map((data) => db.affiliate.create({ data })));
+  // ── Workplace unions (placeholder names, one per facility) ──
+  const unionDefs: [string, string, string][] = [
+    ["IGMH Staff Union", "IGMH-SU", "IGMH, Indira Gandhi Memorial Hospital"], ["Hulhumalé Hospital Staff Union", "HH-SU", "Hulhumalé Hospital, Hulhumale Hospital"],
+    ["Kulhudhuffushi Hospital Staff Union", "KRH-SU", "Kulhudhuffushi Regional Hospital"], ["Addu Equatorial Hospital Staff Union", "AEH-SU", "Addu Equatorial Hospital"],
+    ["Gan Regional Hospital Staff Union", "GRH-SU", "Gan Regional Hospital"], ["Ungoofaaru Hospital Staff Union", "URH-SU", "Ungoofaaru Regional Hospital"],
+    ["Naifaru Hospital Staff Union", "NAH-SU", "Naifaru Atoll Hospital"], ["Thinadhoo Hospital Staff Union", "TRH-SU", "Thinadhoo Regional Hospital"],
+    ["Island Health Centres Union", "IHC-U", "Eydhafushi Health Centre"], ["Fuvahmulah Hospital Staff Union", "FH-SU", "Fuvahmulah Hospital"],
+    ["Private Healthcare Workers Union", "PHWU", "Private Clinic, Malé"],
+  ];
+  const affs = await Promise.all(unionDefs.map(([name, shortName, workplace]) => db.affiliate.create({ data: { name, shortName, workplace, description: "Sample workplace union — replace with real details." } })));
+  const unionFor = (facility: string) => affs[Math.max(0, unionDefs.findIndex((u) => u[2].split(", ")[0] === facility))] ?? affs[8];
 
   // ── Members ──
   const first = ["Aminath", "Mohamed", "Fathimath", "Ahmed", "Mariyam", "Ibrahim", "Hawwa", "Ali", "Aishath", "Hussain", "Khadheeja", "Hassan", "Shifza", "Abdulla", "Zulfa", "Ismail", "Nashwa", "Yoosuf", "Raufa", "Adam"];
@@ -66,7 +70,6 @@ async function main() {
   const expat = [["Priya Nair", "Indian"], ["Rajesh Kumar", "Indian"], ["Farzana Akter", "Bangladeshi"], ["Nimal Perera", "Sri Lankan"], ["Sunita Thapa", "Nepali"], ["Anil Varghese", "Indian"], ["Dilani Fernando", "Sri Lankan"], ["Mohammad Hasan", "Bangladeshi"]];
   const facilities = [["IGMH", "Malé City"], ["Hulhumalé Hospital", "Kaafu"], ["Kulhudhuffushi Regional Hospital", "Haa Dhaalu"], ["Addu Equatorial Hospital", "Addu City"], ["Gan Regional Hospital", "Laamu"], ["Ungoofaaru Regional Hospital", "Raa"], ["Naifaru Atoll Hospital", "Lhaviyani"], ["Thinadhoo Regional Hospital", "Gaafu Dhaalu"], ["Eydhafushi Health Centre", "Baa"], ["Felidhoo Health Centre", "Vaavu"], ["Fuvahmulah Hospital", "Gnaviyani"], ["Private Clinic, Malé", "Malé City"]];
   const professions = ["Nurse", "Nurse", "Nurse", "Midwife", "Medical Doctor", "Laboratory Technologist", "Pharmacist", "Radiographer", "Physiotherapist", "Paramedic / EMT", "Community Health Worker", "Public Health Officer", "Support Staff", "Health Administrator"];
-  const affFor = (p: string, isExpat: boolean) => isExpat ? affs[5] : p.startsWith("Nurse") || p === "Midwife" ? affs[0] : p.includes("Doctor") ? affs[1] : ["Community Health Worker", "Public Health Officer"].includes(p) ? affs[3] : ["Support Staff", "Health Administrator"].includes(p) ? affs[4] : affs[2];
 
   const members = [];
   const N = 84;
@@ -85,7 +88,7 @@ async function main() {
         fullName: i === 0 ? "Aminath Shareef" : name, idNumber: isExpat ? `P${8800000 + i * 13}` : `A${String(100000 + i * 917).slice(0, 6)}`,
         nationality, phone: `+960 7${String(100000 + i * 4111).slice(0, 6)}`, email, profession: i === 0 ? "Nurse" : prof,
         role: prof === "Nurse" ? "Staff Nurse" : null, employer: i === 0 ? "IGMH" : fac, atoll: i === 0 ? "Malé City" : atoll,
-        status, joinedAt, isRep: i % 9 === 1, affiliateId: affFor(prof, isExpat).id, userId: user.id,
+        status, joinedAt, isRep: i % 9 === 1, affiliateId: unionFor(i === 0 ? "IGMH" : fac).id, userId: user.id,
         duesPaidUntil: status === "LAPSED" ? days(-40) : days(10 + (i % 5) * 30),
       },
     }));
@@ -116,7 +119,7 @@ async function main() {
     const idName = `sample-id-${i + 1}.pdf`, sigName = `sample-signature-${i + 1}.png`;
     writeFileSync(path.join(appDir, idName), makePdf("SAMPLE ID DOCUMENT", [a.fullName, a.idNumber, "", "Placeholder for the applicant's ID / passport copy."]));
     writeFileSync(path.join(appDir, sigName), await sigPng(i * 8));
-    await db.application.create({ data: { ...a, reference: `APP-${new Date().getFullYear()}-${String(i + 1).padStart(4, "0")}`, idDocFile: idName, signatureFile: sigName, declarationDate: days(-i), consent: true, createdAt: days(-i - 0.2) } });
+    await db.application.create({ data: { ...a, affiliateId: unionFor(a.employer).id, reference: `APP-${new Date().getFullYear()}-${String(i + 1).padStart(4, "0")}`, idDocFile: idName, signatureFile: sigName, declarationDate: days(-i), consent: true, createdAt: days(-i - 0.2) } });
   }
 
   // ── Media ──
@@ -185,7 +188,7 @@ async function main() {
   // ── Events ──
   const events = await Promise.all([
     { title: "Branch meeting: Malé & Kaafu", description: "Discuss the 2027 pay claim and the overtime campaign.", startsAt: at(4, 20, 30), location: "MHPU Hall, Malé", type: "MEETING", capacity: 120 },
-    { title: "Know your rights: disciplinary procedures", description: "Practical training for members and reps.", startsAt: at(9, 21), location: "Online (Zoom)", isOnline: true, type: "TRAINING", cpdHours: 2 },
+    { title: "Know your rights: disciplinary procedures", description: "Practical training for members and reps.", startsAt: at(9, 21), location: "Online (Google Meet)", isOnline: true, type: "TRAINING", cpdHours: 2, meetingUrl: "https://meet.google.com/abc-defg-hij" },
     { title: "CPD: Infection prevention update", description: "Accredited CPD session for nurses and allied health staff.", startsAt: at(14, 9), location: "Addu Equatorial Hospital", type: "CPD", cpdHours: 3, capacity: 40 },
     { title: "Members' briefing: expatriate worker classification", description: "Members-only briefing in English.", startsAt: at(6, 21, 30), location: "Online (Zoom)", isOnline: true, type: "WEBINAR", visibility: "MEMBERS" },
     { title: "Annual General Assembly 2027", description: "Elect the executive committee and vote on motions.", startsAt: at(48, 9), location: "Dharubaaruge, Malé", type: "AGM", visibility: "MEMBERS", capacity: 400 },
@@ -242,6 +245,30 @@ async function main() {
   for (const [i, m] of members.slice(1, 50).entries()) await db.vote.create({ data: { ballotId: b1.id, memberId: m.id, optionId: b1.options[i % 7 < 3 ? 0 : i % 7 < 5 ? 3 : i % 2 ? 1 : 2].id } });
   for (const [i, m] of members.slice(0, 61).entries()) await db.vote.create({ data: { ballotId: b2.id, memberId: m.id, optionId: b2.options[i % 5 === 0 ? 1 : 0].id } });
 
+  // ── Workplace union elections (sample) ──
+  const igmh = affs[0];
+  const igmhMembers = members.filter((m) => m.affiliateId === igmh.id);
+  const openEl = await db.election.create({ data: { title: "IGMH Staff Union — ExCom election", description: "Sample election. Elects the IGMH Staff Union executive committee for a two-year term.", affiliateId: igmh.id, opensAt: days(-1), closesAt: days(6) } });
+  const posDefs: [string, number][] = [["President", 1], ["Secretary", 1], ["Committee members", 2]];
+  let ci = 1;
+  for (const [i, [title, seats]] of posDefs.entries()) {
+    const pos = await db.electionPosition.create({ data: { electionId: openEl.id, title, seats, order: i } });
+    for (let k = 0; k < seats + 1; k++) {
+      const cand = igmhMembers[ci++ % igmhMembers.length];
+      if (cand && cand.id !== demo.id) await db.electionCandidate.create({ data: { positionId: pos.id, memberId: cand.id, statement: k === 0 ? "I will push for fair rosters and paid overtime." : null } }).catch(() => {});
+    }
+  }
+  const closedEl = await db.election.create({ data: { title: "Island Health Centres Union — ExCom election 2025", affiliateId: affs[8].id, opensAt: days(-60), closesAt: days(-53), resultsPublished: true, requireDuesPaid: false } });
+  const cpos = await db.electionPosition.create({ data: { electionId: closedEl.id, title: "President", seats: 1 } });
+  const ihc = members.filter((m) => m.affiliateId === affs[8].id).slice(0, 2);
+  const cands = [];
+  for (const m of ihc) cands.push(await db.electionCandidate.create({ data: { positionId: cpos.id, memberId: m.id } }));
+  for (const [i, m] of members.filter((m) => m.affiliateId === affs[8].id).entries()) {
+    if (!cands.length) break;
+    await db.electionVoter.create({ data: { electionId: closedEl.id, memberId: m.id } });
+    await db.electionVote.create({ data: { positionId: cpos.id, candidateId: cands[i % 3 === 0 ? 1 % cands.length : 0].id } });
+  }
+
   // ── Misc ──
   await db.contactMessage.createMany({ data: [
     { name: "Journalist, Malé newsroom", email: "news@example.mv", topic: "Media enquiry", message: "Could MHPU comment on the overtime cap ahead of the budget debate?" },
@@ -255,10 +282,11 @@ async function main() {
     { key: "alertText", value: "Overtime pay campaign: add your name to the petition." },
     { key: "alertLink", value: "/campaigns/fair-overtime-pay" },
     { key: "bankDetails", value: "SAMPLE BANK · Acc. 0000-000000-000 · MHPU" },
+    { key: "paymentsEnabled", value: "true" }, { key: "smsEnabled", value: "true" }, { key: "remindersEnabled", value: "true" },
   ] });
 
   console.log(`Seeded: ${members.length} members, ${posts.length + 3} posts, 3 campaigns, ${events.length} events, ${docs.length} documents, ${caseData.length} cases.`);
-  console.log("Demo logins (password mhpu1234): admin@ / editor@ / author@ / caseworker@ / member@mhpu.mv");
+  console.log("Demo logins (password mhpu1234): admin@ / treasurer@ / editor@ / author@ / caseworker@ / member@mhpu.mv");
 }
 
 main().finally(() => db.$disconnect());

@@ -40,7 +40,7 @@ export default async function HomePage() {
     db.post.findMany({ where: livePosts(), orderBy: liveOrder, take: 4 }),
     db.event.findMany({ where: { published: true, startsAt: { gte: new Date() }, visibility: "PUBLIC" }, orderBy: { startsAt: "asc" }, take: 3 }),
     db.member.count({ where: { status: "ACTIVE" } }),
-    db.affiliate.count(),
+    db.affiliate.count({ where: { active: true } }),
     db.campaign.count({ where: { status: "WON" } }),
   ]);
   const reps = await db.member.count({ where: { isRep: true, status: "ACTIVE" } });
@@ -70,7 +70,7 @@ export default async function HomePage() {
             </div>
             <dl className="mt-10 grid max-w-lg grid-cols-3 gap-6 border-t border-white/15 pt-6">
               {memberCount >= 50 && <Stat value={memberCount.toLocaleString()} label="Active members" />}
-              {affiliateCount > 0 && <Stat value={affiliateCount} label="Affiliated unions" />}
+              {affiliateCount > 0 && <Stat value={affiliateCount} label="Workplace unions" />}
               <Stat value="21" label="Atolls & cities" />
             </dl>
           </div>
@@ -158,7 +158,7 @@ export default async function HomePage() {
               <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Every health worker. Every island.</h2>
               <p className="mt-4 text-brand-100">From IGMH in Malé to a two-person health post in the far north, MHPU members bargain together — Maldivian and expatriate, clinical and support staff alike.</p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <ButtonLink href={affiliateCount > 0 ? "/about#affiliates" : "/about"} className="bg-white text-brand-900 hover:bg-brand-50"><Users className="size-4" /> {affiliateCount > 0 ? "Our affiliated unions" : "About MHPU"}</ButtonLink>
+                <ButtonLink href={affiliateCount > 0 ? "/about#affiliates" : "/about"} className="bg-white text-brand-900 hover:bg-brand-50"><Users className="size-4" /> {affiliateCount > 0 ? "Our workplace unions" : "About MHPU"}</ButtonLink>
                 {reps > 0 && <ButtonLink href="/contact#reps" variant="ghost" className="text-white hover:bg-white/10"><MapPinned className="size-4" /> Find your rep</ButtonLink>}
               </div>
             </div>

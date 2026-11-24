@@ -9,8 +9,8 @@ import { Badge, Card, Notice, PageHeader, Select, StatusBadge, Table, Td, Th, bu
 
 export const dynamic = "force-dynamic";
 
-export default async function MembersPage({ searchParams }: { searchParams: Promise<{ q?: string; status?: string; profession?: string; atoll?: string; dues?: string; page?: string; deleted?: string }> }) {
-  await requireRole(["ADMIN", "CASEWORKER"], "/admin");
+export default async function MembersPage({ searchParams }: { searchParams: Promise<{ q?: string; status?: string; profession?: string; atoll?: string; dues?: string; page?: string; deleted?: string; union?: string }> }) {
+  await requireRole(["ADMIN", "CASEWORKER", "TREASURER"], "/admin");
   const sp = await searchParams;
   const page = Math.max(1, Number(sp.page) || 1);
   const take = 25;
@@ -19,9 +19,11 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
     ...(sp.status ? { status: sp.status } : {}),
     ...(sp.profession ? { profession: sp.profession } : {}),
     ...(sp.atoll ? { atoll: sp.atoll } : {}),
+    ...(sp.union ? { affiliateId: sp.union === "none" ? null : sp.union } : {}),
     ...(sp.dues === "overdue" ? { OR: [{ duesPaidUntil: null }, { duesPaidUntil: { lt: now } }] } : {}),
     ...(sp.q ? { AND: [{ OR: [{ fullName: { contains: sp.q, mode: "insensitive" as const } }, { membershipNo: { contains: sp.q.toUpperCase(), mode: "insensitive" as const } }, { email: { contains: sp.q.toLowerCase(), mode: "insensitive" as const } }, { phone: { contains: sp.q, mode: "insensitive" as const } }, { idNumber: { contains: sp.q, mode: "insensitive" as const } }, { employer: { contains: sp.q, mode: "insensitive" as const } }] }] } : {}),
   };
+  const unions = await db.affiliate.findMany({ select: { id: true, shortName: true }, orderBy: { shortName: "asc" } });
   const [members, total] = await Promise.all([
     db.member.findMany({ where, include: { affiliate: { select: { shortName: true } } }, orderBy: { joinedAt: "desc" }, take, skip: (page - 1) * take }),
     db.member.count({ where }),
@@ -34,7 +36,7 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
       <PageHeader title="Members" desc={`${total.toLocaleString()} matching members`} actions={<a href={`/api/export/members?${qs}`} className={buttonClass("outline")}><Download className="size-4" /> Export CSV</a>} />
       {sp.deleted && <div className="mb-4"><Notice>Member deleted: {sp.deleted}</Notice></div>}
       <Card className="mb-4 p-3">
-        <form className="grid gap-2 md:grid-cols-[1fr_repeat(4,auto)_auto]">
+        <form className="grid gap-2 md:grid-cols-[1fr_repeat(5,auto)_auto]">
           <div className="relative">
             <Search className="absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted" />
             <input name="q" defaultValue={sp.q} placeholder="Name, number, email, phone, ID, workplace…" className="h-10 w-full rounded-xl border border-line ps-9 pe-3 text-sm" />
@@ -42,6 +44,7 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
           <Select name="status" defaultValue={sp.status ?? ""} className="h-10 py-2"><option value="">Any status</option>{MEMBER_STATUSES.map((s) => <option key={s}>{s}</option>)}</Select>
           <Select name="profession" defaultValue={sp.profession ?? ""} className="h-10 py-2"><option value="">Any profession</option>{PROFESSIONS.map((s) => <option key={s}>{s}</option>)}</Select>
           <Select name="atoll" defaultValue={sp.atoll ?? ""} className="h-10 py-2"><option value="">Any atoll</option>{ATOLLS.map((s) => <option key={s}>{s}</option>)}</Select>
+          <Select name="union" defaultValue={sp.union ?? ""} className="h-10 py-2"><option value="">Any union</option>{unions.map((u) => <option key={u.id} value={u.id}>{u.shortName}</option>)}<option value="none">No union</option></Select>
           <Select name="dues" defaultValue={sp.dues ?? ""} className="h-10 py-2"><option value="">Any dues</option><option value="overdue">Overdue</option></Select>
           <button className={buttonClass("primary")}>Filter</button>
         </form>

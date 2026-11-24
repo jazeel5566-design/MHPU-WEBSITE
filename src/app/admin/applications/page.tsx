@@ -15,7 +15,7 @@ export default async function ApplicationsPage({ searchParams }: { searchParams:
   await requireRole(["ADMIN"], "/admin");
   const { status = "PENDING" } = await searchParams;
   const [apps, affiliates] = await Promise.all([
-    db.application.findMany({ where: { status }, orderBy: { createdAt: status === "PENDING" ? "asc" : "desc" }, take: 100 }),
+    db.application.findMany({ where: { status }, include: { affiliate: { select: { name: true } } }, orderBy: { createdAt: status === "PENDING" ? "asc" : "desc" }, take: 100 }),
     db.affiliate.findMany({ select: { id: true, shortName: true } }),
   ]);
   const members = await db.member.findMany({ where: { id: { in: apps.map((a) => a.memberId).filter((x): x is string => !!x) } }, select: { id: true, membershipNo: true } });
@@ -41,7 +41,7 @@ export default async function ApplicationsPage({ searchParams }: { searchParams:
                   </div>
                   <p className="text-sm text-muted"><span className="font-mono">{a.reference}</span> · applied {timeAgo(a.createdAt)} ({formatDate(a.createdAt)})</p>
                   <dl className="mt-4 grid gap-x-6 gap-y-2.5 text-sm sm:grid-cols-2 xl:grid-cols-3">
-                    {[["National ID / Passport", a.idNumber], ["Country", a.country], ["Phone", a.phone], ["Email", a.email], ["Present address", a.address], ["Job / job title", a.jobTitle], ["Hospital / company", a.employer], ["Profession", a.profession ?? "—"], ["Atoll / island", [a.island, a.atoll].filter(Boolean).join(", ") || "—"], ["Referred by", a.referredBy ?? "—"], ["Declaration date", formatDate(a.declarationDate)]].map(([k, v]) => (
+                    {[["Workplace union", a.affiliate?.name ?? "—"], ["National ID / Passport", a.idNumber], ["Country", a.country], ["Phone", a.phone], ["Email", a.email], ["Present address", a.address], ["Job / job title", a.jobTitle], ["Hospital / company", a.employer], ["Profession", a.profession ?? "—"], ["Atoll / island", [a.island, a.atoll].filter(Boolean).join(", ") || "—"], ["Referred by", a.referredBy ?? "—"], ["Declaration date", formatDate(a.declarationDate)]].map(([k, v]) => (
                       <div key={k}><dt className="text-xs text-muted">{k}</dt><dd className="break-words font-medium">{v}</dd></div>
                     ))}
                   </dl>
@@ -80,7 +80,7 @@ export default async function ApplicationsPage({ searchParams }: { searchParams:
               </div>
               {a.status === "PENDING" && (
                 <div className="flex flex-col gap-4 border-t border-line px-5 py-4 lg:flex-row lg:items-end lg:justify-between">
-                  <ApproveForm id={a.id} affiliates={affiliates} />
+                  <ApproveForm id={a.id} affiliates={affiliates} defaultAffiliateId={a.affiliateId} />
                   <form action={rejectApplication} className="flex items-end gap-2">
                     <input type="hidden" name="id" value={a.id} />
                     <Input name="note" placeholder="Reason (optional)" className="h-9 py-1.5" />

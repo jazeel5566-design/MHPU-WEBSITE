@@ -25,7 +25,7 @@ function Result({ state }: { state: AState }) {
   );
 }
 
-export function ApproveForm({ id, affiliates }: { id: string; affiliates: { id: string; shortName: string }[] }) {
+export function ApproveForm({ id, affiliates, defaultAffiliateId }: { id: string; affiliates: { id: string; shortName: string }[]; defaultAffiliateId?: string | null }) {
   const [state, action] = useActionState<AState, FormData>(approveApplication, {});
   if (state.ok)
     return (
@@ -38,7 +38,7 @@ export function ApproveForm({ id, affiliates }: { id: string; affiliates: { id: 
   return (
     <form action={action} className="flex flex-wrap items-end gap-2">
       <input type="hidden" name="id" value={id} />
-      <Field label="Affiliate union"><Select name="affiliateId" defaultValue="" className="h-9 py-1.5"><option value="">None</option>{affiliates.map((a) => <option key={a.id} value={a.id}>{a.shortName}</option>)}</Select></Field>
+      <Field label="Workplace union"><Select name="affiliateId" defaultValue={defaultAffiliateId ?? ""} className="h-9 py-1.5"><option value="">None</option>{affiliates.map((a) => <option key={a.id} value={a.id}>{a.shortName}</option>)}</Select></Field>
       <SubmitButton size="sm" pendingText="Approving…">Approve & create login</SubmitButton>
       {state.error && <div className="w-full"><Result state={state} /></div>}
     </form>
@@ -61,7 +61,7 @@ export function MemberEditForm({ m, affiliates, readOnly }: { m: M; affiliates: 
         <Field label="Workplace"><Input name="employer" defaultValue={m.employer} /></Field>
         <Field label="Atoll"><Select name="atoll" defaultValue={m.atoll}>{ATOLLS.map((a) => <option key={a}>{a}</option>)}</Select></Field>
         <Field label="Status"><Select name="status" defaultValue={m.status}>{MEMBER_STATUSES.map((s) => <option key={s}>{s}</option>)}</Select></Field>
-        <Field label="Affiliate union"><Select name="affiliateId" defaultValue={m.affiliateId ?? ""}><option value="">None</option>{affiliates.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}</Select></Field>
+        <Field label="Workplace union"><Select name="affiliateId" defaultValue={m.affiliateId ?? ""}><option value="">None</option>{affiliates.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}</Select></Field>
         <Field label="Dues paid until"><Input type="date" name="duesPaidUntil" defaultValue={m.duesPaidUntil} /></Field>
         <div className="flex items-end pb-2"><Checkbox name="isRep" defaultChecked={m.isRep} label="Workplace representative (shown on 'Find your rep')" /></div>
         {m.hasLogin && <Field label="Title / position (shown when logged in)" hint="For ExCom and officers, e.g. Treasurer. Leave blank for ordinary members."><Input name="userTitle" defaultValue={m.userTitle ?? ""} placeholder="e.g. Vice President" /></Field>}
@@ -138,20 +138,22 @@ export function BallotForm() {
   );
 }
 
-type Aff = { id?: string; name: string; nameDv: string | null; shortName: string; description: string | null; website: string | null; memberCount: number };
+type Aff = { id?: string; name: string; nameDv: string | null; shortName: string; description: string | null; website: string | null; memberCount: number; workplace?: string | null; active?: boolean };
 export function AffiliateForm({ a }: { a?: Aff }) {
   const [state, action] = useActionState<AState, FormData>(saveAffiliate, {});
   return (
     <form action={action} className="grid gap-3 sm:grid-cols-2">
       <div className="sm:col-span-2"><Result state={state} /></div>
       {a?.id && <input type="hidden" name="id" value={a.id} />}
-      <Field label="Name" required><Input name="name" defaultValue={a?.name} required /></Field>
-      <Field label="Short name" required><Input name="shortName" defaultValue={a?.shortName} required /></Field>
+      <Field label="Union name" required><Input name="name" defaultValue={a?.name} required placeholder="e.g. IGMH Staff Union" /></Field>
+      <Field label="Short name" required><Input name="shortName" defaultValue={a?.shortName} required placeholder="e.g. IGMH-SU" /></Field>
+      <Field label="Workplace name(s)" hint="Used to match applicants automatically. Separate alternative names with commas." className="sm:col-span-2"><Input name="workplace" defaultValue={a?.workplace ?? ""} placeholder="e.g. Indira Gandhi Memorial Hospital, IGMH" /></Field>
+      <div className="flex items-end pb-2"><Checkbox name="active" defaultChecked={a?.active ?? true} label="Active (used to match new applicants)" /></div>
       <Field label="Name (ދިވެހި)"><Input name="nameDv" defaultValue={a?.nameDv ?? ""} dir="rtl" className="dv-text" /></Field>
       <Field label="Members"><Input name="memberCount" type="number" defaultValue={a?.memberCount ?? 0} /></Field>
       <Field label="Description" className="sm:col-span-2"><Input name="description" defaultValue={a?.description ?? ""} /></Field>
       <Field label="Website"><Input name="website" defaultValue={a?.website ?? ""} /></Field>
-      <div className="flex items-end"><SubmitButton size="sm">{a?.id ? "Save" : "Add affiliate"}</SubmitButton></div>
+      <div className="flex items-end"><SubmitButton size="sm">{a?.id ? "Save" : "Add workplace union"}</SubmitButton></div>
     </form>
   );
 }
@@ -172,7 +174,7 @@ export function StaffForm() {
   );
 }
 
-export function SettingsForm({ s }: { s: Settings }) {
+export function SettingsForm({ s, env }: { s: Settings; env: { bml: boolean; bmlMode: string; dhiraagu: boolean; cron: boolean } }) {
   const [state, action] = useActionState<AState, FormData>(saveSettings, {});
   const F = ({ k, label, hint }: { k: keyof Settings; label: string; hint?: string }) => <Field label={label} hint={hint}><Input name={k} defaultValue={s[k]} /></Field>;
   return (
@@ -205,6 +207,45 @@ export function SettingsForm({ s }: { s: Settings }) {
           <F k="facebook" label="Facebook URL" /><F k="instagram" label="Instagram URL" /><F k="x" label="X URL" />
         </div>
       </section>
+      <section id="integrations" className="scroll-mt-24 space-y-4 rounded-2xl border border-line p-5">
+        <h2 className="font-bold">Online dues payments</h2>
+        <Checkbox name="paymentsEnabled" defaultChecked={s.paymentsEnabled === "true"} label="Let members pay dues online from the member portal" />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Payment provider" hint={env.bml ? `BML key found (${env.bmlMode} mode).` : "BML not configured yet — add BML_API_KEY and BML_MODE in Vercel."}>
+            <Select name="paymentProvider" defaultValue={s.paymentProvider}>
+              <option value="TEST">Test mode (only admins see it; no real money)</option>
+              <option value="BML">Bank of Maldives — BML Connect</option>
+            </Select>
+          </Field>
+        </div>
+      </section>
+
+      <section className="space-y-4 rounded-2xl border border-line p-5">
+        <h2 className="font-bold">SMS</h2>
+        <Checkbox name="smsEnabled" defaultChecked={s.smsEnabled === "true"} label="Allow sending SMS from the website" />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="SMS provider" hint={env.dhiraagu ? "Dhiraagu credentials found." : "Dhiraagu not configured yet — add DHIRAAGU_SMS_USERNAME and DHIRAAGU_SMS_PASSWORD in Vercel."}>
+            <Select name="smsProvider" defaultValue={s.smsProvider}>
+              <option value="TEST">Test mode (log only, nothing is sent)</option>
+              <option value="DHIRAAGU">Dhiraagu Bulk SMS</option>
+            </Select>
+          </Field>
+        </div>
+      </section>
+
+      <section className="space-y-4 rounded-2xl border border-line p-5">
+        <h2 className="font-bold">Automatic dues reminders</h2>
+        <Checkbox name="remindersEnabled" defaultChecked={s.remindersEnabled === "true"} label="Send dues reminders by SMS automatically every morning (needs SMS switched on)" />
+        {!env.cron && <p className="text-xs text-amber-700">The daily schedule needs CRON_SECRET set in Vercel. Until then you can still send reminders manually from the SMS page.</p>}
+        <div className="grid gap-4 sm:grid-cols-3">
+          <F k="reminderDaysBefore" label="Remind this many days before dues are due" />
+          <F k="reminderRepeatDays" label="Repeat overdue reminders every (days)" />
+          <F k="reminderMaxOverdue" label="Maximum overdue reminders" />
+        </div>
+        <Field label="“Due soon” message" hint="Placeholders: {name} {membershipNo} {dueDate} {payLink} {hotline}"><Textarea name="reminderUpcomingText" defaultValue={s.reminderUpcomingText} rows={2} /></Field>
+        <Field label="“Overdue” message"><Textarea name="reminderOverdueText" defaultValue={s.reminderOverdueText} rows={2} /></Field>
+      </section>
+
       <SubmitButton size="lg">Save settings</SubmitButton>
     </form>
   );

@@ -117,3 +117,69 @@ export async function castVote(_: MState, fd: FormData): Promise<MState> {
   revalidatePath("/members/ballots");
   return { ok: true, message: "Your vote has been recorded. Thank you!" };
 }
+
+// ─── Online dues payments ───────────────────────────────────────────
+
+/** Test checkout is only for trying the flow: admins on the live site, anyone in development. */
+export async function testCheckoutAllowed(role: string) {
+  return role === "ADMIN" || process.env.VERCEL_ENV !== "production";
+}
+
+export async function startOnlinePayment(fd: FormData) {
+  const { user, member } = await requireMember();
+  const { getSettings } = await import("@/lib/settings");
+  const { startCheckout } = await import("@/lib/payments");
+  const { headers } = await import("next/headers");
+  const s = await getSettings();
+  if (s.paymentsEnabled !== "true") redirect("/members/dues?payment=off");
+  const provider = s.paymentProvider === "BML" ? "BML" : "TEST";
+  if (provider === "TEST" && !(await testCheckoutAllowed(user.role))) redirect("/members/dues?payment=off");
+  const months = [1, 3, 6, 12].includes(Number(str(fd, "months"))) ? Number(str(fd, "months")) : 1;
+  const amount = months * (Number(s.monthlyDues) || 100);
+  const intent = await db.paymentIntent.create({ data: { memberId: member.id, months, amount, provider } });
+  const h = await headers();
+  const base = `${h.get("x-forwarded-proto") ?? "https"}://${h.get("host")}`;
+  const r = await startCheckout(intent, base);
+  if (!r.ok) {
+    await db.paymentIntent.update({ where: { id: intent.id }, data: { status: "FAILED" } });
+    redirect("/members/dues?payment=error&msg=" + encodeURIComponent(r.error));
+  }
+  await audit(user.id, "payment_start", "PaymentIntent", intent.id, `${provider} MVR ${amount}`);
+  redirect(r.redirectUrl);
+}
+
+export async function completeTestPayment(fd: FormData) {
+  const { user, member } = await requireMember();
+  const { markIntentPaid } = await import("@/lib/payments");
+  const intent = await db.paymentIntent.findFirst({ where: { id: str(fd, "id"), memberId: member.id, provider: "TEST", status: "PENDING" } });
+  if (!intent || !(await testCheckoutAllowed(user.role))) redirect("/members/dues");
+  if (str(fd, "outcome") === "pay") {
+    if (fd.get("saveCard") === "on") {
+      await db.member.update({ where: { id: member.id }, data: { autopayToken: `test_tok_${intent.id.slice(0, 8)}`, autopayCardLabel: "Test card •••• 4242" } });
+    }
+    await markIntentPaid(intent.id, "TEST");
+    await audit(user.id, "payment_test_paid", "PaymentIntent", intent.id);
+    redirect("/members/dues?payment=paid");
+  }
+  await db.paymentIntent.update({ where: { id: intent.id }, data: { status: "CANCELLED" } });
+  redirect("/members/dues?payment=cancelled");
+}
+
+export async function setAutopay(fd: FormData) {
+  const { user, member } = await requireMember();
+  const on = str(fd, "autopay") === "on";
+  const months = [1, 3, 6, 12].includes(Number(str(fd, "months"))) ? Number(str(fd, "months")) : 1;
+  await db.member.update({
+    where: { id: member.id },
+    data: on ? { autopay: true, autopayMonths: months, autopayConsentAt: new Date() } : { autopay: false, autopayToken: null, autopayCardLabel: null },
+  });
+  await audit(user.id, on ? "autopay_on" : "autopay_off", "Member", member.id, on ? `${months} month(s)` : undefined);
+  redirect(`/members/dues?autopay=${on ? "on" : "off"}`);
+}
+
+export async function removeSavedCard() {
+  const { user, member } = await requireMember();
+  await db.member.update({ where: { id: member.id }, data: { autopayToken: null, autopayCardLabel: null } });
+  await audit(user.id, "autopay_card_removed", "Member", member.id);
+  redirect("/members/dues?autopay=card-removed");
+}

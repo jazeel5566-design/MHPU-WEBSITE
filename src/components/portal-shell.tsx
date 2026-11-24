@@ -29,7 +29,7 @@ export function PortalShell({ portal, groups, user, children, switcher }: {
     <div className="min-h-screen bg-sand-50/60">
       <div className={`h-1 ${a.bar}`} />
       {/* Sidebar */}
-      <aside className="fixed inset-y-0 start-0 top-1 z-30 hidden w-64 flex-col border-e border-line bg-white lg:flex">
+      <aside className="fixed inset-y-0 start-0 top-1 z-30 hidden w-64 flex-col border-e border-line bg-white lg:flex print:!hidden">
         <div className="border-b border-line px-5 py-4">
           <Link href="/"><Logo sub={a.label} /></Link>
         </div>
@@ -74,7 +74,7 @@ export function PortalShell({ portal, groups, user, children, switcher }: {
       </aside>
 
       {/* Mobile top bar */}
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-line bg-white/95 px-4 py-2.5 backdrop-blur lg:hidden">
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-line bg-white/95 px-4 py-2.5 backdrop-blur lg:hidden print:hidden">
         <Link href="/"><Logo sub={a.label} /></Link>
         <MobileNav
           items={[...flat.map((i) => ({ href: i.href, label: i.label })), ...(switcher ?? [])]}
@@ -82,7 +82,7 @@ export function PortalShell({ portal, groups, user, children, switcher }: {
         />
       </header>
 
-      <main id="main" className="lg:ps-64">
+      <main id="main" className="lg:ps-64 print:!ps-0">
         <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:py-8">{children}</div>
       </main>
     </div>
@@ -91,10 +91,10 @@ export function PortalShell({ portal, groups, user, children, switcher }: {
 
 export function portalSwitcher(role: string, current: string) {
   const all = [
-    { href: "/admin", label: "Admin", roles: ["ADMIN", "CASEWORKER"] },
+    { href: "/admin", label: "Admin", roles: ["ADMIN", "CASEWORKER", "TREASURER"] },
     { href: "/editorial", label: "Editorial", roles: ["ADMIN", "EDITOR", "AUTHOR"] },
     { href: "/members", label: "Members", roles: ["ADMIN", "MEMBER"] },
-    { href: "/", label: "Public website", roles: ["ADMIN", "EDITOR", "AUTHOR", "CASEWORKER", "MEMBER"] },
+    { href: "/", label: "Public website", roles: ["ADMIN", "TREASURER", "EDITOR", "AUTHOR", "CASEWORKER", "MEMBER"] },
   ];
   return all.filter((p) => p.roles.includes(role) && p.href !== current).map(({ href, label }) => ({ href, label }));
 }

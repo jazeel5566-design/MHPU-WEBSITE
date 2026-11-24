@@ -9,11 +9,11 @@ export async function GET(req: Request) {
   if (!user || user.role !== "ADMIN") return new NextResponse("Forbidden", { status: 403 });
   const sp = new URL(req.url).searchParams;
   const members = await db.member.findMany({
-    where: { ...(sp.get("status") ? { status: sp.get("status")! } : {}), ...(sp.get("profession") ? { profession: sp.get("profession")! } : {}), ...(sp.get("atoll") ? { atoll: sp.get("atoll")! } : {}) },
+    where: { ...(sp.get("status") ? { status: sp.get("status")! } : {}), ...(sp.get("profession") ? { profession: sp.get("profession")! } : {}), ...(sp.get("atoll") ? { atoll: sp.get("atoll")! } : {}), ...(sp.get("union") ? { affiliateId: sp.get("union") === "none" ? null : sp.get("union")! } : {}) },
     include: { affiliate: { select: { shortName: true } } }, orderBy: { membershipNo: "asc" },
   });
   const csv = toCsv([
-    ["Membership no", "Full name", "Status", "Profession", "Job title", "Employer", "Atoll", "Island", "Phone", "Email", "Nationality", "Affiliate", "Rep", "Joined", "Dues paid until"],
+    ["Membership no", "Full name", "Status", "Profession", "Job title", "Employer", "Atoll", "Island", "Phone", "Email", "Nationality", "Workplace union", "Rep", "Joined", "Dues paid until"],
     ...members.map((m) => [m.membershipNo, m.fullName, m.status, m.profession, m.role, m.employer, m.atoll, m.island, m.phone, m.email, m.nationality, m.affiliate?.shortName, m.isRep ? "Y" : "", m.joinedAt.toISOString().slice(0, 10), m.duesPaidUntil?.toISOString().slice(0, 10)]),
   ]);
   await audit(user.id, "export_members", "Member", undefined, `${members.length} rows`);

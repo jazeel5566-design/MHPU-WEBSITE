@@ -33,7 +33,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           {process.env.NODE_ENV !== "production" && (
             <div className="mt-8 rounded-xl border border-dashed border-line bg-sand-50 p-4 text-xs text-muted">
               <div className="mb-1 font-bold text-ink">Demo accounts (password: <code>mhpu1234</code>)</div>
-              admin@mhpu.mv · editor@mhpu.mv · author@mhpu.mv · caseworker@mhpu.mv · member@mhpu.mv
+              admin@mhpu.mv · treasurer@mhpu.mv · editor@mhpu.mv · author@mhpu.mv · caseworker@mhpu.mv · member@mhpu.mv
             </div>
           )}
         </div>

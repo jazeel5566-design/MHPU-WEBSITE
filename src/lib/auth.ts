@@ -46,6 +46,7 @@ export async function requireMember() {
 
 export function homeFor(role: string) {
   if (role === "MEMBER") return "/members";
+  if (role === "TREASURER") return "/admin/finance";
   if (role === "EDITOR" || role === "AUTHOR") return "/editorial";
   return "/admin";
 }

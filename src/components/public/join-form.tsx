@@ -8,6 +8,7 @@ import { SubmitButton } from "@/components/submit-button";
 import { SignaturePad } from "./signature-pad";
 import { cn } from "@/lib/utils";
 import { shrinkImage } from "@/lib/shrink-image";
+import { matchWorkplaceUnion, aliasesOf } from "@/lib/workplace";
 
 const ICONS: Record<string, React.ElementType> = { nurse: HeartPulse, doctor: Stethoscope, allied: FlaskConical, community: Building2, support: Users, expat: Globe2 };
 const MAX = 4 * 1024 * 1024; // server/Vercel limit per upload
@@ -26,13 +27,15 @@ function Step({ n, title, children }: { n: number; title: string; children: Reac
   );
 }
 
-export function JoinForm({ dues, registration }: { dues: number; registration: number }) {
+export function JoinForm({ dues, registration, unions }: { dues: number; registration: number; unions: { id: string; name: string; workplace: string | null }[] }) {
   const [state, action] = useActionState<FormState, FormData>(applyToJoin, {});
   const [cat, setCat] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [fileErr, setFileErr] = useState("");
   const [preview, setPreview] = useState("");
   const [signed, setSigned] = useState(false);
+  const [employer, setEmployer] = useState("");
+  const matched = matchWorkplaceUnion(employer, unions);
   const today = new Date().toISOString().slice(0, 10);
 
   if (state.ok) {
@@ -99,7 +102,17 @@ export function JoinForm({ dues, registration }: { dues: number; registration: n
       <Step n={3} title="Current employment details">
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Job / job title" required><Input name="jobTitle" required placeholder="e.g. Staff Nurse" /></Field>
-          <Field label="Hospital / company" required><Input name="employer" required placeholder="e.g. IGMH" /></Field>
+          <Field label="Hospital / company" required hint={unions.length ? "Start typing to see workplaces with a union." : undefined}>
+            <Input name="employer" required placeholder="e.g. IGMH" list="mhpu-workplaces" autoComplete="organization" value={employer} onChange={(e) => setEmployer(e.target.value)} />
+            <datalist id="mhpu-workplaces">{unions.flatMap((u) => aliasesOf(u)).map((w) => <option key={w} value={w} />)}</datalist>
+          </Field>
+          {employer.trim().length >= 2 && unions.length > 0 && (
+            <div className="sm:col-span-2" aria-live="polite">
+              {matched
+                ? <p className="flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-2.5 text-sm text-emerald-900"><CheckCircle2 className="size-4 shrink-0" /> Your workplace union: <strong>{matched.name}</strong>. You&apos;ll be placed in it automatically.</p>
+                : <p className="rounded-xl bg-sand-50 px-3 py-2.5 text-sm text-muted">No workplace union is registered for this workplace yet — no problem, you&apos;ll join MHPU directly.</p>}
+            </div>
+          )}
           <Field label="Profession"><Select name="profession" defaultValue=""><option value="">Choose…</option>{PROFESSIONS.map((p) => <option key={p}>{p}</option>)}</Select></Field>
           <Field label="Atoll / city of workplace"><Select name="atoll" defaultValue=""><option value="">Choose…</option>{ATOLLS.map((a) => <option key={a}>{a}</option>)}</Select></Field>
           <Field label="Island"><Input name="island" /></Field>

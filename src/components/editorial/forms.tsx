@@ -46,7 +46,7 @@ export function CampaignForm({ c, savedMsg }: { c: Campaign; savedMsg?: string }
   );
 }
 
-type Ev = { id?: string; title: string; titleDv: string | null; description: string; startsAt: string; endsAt: string | null; location: string; isOnline: boolean; type: string; visibility: string; capacity: number | null; cpdHours: number | null; published: boolean };
+type Ev = { meetingUrl?: string | null; id?: string; title: string; titleDv: string | null; description: string; startsAt: string; endsAt: string | null; location: string; isOnline: boolean; type: string; visibility: string; capacity: number | null; cpdHours: number | null; published: boolean };
 
 export function EventForm({ e, savedMsg }: { e: Ev; savedMsg?: string }) {
   const [state, action] = useActionState<EState, FormData>(saveEvent, savedMsg ? { ok: true, message: savedMsg } : {});
@@ -63,6 +63,9 @@ export function EventForm({ e, savedMsg }: { e: Ev; savedMsg?: string }) {
           <Field label="Starts" required><Input type="datetime-local" name="startsAt" defaultValue={e.startsAt} required /></Field>
           <Field label="Ends"><Input type="datetime-local" name="endsAt" defaultValue={e.endsAt ?? ""} /></Field>
           <Field label="Location / link" required><Input name="location" defaultValue={e.location} required placeholder="e.g. MHPU Hall, Malé or Zoom" /></Field>
+          <Field label="Online meeting link (Google Meet)" className="sm:col-span-2" hint="Create one at meet.google.com → “New meeting” → “Create a meeting for later”, then paste it here. Only signed-in members see the Join button; the link is never shown publicly.">
+            <Input name="meetingUrl" defaultValue={e.meetingUrl ?? ""} placeholder="https://meet.google.com/abc-defg-hij" />
+          </Field>
           <Field label="Type"><Select name="type" defaultValue={e.type}>{EVENT_TYPES.map((t) => <option key={t} value={t}>{t.charAt(0) + t.slice(1).toLowerCase()}</option>)}</Select></Field>
         </div>
       </div>

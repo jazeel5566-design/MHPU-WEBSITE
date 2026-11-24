@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Users, UserPlus, LifeBuoy, Wallet, ArrowRight } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireRole } from "@/lib/auth";
@@ -8,7 +9,8 @@ import { Card, CardHeader, PageHeader, StatCard, StatusBadge } from "@/component
 export const dynamic = "force-dynamic";
 
 export default async function AdminHome() {
-  const user = await requireRole(["ADMIN", "CASEWORKER"], "/admin");
+  const user = await requireRole(["ADMIN", "CASEWORKER", "TREASURER"], "/admin");
+  if (user.role === "TREASURER") redirect("/admin/finance");
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const yearAgo = new Date(now.getFullYear(), now.getMonth() - 11, 1);
