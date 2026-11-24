@@ -1,0 +1,141 @@
+import Link from "next/link";
+import { Megaphone, Phone, MessageCircle, Mail, MapPin, ArrowRight } from "lucide-react";
+import { getLang, t } from "@/lib/i18n";
+import { getSettings } from "@/lib/settings";
+import { getCurrentUser, homeFor } from "@/lib/auth";
+import { Logo } from "@/components/logo";
+import { A11yControls } from "@/components/a11y-bar";
+import { LangSwitch } from "@/components/lang-switch";
+import { MobileNav } from "@/components/mobile-nav";
+import { NavLink } from "@/components/nav-link";
+import { ButtonLink } from "@/components/ui";
+import { NewsletterForm } from "@/components/public/newsletter-form";
+
+export default async function PublicLayout({ children }: { children: React.ReactNode }) {
+  const [lang, settings, user] = await Promise.all([getLang(), getSettings(), getCurrentUser()]);
+  const nav = [
+    { href: "/about", label: t(lang, "about") },
+    { href: "/news", label: t(lang, "news") },
+    { href: "/campaigns", label: t(lang, "campaigns") },
+    { href: "/events", label: t(lang, "events") },
+    { href: "/resources", label: t(lang, "resources") },
+    { href: "/contact", label: t(lang, "contact") },
+  ];
+  const tel = settings.hotline.replace(/[^\d+]/g, "");
+  const portalHref = user ? homeFor(user.role) : "/login";
+
+  return (
+    <>
+      {settings.alertEnabled === "true" && settings.alertText && (
+        <div className="bg-coral-500 text-white">
+          <div className="mx-auto flex max-w-7xl items-center justify-center gap-2 px-4 py-2 text-center text-sm font-medium">
+            <Megaphone className="size-4 shrink-0" />
+            <span>{settings.alertText}</span>
+            {settings.alertLink && (
+              <Link href={settings.alertLink} className="inline-flex items-center gap-1 font-bold underline underline-offset-2">
+                Take action <ArrowRight className="size-3.5 rtl:rotate-180" />
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="bg-brand-900 text-brand-100">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-1.5 text-xs">
+          <div className="flex items-center gap-4">
+            <a href={`tel:${tel}`} className="inline-flex items-center gap-1.5 font-semibold text-white hover:underline">
+              <Phone className="size-3.5" /> {t(lang, "hotline")}: <span dir="ltr">{settings.hotline}</span>
+            </a>
+            <a href={`https://wa.me/${tel.replace("+", "")}`} className="hidden items-center gap-1.5 hover:text-white sm:inline-flex">
+              <MessageCircle className="size-3.5" /> WhatsApp / Viber
+            </a>
+          </div>
+          <div className="flex items-center gap-2">
+            <A11yControls />
+            <LangSwitch lang={lang} />
+          </div>
+        </div>
+      </div>
+
+      <header className="sticky top-0 z-40 border-b border-line bg-white/90 backdrop-blur-md">
+        <div className="mx-auto flex h-18 max-w-7xl items-center justify-between gap-2 px-4 py-3 sm:gap-4">
+          <Link href="/" aria-label="MHPU home" className="shrink-0"><Logo compact /></Link>
+          <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
+            {nav.map((n) => (
+              <NavLink key={n.href} href={n.href}
+                className="rounded-full px-3.5 py-2 text-sm font-semibold transition-colors"
+                activeClassName="bg-brand-50 text-brand-800" inactiveClassName="text-ink/80 hover:bg-sand-50 hover:text-ink">
+                {n.label}
+              </NavLink>
+            ))}
+          </nav>
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <ButtonLink href="/get-help" variant="outline" className="hidden md:inline-flex">{t(lang, "getHelp")}</ButtonLink>
+            <ButtonLink href={portalHref} variant="ghost" className="hidden sm:inline-flex">
+              {user ? `My portal` : t(lang, "login")}
+            </ButtonLink>
+            <ButtonLink href="/join" variant="coral" className="h-9 px-3.5 sm:h-10 sm:px-4">{t(lang, "join")}</ButtonLink>
+            <MobileNav
+              items={[{ href: "/", label: t(lang, "home") }, ...nav, { href: "/get-help", label: t(lang, "getHelp") }]}
+              footer={<ButtonLink href={portalHref} variant="primary" className="w-full">{user ? "My portal" : t(lang, "login")}</ButtonLink>}
+            />
+          </div>
+        </div>
+      </header>
+
+      <main id="main">{children}</main>
+
+      <footer className="mt-24 bg-brand-950 text-brand-100">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 md:grid-cols-2 lg:grid-cols-5">
+          <div className="lg:col-span-2">
+            <Logo light />
+            <p className="mt-4 max-w-sm text-sm leading-relaxed text-brand-200">{t(lang, "footerAbout")}</p>
+            <div className="mt-6">
+              <div className="mb-2 text-sm font-semibold text-white">{t(lang, "newsletter")}</div>
+              <NewsletterForm label={t(lang, "subscribe")} />
+            </div>
+          </div>
+          <FooterCol title="Union" links={[["/about", "About MHPU"], ["/about#affiliates", "Affiliated unions"], ["/resources?category=CONSTITUTION", "Constitution"]]} />
+          <FooterCol title="Members" links={[["/join", "Join MHPU"], ["/get-help", "Get help at work"], ["/login", "Member portal"], ["/verify", "Verify a membership"]]} />
+          <div>
+            <div className="mb-3 text-sm font-semibold text-white">Contact</div>
+            <ul className="space-y-2.5 text-sm text-brand-200">
+              <li className="flex gap-2"><Phone className="mt-0.5 size-4 shrink-0" /><span dir="ltr">{settings.hotline}</span></li>
+              <li className="flex gap-2"><Mail className="mt-0.5 size-4 shrink-0" />{settings.email}</li>
+              <li className="flex gap-2"><MapPin className="mt-0.5 size-4 shrink-0" />{settings.address}</li>
+            </ul>
+            <div className="mt-4 flex gap-3 text-sm">
+              {settings.facebook && <a href={settings.facebook} className="hover:text-white">Facebook</a>}
+              {settings.instagram && <a href={settings.instagram} className="hover:text-white">Instagram</a>}
+              {settings.x && <a href={settings.x} className="hover:text-white">X</a>}
+            </div>
+          </div>
+        </div>
+        <div className="border-t border-white/10">
+          <div className="mx-auto flex max-w-7xl flex-col justify-between gap-2 px-4 py-5 text-xs text-brand-300 sm:flex-row">
+            <span>© {new Date().getFullYear()} Maldives Health Professionals Union · <span className="font-thaana">{settings.nameDv}</span> · Reg. no. {settings.registrationNo}</span>
+            <span className="flex gap-4"><Link href="/privacy" className="hover:text-white">Privacy</Link><Link href="/login" className="hover:text-white">Staff login</Link></span>
+          </div>
+        </div>
+        {/* Letterhead band: brand blue with a slanted cut into black */}
+        <div className="flex h-3" aria-hidden="true">
+          <div className="w-1/2 bg-brand-500 [clip-path:polygon(0_0,100%_0,calc(100%-14px)_100%,0_100%)]" />
+          <div className="-ms-2 flex-1 bg-black/60" />
+        </div>
+      </footer>
+    </>
+  );
+}
+
+function FooterCol({ title, links }: { title: string; links: [string, string][] }) {
+  return (
+    <div>
+      <div className="mb-3 text-sm font-semibold text-white">{title}</div>
+      <ul className="space-y-2.5 text-sm">
+        {links.map(([href, label]) => (
+          <li key={href}><Link href={href} className="text-brand-200 hover:text-white">{label}</Link></li>
+        ))}
+      </ul>
+    </div>
+  );
+}

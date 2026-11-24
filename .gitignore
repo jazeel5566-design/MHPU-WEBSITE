@@ -39,3 +39,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.env
+prisma/dev.db*
+public/uploads/*
+!public/uploads/.gitkeep
+!.env.example
+storage/resources/*
+!storage/resources/.gitkeep
+.scratch/
+storage/applications/*
+!storage/applications/.gitkeep
+.pgdata/
+.env.production*
