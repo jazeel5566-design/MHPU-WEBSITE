@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { getSettings } from "./settings";
 
 export type Lang = "en" | "dv";
 
@@ -41,8 +42,14 @@ const dict = {
 export type DictKey = keyof typeof dict;
 
 export async function getLang(): Promise<Lang> {
+  if (!(await isDhivehiEnabled())) return "en";
   const v = (await cookies()).get("lang")?.value;
   return v === "dv" ? "dv" : "en";
+}
+
+/** Admins can switch the Dhivehi version off in Site settings. */
+export async function isDhivehiEnabled() {
+  return (await getSettings()).dhivehiEnabled !== "false";
 }
 
 export function t(lang: Lang, key: DictKey) {

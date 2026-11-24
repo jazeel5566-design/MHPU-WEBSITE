@@ -1,20 +1,24 @@
 import { db } from "@/lib/db";
 import { requireRole } from "@/lib/auth";
-import { updateStaff } from "@/app/actions/admin";
+import { updateStaff, deleteStaff } from "@/app/actions/admin";
+import { Trash2 } from "lucide-react";
 import { ROLE_LABELS, ROLES } from "@/lib/constants";
 import { timeAgo } from "@/lib/utils";
-import { Card, CardHeader, Input, PageHeader, Select, Table, Td, Th } from "@/components/ui";
+import { Card, CardHeader, Input, Notice, PageHeader, Select, Table, Td, Th } from "@/components/ui";
 import { StaffForm } from "@/components/admin/forms";
 import { SubmitButton } from "@/components/submit-button";
 
 export const dynamic = "force-dynamic";
 
-export default async function UsersAdmin() {
+export default async function UsersAdmin({ searchParams }: { searchParams: Promise<{ error?: string; deleted?: string }> }) {
   const me = await requireRole(["ADMIN"], "/admin");
+  const sp = await searchParams;
   const staff = await db.user.findMany({ where: { role: { not: "MEMBER" } }, orderBy: [{ role: "asc" }, { name: "asc" }] });
   return (
     <div className="space-y-6">
       <PageHeader title="Staff & roles" desc="Who can access the admin and editorial portals." />
+      {sp.error && <Notice tone="red">{sp.error}</Notice>}
+      {sp.deleted && <Notice>Account deleted: {sp.deleted}</Notice>}
       <Card>
         <CardHeader title="What each role can do" />
         <div className="grid gap-4 p-5 text-sm sm:grid-cols-2 lg:grid-cols-4">
@@ -26,7 +30,7 @@ export default async function UsersAdmin() {
       <Card><CardHeader title="Add a staff account" /><div className="p-5"><StaffForm /></div></Card>
       <Card>
         <Table>
-          <thead><tr><Th>Name</Th><Th>Title, role & access</Th><Th>Last login</Th></tr></thead>
+          <thead><tr><Th>Name</Th><Th>Title, role & access</Th><Th>Last login</Th><Th /></tr></thead>
           <tbody>
             {staff.map((u) => (
               <tr key={u.id}>
@@ -50,6 +54,16 @@ export default async function UsersAdmin() {
                   )}
                 </Td>
                 <Td className="text-muted">{u.lastLoginAt ? timeAgo(u.lastLoginAt) : "Never"}</Td>
+                <Td className="text-end">
+                  {u.id !== me.id && (
+                    <form action={deleteStaff}>
+                      <input type="hidden" name="id" value={u.id} />
+                      <SubmitButton size="sm" variant="ghost" className="text-red-600" aria-label={`Delete ${u.name}`} confirm={`Permanently delete the account for ${u.name} (${u.email})? This can't be undone.`}>
+                        <Trash2 className="size-4" /> Delete
+                      </SubmitButton>
+                    </form>
+                  )}
+                </Td>
               </tr>
             ))}
           </tbody>

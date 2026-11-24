@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { db } from "./db";
 
 export const DEFAULT_SETTINGS = {
@@ -13,6 +14,7 @@ export const DEFAULT_SETTINGS = {
   facebook: "",
   instagram: "",
   x: "",
+  dhivehiEnabled: "true",
   alertEnabled: "false",
   alertText: "",
   alertLink: "",
@@ -23,9 +25,10 @@ export const DEFAULT_SETTINGS = {
 
 export type Settings = typeof DEFAULT_SETTINGS;
 
-export async function getSettings(): Promise<Settings> {
+/** Cached per request, so layouts and pages share one DB read. */
+export const getSettings = cache(async function getSettings(): Promise<Settings> {
   const rows = await db.setting.findMany();
   const s = { ...DEFAULT_SETTINGS };
   for (const r of rows) if (r.key in s) (s as Record<string, string>)[r.key] = r.value;
   return s;
-}
+});

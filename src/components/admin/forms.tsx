@@ -178,6 +178,11 @@ export function SettingsForm({ s }: { s: Settings }) {
   return (
     <form action={action} className="space-y-8">
       <Result state={state} />
+      <section className="space-y-3">
+        <h2 className="font-bold">Languages</h2>
+        <Checkbox name="dhivehiEnabled" defaultChecked={s.dhivehiEnabled !== "false"} label="Offer the Dhivehi (ދިވެހި) version of the website" />
+        <p className="text-xs text-muted">When switched off, the language toggle is hidden and everyone sees the English site. Dhivehi text already written in articles is kept and comes back if you switch it on again.</p>
+      </section>
       <section className="space-y-4">
         <h2 className="font-bold">Alert banner</h2>
         <Checkbox name="alertEnabled" defaultChecked={s.alertEnabled === "true"} label="Show the alert banner across the top of the public site" />

@@ -5,11 +5,11 @@ import { db } from "@/lib/db";
 import { requireRole } from "@/lib/auth";
 import { ATOLLS, MEMBER_STATUSES, PROFESSIONS } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
-import { Badge, Card, PageHeader, Select, StatusBadge, Table, Td, Th, buttonClass, EmptyState } from "@/components/ui";
+import { Badge, Card, Notice, PageHeader, Select, StatusBadge, Table, Td, Th, buttonClass, EmptyState } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
-export default async function MembersPage({ searchParams }: { searchParams: Promise<{ q?: string; status?: string; profession?: string; atoll?: string; dues?: string; page?: string }> }) {
+export default async function MembersPage({ searchParams }: { searchParams: Promise<{ q?: string; status?: string; profession?: string; atoll?: string; dues?: string; page?: string; deleted?: string }> }) {
   await requireRole(["ADMIN", "CASEWORKER"], "/admin");
   const sp = await searchParams;
   const page = Math.max(1, Number(sp.page) || 1);
@@ -26,12 +26,13 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
     db.member.findMany({ where, include: { affiliate: { select: { shortName: true } } }, orderBy: { joinedAt: "desc" }, take, skip: (page - 1) * take }),
     db.member.count({ where }),
   ]);
-  const qs = new URLSearchParams(Object.entries(sp).filter(([k, v]) => v && k !== "page") as [string, string][]);
+  const qs = new URLSearchParams(Object.entries(sp).filter(([k, v]) => v && k !== "page" && k !== "deleted") as [string, string][]);
   const pages = Math.ceil(total / take);
 
   return (
     <div>
       <PageHeader title="Members" desc={`${total.toLocaleString()} matching members`} actions={<a href={`/api/export/members?${qs}`} className={buttonClass("outline")}><Download className="size-4" /> Export CSV</a>} />
+      {sp.deleted && <div className="mb-4"><Notice>Member deleted: {sp.deleted}</Notice></div>}
       <Card className="mb-4 p-3">
         <form className="grid gap-2 md:grid-cols-[1fr_repeat(4,auto)_auto]">
           <div className="relative">

@@ -36,7 +36,8 @@ export async function logout() {
 }
 
 export async function setLanguage(fd: FormData) {
-  const lang = str(fd, "lang") === "dv" ? "dv" : "en";
+  const { isDhivehiEnabled } = await import("@/lib/i18n");
+  const lang = str(fd, "lang") === "dv" && (await isDhivehiEnabled()) ? "dv" : "en";
   (await cookies()).set("lang", lang, { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax" });
   let back = str(fd, "back");
   if (!back) {

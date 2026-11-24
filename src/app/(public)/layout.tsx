@@ -52,7 +52,7 @@ export default async function PublicLayout({ children }: { children: React.React
           </div>
           <div className="flex items-center gap-2">
             <A11yControls />
-            <LangSwitch lang={lang} />
+            {settings.dhivehiEnabled !== "false" && <LangSwitch lang={lang} />}
           </div>
         </div>
       </div>
