@@ -21,8 +21,8 @@ export default async function UsersAdmin({ searchParams }: { searchParams: Promi
       {sp.deleted && <Notice>Account deleted: {sp.deleted}</Notice>}
       <Card>
         <CardHeader title="What each role can do" />
-        <div className="grid gap-4 p-5 text-sm sm:grid-cols-2 lg:grid-cols-4">
-          {[["Administrator", "Everything: members, applications, dues, ballots, settings, staff and all editorial."], ["Editor", "Review, publish and schedule articles; manage campaigns, events, documents and media."], ["Author", "Write drafts and submit them for review. Cannot publish."], ["Caseworker", "Handle member cases and view member records (read-only)."]].map(([t, d]) => (
+        <div className="grid gap-4 p-5 text-sm sm:grid-cols-2 lg:grid-cols-3">
+          {[["Administrator", "Everything: members, applications, dues, ballots, settings, staff and all editorial."], ["President / General Secretary", "All editorial rights (publish, events and meeting links), member casework, the public inbox, and approving membership applications."], ["Treasurer", "Financial reports, online payments, recording dues, and approving membership applications."], ["Editor", "Review, publish and schedule articles; manage campaigns, events, documents and media."], ["Author", "Write drafts and submit them for review. Cannot publish."], ["Caseworker", "Handle member cases and view member records (read-only)."]].map(([t, d]) => (
             <div key={t} className="rounded-xl bg-sand-50 p-4"><div className="font-bold">{t}</div><div className="mt-1 text-muted">{d}</div></div>
           ))}
         </div>

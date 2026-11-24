@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/ui";
 import { CampaignForm } from "@/components/editorial/forms";
 
 export default async function NewCampaign() {
-  await requireRole(["ADMIN", "EDITOR"], "/editorial");
+  await requireRole(["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "EDITOR"], "/editorial");
   return (
     <div>
       <PageHeader title="New campaign" />

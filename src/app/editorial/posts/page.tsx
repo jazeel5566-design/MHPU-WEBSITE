@@ -11,7 +11,7 @@ const TABS = ["ALL", "DRAFT", "IN_REVIEW", "SCHEDULED", "PUBLISHED", "ARCHIVED"]
 
 export default async function PostsList({ searchParams }: { searchParams: Promise<{ status?: string; q?: string; deleted?: string }> }) {
   const sp = await searchParams;
-  const user = await requireRole(["ADMIN", "EDITOR", "AUTHOR"], "/editorial");
+  const user = await requireRole(["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "EDITOR", "AUTHOR"], "/editorial");
   const status = sp.status && sp.status !== "ALL" ? sp.status : undefined;
   const scope = user.role === "AUTHOR" ? { authorId: user.id } : {};
   const where = { ...scope, ...(status ? { status } : {}), ...(sp.q ? { title: { contains: sp.q, mode: "insensitive" as const } } : {}) };

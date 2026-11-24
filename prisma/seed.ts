@@ -50,19 +50,21 @@ async function main() {
   const author = await mkUser("author@mhpu.mv", "Mariyam Zeena", "AUTHOR");
   const caseworker = await mkUser("caseworker@mhpu.mv", "Hassan Rasheed", "CASEWORKER");
   const treasurer = await mkUser("treasurer@mhpu.mv", "Fathimath Rifa", "TREASURER");
+  await mkUser("gensec@mhpu.mv", "Ahmed Naseer", "GENERAL_SECRETARY");
+  await mkUser("president@mhpu.mv", "Mariyam Shifa", "PRESIDENT");
   await db.user.update({ where: { id: treasurer.id }, data: { title: "Treasurer" } });
 
   // ── Workplace unions (placeholder names, one per facility) ──
   const unionDefs: [string, string, string][] = [
-    ["IGMH Staff Union", "IGMH-SU", "IGMH, Indira Gandhi Memorial Hospital"], ["Hulhumalé Hospital Staff Union", "HH-SU", "Hulhumalé Hospital, Hulhumale Hospital"],
+    ["IGMH Staff Union", "IGMH-SU", "IGMH"], ["Hulhumalé Hospital Staff Union", "HH-SU", "Hulhumalé Hospital"],
     ["Kulhudhuffushi Hospital Staff Union", "KRH-SU", "Kulhudhuffushi Regional Hospital"], ["Addu Equatorial Hospital Staff Union", "AEH-SU", "Addu Equatorial Hospital"],
     ["Gan Regional Hospital Staff Union", "GRH-SU", "Gan Regional Hospital"], ["Ungoofaaru Hospital Staff Union", "URH-SU", "Ungoofaaru Regional Hospital"],
     ["Naifaru Hospital Staff Union", "NAH-SU", "Naifaru Atoll Hospital"], ["Thinadhoo Hospital Staff Union", "TRH-SU", "Thinadhoo Regional Hospital"],
     ["Island Health Centres Union", "IHC-U", "Eydhafushi Health Centre"], ["Fuvahmulah Hospital Staff Union", "FH-SU", "Fuvahmulah Hospital"],
     ["Private Healthcare Workers Union", "PHWU", "Private Clinic, Malé"],
   ];
-  const affs = await Promise.all(unionDefs.map(([name, shortName, workplace]) => db.affiliate.create({ data: { name, shortName, workplace, description: "Sample workplace union — replace with real details." } })));
-  const unionFor = (facility: string) => affs[Math.max(0, unionDefs.findIndex((u) => u[2].split(", ")[0] === facility))] ?? affs[8];
+  const affs = await Promise.all(unionDefs.map(([name, shortName, workplace]) => db.affiliate.create({ data: { name, shortName, workplace, matchNames: ({ "IGMH-SU": "Indira Gandhi Memorial Hospital", "HH-SU": "Hulhumale Hospital" } as Record<string, string>)[shortName] ?? null, description: "Sample workplace union — replace with real details." } })));
+  const unionFor = (facility: string) => affs[Math.max(0, unionDefs.findIndex((u) => u[2] === facility))] ?? affs[8];
 
   // ── Members ──
   const first = ["Aminath", "Mohamed", "Fathimath", "Ahmed", "Mariyam", "Ibrahim", "Hawwa", "Ali", "Aishath", "Hussain", "Khadheeja", "Hassan", "Shifza", "Abdulla", "Zulfa", "Ismail", "Nashwa", "Yoosuf", "Raufa", "Adam"];
@@ -286,7 +288,7 @@ async function main() {
   ] });
 
   console.log(`Seeded: ${members.length} members, ${posts.length + 3} posts, 3 campaigns, ${events.length} events, ${docs.length} documents, ${caseData.length} cases.`);
-  console.log("Demo logins (password mhpu1234): admin@ / treasurer@ / editor@ / author@ / caseworker@ / member@mhpu.mv");
+  console.log("Demo logins (password mhpu1234): admin@ / president@ / gensec@ / treasurer@ / editor@ / author@ / caseworker@ / member@mhpu.mv");
 }
 
 main().finally(() => db.$disconnect());

@@ -8,7 +8,7 @@ import { SubmitButton } from "@/components/submit-button";
 export const dynamic = "force-dynamic";
 
 export default async function Inbox() {
-  await requireRole(["ADMIN", "CASEWORKER"], "/admin");
+  await requireRole(["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "CASEWORKER"], "/admin");
   const [msgs, subs] = await Promise.all([db.contactMessage.findMany({ orderBy: [{ handled: "asc" }, { createdAt: "desc" }], take: 100 }), db.subscriber.count()]);
   return (
     <div>

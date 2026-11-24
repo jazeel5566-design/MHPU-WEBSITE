@@ -10,8 +10,8 @@ import { saveImage, saveDocument } from "@/lib/storage";
 
 export type EState = { ok?: boolean; error?: string; message?: string };
 
-const STAFF = ["ADMIN", "EDITOR", "AUTHOR"] as const;
-const PUBLISHERS = ["ADMIN", "EDITOR"] as const;
+const STAFF = ["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "EDITOR", "AUTHOR"] as const;
+const PUBLISHERS = ["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "EDITOR"] as const;
 const canPublish = (role: string) => (PUBLISHERS as readonly string[]).includes(role);
 
 async function uniqueSlug(base: string, model: "post" | "campaign", excludeId?: string) {

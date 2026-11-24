@@ -11,11 +11,11 @@ import { StaffReplyForm } from "@/components/admin/forms";
 import { SubmitButton } from "@/components/submit-button";
 
 export default async function CaseAdmin({ params }: { params: Promise<{ id: string }> }) {
-  await requireRole(["ADMIN", "CASEWORKER"], "/admin");
+  await requireRole(["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "CASEWORKER"], "/admin");
   const { id } = await params;
   const [c, staff] = await Promise.all([
     db.case.findUnique({ where: { id }, include: { member: true, messages: { include: { author: { select: { name: true, role: true, title: true } } }, orderBy: { createdAt: "asc" } } } }),
-    db.user.findMany({ where: { role: { in: ["ADMIN", "CASEWORKER"] }, active: true }, select: { id: true, name: true } }),
+    db.user.findMany({ where: { role: { in: ["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "CASEWORKER"] }, active: true }, select: { id: true, name: true } }),
   ]);
   if (!c) notFound();
   return (

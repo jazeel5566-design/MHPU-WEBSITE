@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { APPLICATION_APPROVERS } from "@/lib/constants";
 import { Users, UserPlus, LifeBuoy, Wallet, ArrowRight } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireRole } from "@/lib/auth";
@@ -9,7 +10,7 @@ import { Card, CardHeader, PageHeader, StatCard, StatusBadge } from "@/component
 export const dynamic = "force-dynamic";
 
 export default async function AdminHome() {
-  const user = await requireRole(["ADMIN", "CASEWORKER", "TREASURER"], "/admin");
+  const user = await requireRole(["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "CASEWORKER", "TREASURER"], "/admin");
   if (user.role === "TREASURER") redirect("/admin/finance");
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -46,7 +47,7 @@ export default async function AdminHome() {
       <PageHeader title="Dashboard" desc={`${now.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })} — here's how the union is doing.`} />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Link href="/admin/members?status=ACTIVE"><StatCard label="Active members" value={active.toLocaleString()} sub={`${total.toLocaleString()} on record · ${lapsed} dues overdue`} icon={<Users className="size-5" />} /></Link>
-        {user.role === "ADMIN" && <Link href="/admin/applications"><StatCard label="Pending applications" value={pending} sub="Awaiting verification" icon={<UserPlus className="size-5" />} tone="amber" /></Link>}
+        {(APPLICATION_APPROVERS as readonly string[]).includes(user.role) && <Link href="/admin/applications"><StatCard label="Pending applications" value={pending} sub="Awaiting verification" icon={<UserPlus className="size-5" />} tone="amber" /></Link>}
         <Link href="/admin/cases"><StatCard label="Open cases" value={openCases} sub={`${myCases} assigned to you`} icon={<LifeBuoy className="size-5" />} tone="coral" /></Link>
         <StatCard label="Dues this month" value={mvr(duesMonth._sum.amount ?? 0)} sub="Recorded payments" icon={<Wallet className="size-5" />} tone="violet" />
       </div>

@@ -10,7 +10,7 @@ import { SubmitButton } from "@/components/submit-button";
 export const dynamic = "force-dynamic";
 
 export default async function MediaPage() {
-  const user = await requireRole(["ADMIN", "EDITOR", "AUTHOR"], "/editorial");
+  const user = await requireRole(["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "EDITOR", "AUTHOR"], "/editorial");
   const media = await db.media.findMany({ orderBy: { createdAt: "desc" }, include: { uploadedBy: { select: { name: true } } } });
   return (
     <div className="space-y-6">

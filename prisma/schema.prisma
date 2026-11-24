@@ -43,7 +43,8 @@ model Affiliate {
   description String?
   memberCount Int      @default(0)
   website     String?
-  workplace   String? // hospital / facility this workplace union represents
+  workplace   String? // workplaces shown publicly, comma-separated, e.g. "IGMH, Dharumavantha Hospital"
+  matchNames  String? // other spellings/abbreviations used only for matching applicants (not shown)
   active      Boolean  @default(true) // listed on the membership form
   createdAt   DateTime @default(now())
 

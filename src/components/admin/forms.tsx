@@ -138,7 +138,7 @@ export function BallotForm() {
   );
 }
 
-type Aff = { id?: string; name: string; nameDv: string | null; shortName: string; description: string | null; website: string | null; memberCount: number; workplace?: string | null; active?: boolean };
+type Aff = { id?: string; name: string; nameDv: string | null; shortName: string; description: string | null; website: string | null; memberCount: number; workplace?: string | null; matchNames?: string | null; active?: boolean };
 export function AffiliateForm({ a }: { a?: Aff }) {
   const [state, action] = useActionState<AState, FormData>(saveAffiliate, {});
   return (
@@ -147,7 +147,8 @@ export function AffiliateForm({ a }: { a?: Aff }) {
       {a?.id && <input type="hidden" name="id" value={a.id} />}
       <Field label="Union name" required><Input name="name" defaultValue={a?.name} required placeholder="e.g. IGMH Staff Union" /></Field>
       <Field label="Short name" required><Input name="shortName" defaultValue={a?.shortName} required placeholder="e.g. IGMH-SU" /></Field>
-      <Field label="Workplace name(s)" hint="Used to match applicants automatically. Separate alternative names with commas." className="sm:col-span-2"><Input name="workplace" defaultValue={a?.workplace ?? ""} placeholder="e.g. Indira Gandhi Memorial Hospital, IGMH" /></Field>
+      <Field label="Workplaces (shown publicly)" hint="The hospitals/offices this union covers, separated by commas." className="sm:col-span-2"><Input name="workplace" defaultValue={a?.workplace ?? ""} placeholder="e.g. IGMH, Dharumavantha Hospital" /></Field>
+      <Field label="Other spellings & abbreviations (matching only — not shown)" hint="Extra names people might type on the membership form, separated by commas." className="sm:col-span-2"><Input name="matchNames" defaultValue={a?.matchNames ?? ""} placeholder="e.g. Indira Gandhi Memorial Hospital, Dharumavanthaa" /></Field>
       <div className="flex items-end pb-2"><Checkbox name="active" defaultChecked={a?.active ?? true} label="Active (used to match new applicants)" /></div>
       <Field label="Name (ދިވެހި)"><Input name="nameDv" defaultValue={a?.nameDv ?? ""} dir="rtl" className="dv-text" /></Field>
       <Field label="Members"><Input name="memberCount" type="number" defaultValue={a?.memberCount ?? 0} /></Field>

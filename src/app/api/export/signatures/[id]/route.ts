@@ -5,7 +5,7 @@ import { toCsv } from "@/lib/csv";
 
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   const user = await getCurrentUser();
-  if (!user || !["ADMIN", "EDITOR"].includes(user.role)) return new NextResponse("Forbidden", { status: 403 });
+  if (!user || !["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "EDITOR"].includes(user.role)) return new NextResponse("Forbidden", { status: 403 });
   const { id } = await params;
   const c = await db.campaign.findUnique({ where: { id }, include: { signatures: { orderBy: { createdAt: "asc" } } } });
   if (!c) return new NextResponse("Not found", { status: 404 });

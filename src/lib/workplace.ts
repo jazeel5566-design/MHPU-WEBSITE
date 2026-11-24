@@ -4,12 +4,16 @@
  * "Indira Gandhi Memorial Hospital, IGMH". Pure function: used by the join form (live)
  * and re-checked on the server.
  */
-export type UnionForMatch = { id: string; name: string; workplace: string | null };
+export type UnionForMatch = { id: string; name: string; workplace: string | null; matchNames?: string | null };
 
 const norm = (s: string) =>
   s.toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
 
-export const aliasesOf = (u: UnionForMatch) => (u.workplace ?? "").split(",").map((a) => a.trim()).filter(Boolean);
+const split = (s: string | null | undefined) => (s ?? "").split(",").map((a) => a.trim()).filter(Boolean);
+/** Workplaces shown to the public (and suggested on the join form). */
+export const workplacesOf = (u: UnionForMatch) => split(u.workplace);
+/** Every name used for matching: public workplaces + hidden spellings/abbreviations. */
+export const aliasesOf = (u: UnionForMatch) => [...split(u.workplace), ...split(u.matchNames)];
 
 export function matchWorkplaceUnion<T extends UnionForMatch>(employer: string, unions: T[]): T | null {
   const e = norm(employer);

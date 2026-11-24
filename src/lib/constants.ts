@@ -1,11 +1,18 @@
 /** Minimum length for passwords people choose themselves (staff and members). */
 export const MIN_PASSWORD_LENGTH = 5;
 
-export const ROLES = ["ADMIN", "TREASURER", "EDITOR", "AUTHOR", "CASEWORKER", "MEMBER"] as const;
+export const ROLES = ["ADMIN", "PRESIDENT", "GENERAL_SECRETARY", "TREASURER", "EDITOR", "AUTHOR", "CASEWORKER", "MEMBER"] as const;
+
+/** President and General Secretary share the same rights: full editorial, casework + inbox, and approving applications. */
+export const OFFICERS = ["PRESIDENT", "GENERAL_SECRETARY"] as const;
+/** Who may approve or reject membership applications. */
+export const APPLICATION_APPROVERS = ["ADMIN", ...OFFICERS, "TREASURER"] as const;
 export type Role = (typeof ROLES)[number];
 
 export const ROLE_LABELS: Record<Role, string> = {
   ADMIN: "Administrator",
+  PRESIDENT: "President",
+  GENERAL_SECRETARY: "General Secretary",
   TREASURER: "Treasurer (finance)",
   EDITOR: "Editor (can publish)",
   AUTHOR: "Author (writes drafts)",
@@ -15,8 +22,8 @@ export const ROLE_LABELS: Record<Role, string> = {
 
 /** Which roles may enter each portal. */
 export const PORTAL_ACCESS = {
-  admin: ["ADMIN", "CASEWORKER", "TREASURER"] as Role[],
-  editorial: ["ADMIN", "EDITOR", "AUTHOR"] as Role[],
+  admin: ["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "CASEWORKER", "TREASURER"] as Role[],
+  editorial: ["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "EDITOR", "AUTHOR"] as Role[],
   members: ["MEMBER", "ADMIN"] as Role[],
 };
 

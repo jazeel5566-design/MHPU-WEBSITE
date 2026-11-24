@@ -10,7 +10,7 @@ import { Badge, Card, Notice, PageHeader, Select, StatusBadge, Table, Td, Th, bu
 export const dynamic = "force-dynamic";
 
 export default async function MembersPage({ searchParams }: { searchParams: Promise<{ q?: string; status?: string; profession?: string; atoll?: string; dues?: string; page?: string; deleted?: string; union?: string }> }) {
-  await requireRole(["ADMIN", "CASEWORKER", "TREASURER"], "/admin");
+  await requireRole(["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "CASEWORKER", "TREASURER"], "/admin");
   const sp = await searchParams;
   const page = Math.max(1, Number(sp.page) || 1);
   const take = 25;

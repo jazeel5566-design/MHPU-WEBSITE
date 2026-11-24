@@ -8,7 +8,7 @@ import { Badge, ButtonLink, Card, PageHeader, Table, Td, Th } from "@/components
 export const dynamic = "force-dynamic";
 
 export default async function EventsAdmin() {
-  await requireRole(["ADMIN", "EDITOR"], "/editorial");
+  await requireRole(["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "EDITOR"], "/editorial");
   const events = await db.event.findMany({ include: { _count: { select: { rsvps: true } } }, orderBy: { startsAt: "desc" } });
   const now = new Date();
   return (

@@ -8,7 +8,7 @@ import { SubmitButton } from "@/components/submit-button";
 import { SignaturePad } from "./signature-pad";
 import { cn } from "@/lib/utils";
 import { shrinkImage } from "@/lib/shrink-image";
-import { matchWorkplaceUnion, aliasesOf } from "@/lib/workplace";
+import { matchWorkplaceUnion, workplacesOf } from "@/lib/workplace";
 
 const ICONS: Record<string, React.ElementType> = { nurse: HeartPulse, doctor: Stethoscope, allied: FlaskConical, community: Building2, support: Users, expat: Globe2 };
 const MAX = 4 * 1024 * 1024; // server/Vercel limit per upload
@@ -27,7 +27,7 @@ function Step({ n, title, children }: { n: number; title: string; children: Reac
   );
 }
 
-export function JoinForm({ dues, registration, unions }: { dues: number; registration: number; unions: { id: string; name: string; workplace: string | null }[] }) {
+export function JoinForm({ dues, registration, unions }: { dues: number; registration: number; unions: { id: string; name: string; workplace: string | null; matchNames: string | null }[] }) {
   const [state, action] = useActionState<FormState, FormData>(applyToJoin, {});
   const [cat, setCat] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -104,7 +104,7 @@ export function JoinForm({ dues, registration, unions }: { dues: number; registr
           <Field label="Job / job title" required><Input name="jobTitle" required placeholder="e.g. Staff Nurse" /></Field>
           <Field label="Hospital / company" required hint={unions.length ? "Start typing to see workplaces with a union." : undefined}>
             <Input name="employer" required placeholder="e.g. IGMH" list="mhpu-workplaces" autoComplete="organization" value={employer} onChange={(e) => setEmployer(e.target.value)} />
-            <datalist id="mhpu-workplaces">{unions.flatMap((u) => aliasesOf(u)).map((w) => <option key={w} value={w} />)}</datalist>
+            <datalist id="mhpu-workplaces">{unions.flatMap((u) => workplacesOf(u)).map((w) => <option key={w} value={w} />)}</datalist>
           </Field>
           {employer.trim().length >= 2 && unions.length > 0 && (
             <div className="sm:col-span-2" aria-live="polite">

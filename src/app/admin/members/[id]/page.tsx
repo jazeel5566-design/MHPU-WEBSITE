@@ -14,7 +14,7 @@ import { Notice } from "@/components/ui";
 import { Trash2 } from "lucide-react";
 
 export default async function MemberDetail({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ error?: string }> }) {
-  const user = await requireRole(["ADMIN", "CASEWORKER", "TREASURER"], "/admin");
+  const user = await requireRole(["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "CASEWORKER", "TREASURER"], "/admin");
   const { id } = await params;
   const { error } = await searchParams;
   const [m, affiliates, s] = await Promise.all([

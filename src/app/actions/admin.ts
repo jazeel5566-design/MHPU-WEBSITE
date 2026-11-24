@@ -8,14 +8,14 @@ import { requireRole } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { str, optStr } from "@/lib/utils";
 import { DEFAULT_SETTINGS } from "@/lib/settings";
-import { ROLES } from "@/lib/constants";
+import { ROLES, APPLICATION_APPROVERS } from "@/lib/constants";
 import { removeApplicationFiles, saveImage } from "@/lib/storage";
 import { SITE_PHOTOS, settingKey, type SitePhotoKey } from "@/lib/site-photos";
 
 export type AState = { ok?: boolean; error?: string; message?: string; tempPassword?: string };
 
 const ADMIN = ["ADMIN"] as const;
-const STAFF = ["ADMIN", "CASEWORKER"] as const;
+const STAFF = ["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "CASEWORKER"] as const;
 
 function tempPassword() {
   // Readable, no ambiguous characters
@@ -34,7 +34,7 @@ async function nextMembershipNo() {
 // ─── Applications ───────────────────────────────────────────────────
 
 export async function approveApplication(_: AState, fd: FormData): Promise<AState> {
-  const admin = await requireRole([...ADMIN], "/admin");
+  const admin = await requireRole([...APPLICATION_APPROVERS], "/admin");
   const app = await db.application.findUnique({ where: { id: str(fd, "id") } });
   if (!app || app.status !== "PENDING") return { error: "Application not found or already processed." };
   if (await db.user.findUnique({ where: { email: app.email } })) return { error: `An account already exists for ${app.email}.` };
@@ -61,7 +61,7 @@ export async function approveApplication(_: AState, fd: FormData): Promise<AStat
 }
 
 export async function rejectApplication(fd: FormData) {
-  const admin = await requireRole([...ADMIN], "/admin");
+  const admin = await requireRole([...APPLICATION_APPROVERS], "/admin");
   const id = str(fd, "id");
   await db.application.update({ where: { id }, data: { status: "REJECTED", reviewedAt: new Date(), receivedBy: admin.name, reviewNote: optStr(fd, "note") } });
   await audit(admin.id, "application_reject", "Application", id);
@@ -204,7 +204,7 @@ export async function saveAffiliate(_: AState, fd: FormData): Promise<AState> {
   const name = str(fd, "name");
   const shortName = str(fd, "shortName");
   if (!name || !shortName) return { error: "Name and short name are required." };
-  const data = { name, shortName, nameDv: optStr(fd, "nameDv"), description: optStr(fd, "description"), website: optStr(fd, "website"), workplace: optStr(fd, "workplace"), active: fd.get("active") === "on", memberCount: Number(str(fd, "memberCount")) || 0 };
+  const data = { name, shortName, nameDv: optStr(fd, "nameDv"), description: optStr(fd, "description"), website: optStr(fd, "website"), workplace: optStr(fd, "workplace"), matchNames: optStr(fd, "matchNames"), active: fd.get("active") === "on", memberCount: Number(str(fd, "memberCount")) || 0 };
   const a = id ? await db.affiliate.update({ where: { id }, data }) : await db.affiliate.create({ data });
   await audit(admin.id, id ? "affiliate_update" : "affiliate_create", "Affiliate", a.id, name);
   revalidatePath("/", "layout");

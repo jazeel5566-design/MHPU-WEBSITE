@@ -7,7 +7,7 @@ import { Badge, ButtonLink, Card, PageHeader, Progress, StatusBadge, Table, Td, 
 export const dynamic = "force-dynamic";
 
 export default async function CampaignsAdmin() {
-  await requireRole(["ADMIN", "EDITOR"], "/editorial");
+  await requireRole(["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "EDITOR"], "/editorial");
   const list = await db.campaign.findMany({ include: { _count: { select: { signatures: true } } }, orderBy: { updatedAt: "desc" } });
   return (
     <div>

@@ -3,11 +3,12 @@ import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { readApplicationFile, mimeFor } from "@/lib/storage";
+import { APPLICATION_APPROVERS } from "@/lib/constants";
 
-/** Applicant ID copies and signatures: ADMIN only, never cached, every view audited. */
+/** Applicant ID copies and signatures: application approvers only, never cached, every view audited. */
 export async function GET(_: Request, { params }: { params: Promise<{ id: string; kind: string }> }) {
   const user = await getCurrentUser();
-  if (!user || user.role !== "ADMIN") return new NextResponse("Forbidden", { status: 403 });
+  if (!user || !(APPLICATION_APPROVERS as readonly string[]).includes(user.role)) return new NextResponse("Forbidden", { status: 403 });
   const { id, kind } = await params;
   const app = await db.application.findUnique({ where: { id } });
   const file = kind === "id" ? app?.idDocFile : kind === "signature" ? app?.signatureFile : null;

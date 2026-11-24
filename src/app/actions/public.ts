@@ -66,7 +66,7 @@ export async function applyToJoin(_: FormState, fd: FormData): Promise<FormState
   const unionCount = await db.affiliate.count({ where: { active: true } });
   // The workplace union is picked automatically from the hospital/company entered.
   // If that workplace has no union, the applicant joins MHPU directly.
-  const unions = unionCount ? await db.affiliate.findMany({ where: { active: true }, select: { id: true, name: true, workplace: true } }) : [];
+  const unions = unionCount ? await db.affiliate.findMany({ where: { active: true }, select: { id: true, name: true, workplace: true, matchNames: true } }) : [];
   data.affiliateId = matchWorkplaceUnion(data.employer, unions)?.id;
   const existing = await db.application.findFirst({ where: { OR: [{ email: data.email }, { idNumber: data.idNumber }], status: "PENDING" } });
   if (existing) return { error: `We already have a pending application for these details (reference ${existing.reference}). We'll be in touch soon.` };

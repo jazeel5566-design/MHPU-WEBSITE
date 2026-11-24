@@ -9,7 +9,7 @@ import { Card, PageHeader, Select, StatusBadge, Table, Td, Th, buttonClass, Empt
 export const dynamic = "force-dynamic";
 
 export default async function CasesAdmin({ searchParams }: { searchParams: Promise<{ status?: string; type?: string; mine?: string }> }) {
-  const user = await requireRole(["ADMIN", "CASEWORKER"], "/admin");
+  const user = await requireRole(["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "CASEWORKER"], "/admin");
   const sp = await searchParams;
   const status = sp.status ?? "ACTIVE";
   const where: Prisma.CaseWhereInput = {

@@ -8,7 +8,7 @@ import { ButtonLink, Card, CardHeader, PageHeader, StatCard, StatusBadge, EmptyS
 export const dynamic = "force-dynamic";
 
 export default async function EditorialHome() {
-  const user = await requireRole(["ADMIN", "EDITOR", "AUTHOR"], "/editorial");
+  const user = await requireRole(["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "EDITOR", "AUTHOR"], "/editorial");
   const pub = user.role !== "AUTHOR";
   const mine = { authorId: user.id };
   const [drafts, review, scheduled, published, myDrafts, queue, upcoming, top] = await Promise.all([

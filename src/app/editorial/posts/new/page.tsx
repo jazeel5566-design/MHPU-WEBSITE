@@ -6,7 +6,7 @@ import { PostEditor } from "@/components/editorial/post-editor";
 export const metadata = { title: "New article" };
 
 export default async function NewPost() {
-  const user = await requireRole(["ADMIN", "EDITOR", "AUTHOR"], "/editorial");
+  const user = await requireRole(["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "EDITOR", "AUTHOR"], "/editorial");
   const media = await db.media.findMany({ orderBy: { createdAt: "desc" }, take: 60, select: { url: true, alt: true } });
   return (
     <div>

@@ -1,12 +1,14 @@
 import { LayoutDashboard, UserPlus, Users, LifeBuoy, Vote, Building2, ShieldCheck, Inbox, Settings, History, KeyRound, Images, Landmark, MessageSquareText, CreditCard, BarChart3 } from "lucide-react";
 import { requireRole } from "@/lib/auth";
+import { APPLICATION_APPROVERS } from "@/lib/constants";
 import { db } from "@/lib/db";
 import { PortalShell, portalSwitcher, type NavItem } from "@/components/portal-shell";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const user = await requireRole(["ADMIN", "CASEWORKER", "TREASURER"], "/admin");
+  const user = await requireRole(["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "CASEWORKER", "TREASURER"], "/admin");
   const isAdmin = user.role === "ADMIN";
   const isTreasurer = user.role === "TREASURER";
+  const canApprove = (APPLICATION_APPROVERS as readonly string[]).includes(user.role);
   const [apps, openCases, msgs] = await Promise.all([
     db.application.count({ where: { status: "PENDING" } }),
     db.case.count({ where: { status: "OPEN" } }),
@@ -17,7 +19,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     { href: "/admin/payments", label: "Online payments", icon: CreditCard },
   ] : [];
   const membership: NavItem[] = [
-    ...(isAdmin ? [{ href: "/admin/applications", label: "Applications", icon: UserPlus, badge: apps }] : []),
+    ...(canApprove ? [{ href: "/admin/applications", label: "Applications", icon: UserPlus, badge: apps }] : []),
     { href: "/admin/members", label: "Members", icon: Users },
     ...(!isTreasurer ? [{ href: "/admin/cases", label: "Casework", icon: LifeBuoy, badge: openCases }] : []),
   ];

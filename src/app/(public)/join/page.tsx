@@ -9,7 +9,7 @@ export const metadata = { title: "Join MHPU" };
 
 export default async function JoinPage() {
   const photos = await getSitePhotos();
-  const [s, unions] = await Promise.all([getSettings(), db.affiliate.findMany({ where: { active: true }, select: { id: true, name: true, workplace: true }, orderBy: { name: "asc" } })]);
+  const [s, unions] = await Promise.all([getSettings(), db.affiliate.findMany({ where: { active: true }, select: { id: true, name: true, workplace: true, matchNames: true }, orderBy: { name: "asc" } })]);
   return (
     <>
       <PageHero kicker="Join" title="Membership application" desc="Anyone who works as a health professional in the Maldives — Maldivian or expatriate — is eligible to join. It takes about five minutes." image={photos.join} />

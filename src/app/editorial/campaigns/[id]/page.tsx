@@ -9,7 +9,7 @@ import { CampaignForm } from "@/components/editorial/forms";
 import { SubmitButton } from "@/components/submit-button";
 
 export default async function EditCampaign({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ saved?: string }> }) {
-  await requireRole(["ADMIN", "EDITOR"], "/editorial");
+  await requireRole(["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "EDITOR"], "/editorial");
   const [{ id }, sp] = await Promise.all([params, searchParams]);
   const c = await db.campaign.findUnique({ where: { id } });
   if (!c) notFound();

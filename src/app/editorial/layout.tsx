@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { PortalShell, portalSwitcher } from "@/components/portal-shell";
 
 export default async function EditorialLayout({ children }: { children: React.ReactNode }) {
-  const user = await requireRole(["ADMIN", "EDITOR", "AUTHOR"], "/editorial");
+  const user = await requireRole(["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "EDITOR", "AUTHOR"], "/editorial");
   const pub = user.role !== "AUTHOR";
   const inReview = pub ? await db.post.count({ where: { status: "IN_REVIEW" } }) : 0;
   return (

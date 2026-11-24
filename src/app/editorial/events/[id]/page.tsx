@@ -10,7 +10,7 @@ import { EventForm } from "@/components/editorial/forms";
 import { SubmitButton } from "@/components/submit-button";
 
 export default async function EditEvent({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ saved?: string }> }) {
-  await requireRole(["ADMIN", "EDITOR"], "/editorial");
+  await requireRole(["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "EDITOR"], "/editorial");
   const [{ id }, sp] = await Promise.all([params, searchParams]);
   const e = await db.event.findUnique({ where: { id }, include: { rsvps: { include: { member: { select: { fullName: true, membershipNo: true, employer: true } } } }, attendances: { include: { member: { select: { fullName: true, membershipNo: true } } }, orderBy: { joinedAt: "asc" } } } });
   if (!e) notFound();

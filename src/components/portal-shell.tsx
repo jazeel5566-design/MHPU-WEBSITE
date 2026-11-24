@@ -91,10 +91,10 @@ export function PortalShell({ portal, groups, user, children, switcher }: {
 
 export function portalSwitcher(role: string, current: string) {
   const all = [
-    { href: "/admin", label: "Admin", roles: ["ADMIN", "CASEWORKER", "TREASURER"] },
-    { href: "/editorial", label: "Editorial", roles: ["ADMIN", "EDITOR", "AUTHOR"] },
+    { href: "/admin", label: "Admin", roles: ["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "CASEWORKER", "TREASURER"] },
+    { href: "/editorial", label: "Editorial", roles: ["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "EDITOR", "AUTHOR"] },
     { href: "/members", label: "Members", roles: ["ADMIN", "MEMBER"] },
-    { href: "/", label: "Public website", roles: ["ADMIN", "TREASURER", "EDITOR", "AUTHOR", "CASEWORKER", "MEMBER"] },
+    { href: "/", label: "Public website", roles: ["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "TREASURER", "EDITOR", "AUTHOR", "CASEWORKER", "MEMBER"] },
   ];
   return all.filter((p) => p.roles.includes(role) && p.href !== current).map(({ href, label }) => ({ href, label }));
 }

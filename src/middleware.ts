@@ -2,8 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { SESSION_COOKIE, verifySession } from "@/lib/session";
 
 const RULES: [string, string[]][] = [
-  ["/admin", ["ADMIN", "CASEWORKER", "TREASURER"]],
-  ["/editorial", ["ADMIN", "EDITOR", "AUTHOR"]],
+  ["/admin", ["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "CASEWORKER", "TREASURER"]],
+  ["/editorial", ["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "EDITOR", "AUTHOR"]],
   ["/members", ["MEMBER", "ADMIN"]],
 ];
 

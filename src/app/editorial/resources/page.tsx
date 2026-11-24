@@ -11,7 +11,7 @@ import { SubmitButton } from "@/components/submit-button";
 export const dynamic = "force-dynamic";
 
 export default async function ResourcesAdmin() {
-  await requireRole(["ADMIN", "EDITOR"], "/editorial");
+  await requireRole(["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "EDITOR"], "/editorial");
   const docs = await db.resource.findMany({ orderBy: { createdAt: "desc" } });
   return (
     <div className="space-y-6">

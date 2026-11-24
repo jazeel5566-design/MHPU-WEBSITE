@@ -3,7 +3,7 @@ import { Download, FileText, ExternalLink, Trash2 } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireRole } from "@/lib/auth";
 import { rejectApplication, deleteApplication } from "@/app/actions/admin";
-import { JOIN_CATEGORIES, labelOf } from "@/lib/constants";
+import { JOIN_CATEGORIES, labelOf, APPLICATION_APPROVERS } from "@/lib/constants";
 import { formatDate, timeAgo, cn } from "@/lib/utils";
 import { Badge, Card, EmptyState, Input, PageHeader, StatusBadge, buttonClass } from "@/components/ui";
 import { ApproveForm } from "@/components/admin/forms";
@@ -12,7 +12,7 @@ import { SubmitButton } from "@/components/submit-button";
 export const dynamic = "force-dynamic";
 
 export default async function ApplicationsPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
-  await requireRole(["ADMIN"], "/admin");
+  const user = await requireRole([...APPLICATION_APPROVERS], "/admin");
   const { status = "PENDING" } = await searchParams;
   const [apps, affiliates] = await Promise.all([
     db.application.findMany({ where: { status }, include: { affiliate: { select: { name: true } } }, orderBy: { createdAt: status === "PENDING" ? "asc" : "desc" }, take: 100 }),
@@ -24,7 +24,7 @@ export default async function ApplicationsPage({ searchParams }: { searchParams:
     <div>
       <PageHeader title="Membership applications"
         desc="Check the ID copy against the details, then approve to issue a membership number and portal login."
-        actions={<a href="/api/export/applications" className={buttonClass("outline")}><Download className="size-4" /> Export CSV</a>} />
+        actions={user.role !== "ADMIN" ? undefined : <a href="/api/export/applications" className={buttonClass("outline")}><Download className="size-4" /> Export CSV</a>} />
       <div className="mb-4 flex gap-1">
         {["PENDING", "APPROVED", "REJECTED"].map((s) => <Link key={s} href={`/admin/applications?status=${s}`} className={cn("rounded-full px-3 py-1.5 text-sm font-semibold", status === s ? "bg-ink text-white" : "text-muted hover:bg-sand-100")}>{s.charAt(0) + s.slice(1).toLowerCase()}</Link>)}
       </div>
@@ -70,12 +70,12 @@ export default async function ApplicationsPage({ searchParams }: { searchParams:
                       {a.reviewNote && <p className="pt-1 text-muted">Note: {a.reviewNote}</p>}
                     </dl>
                   )}
-                  <form action={deleteApplication} className="border-t border-line pt-3">
+                  {user.role === "ADMIN" && <form action={deleteApplication} className="border-t border-line pt-3">
                     <input type="hidden" name="id" value={a.id} />
                     <SubmitButton size="sm" variant="ghost" className="w-full text-red-600" confirm={`Permanently delete ${a.reference} (${a.fullName}) including the ID copy and signature? This can't be undone.`}>
                       <Trash2 className="size-4" /> Delete permanently
                     </SubmitButton>
-                  </form>
+                  </form>}
                 </div>
               </div>
               {a.status === "PENDING" && (

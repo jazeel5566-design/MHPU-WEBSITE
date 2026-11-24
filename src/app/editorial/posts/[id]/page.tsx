@@ -17,7 +17,7 @@ function toLocalInput(d: Date | null) {
 
 export default async function EditPost({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ saved?: string }> }) {
   const [{ id }, sp] = await Promise.all([params, searchParams]);
-  const user = await requireRole(["ADMIN", "EDITOR", "AUTHOR"], "/editorial");
+  const user = await requireRole(["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "EDITOR", "AUTHOR"], "/editorial");
   const post = await db.post.findUnique({ where: { id }, include: { author: { select: { name: true } } } });
   if (!post) notFound();
   const canPublish = user.role !== "AUTHOR";
