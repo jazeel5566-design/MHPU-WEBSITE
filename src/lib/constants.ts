@@ -1,3 +1,6 @@
+/** Minimum length for passwords people choose themselves (staff and members). */
+export const MIN_PASSWORD_LENGTH = 5;
+
 export const ROLES = ["ADMIN", "EDITOR", "AUTHOR", "CASEWORKER", "MEMBER"] as const;
 export type Role = (typeof ROLES)[number];
 
