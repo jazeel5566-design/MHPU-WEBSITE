@@ -1,0 +1,344 @@
+// MHPU platform data model (PostgreSQL — Supabase in production).
+//  DATABASE_URL: pooled connection used by the app (Supabase "transaction" pooler, port 6543)
+//  DIRECT_URL:   direct connection used by `prisma db push` / migrations
+// Status/role fields are strings; allowed values are listed in src/lib/constants.ts.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── People & access ────────────────────────────────────────────────
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String
+  passwordHash String
+  role         String    @default("MEMBER") // ADMIN | EDITOR | AUTHOR | CASEWORKER | MEMBER
+  active       Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+
+  member        Member?
+  posts         Post[]        @relation("PostAuthor")
+  reviewedPosts Post[]        @relation("PostReviewer")
+  assignedCases Case[]        @relation("CaseAssignee")
+  caseMessages  CaseMessage[]
+  auditLogs     AuditLog[]
+  media         Media[]
+}
+
+model Affiliate {
+  id          String   @id @default(cuid())
+  name        String
+  nameDv      String?
+  shortName   String
+  description String?
+  memberCount Int      @default(0)
+  website     String?
+  createdAt   DateTime @default(now())
+
+  members Member[]
+}
+
+model Member {
+  id             String    @id @default(cuid())
+  membershipNo   String    @unique
+  fullName       String
+  idNumber       String // National ID card or passport/work-permit number
+  nationality    String    @default("Maldivian")
+  address        String?
+  phone          String
+  email          String
+  dateOfBirth    DateTime?
+  gender         String?
+  profession     String // Nurse, Doctor, Allied Health, …
+  role           String? // job title
+  employer       String // facility name
+  atoll          String
+  island         String?
+  status         String    @default("ACTIVE") // ACTIVE | LAPSED | SUSPENDED | RESIGNED
+  joinedAt       DateTime  @default(now())
+  duesPaidUntil  DateTime?
+  isRep          Boolean   @default(false) // workplace representative
+  notes          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  userId      String?    @unique
+  user        User?      @relation(fields: [userId], references: [id])
+  affiliateId String?
+  affiliate   Affiliate? @relation(fields: [affiliateId], references: [id])
+
+  cases      Case[]
+  payments   Payment[]
+  rsvps      EventRsvp[]
+  votes      Vote[]
+}
+
+model Application {
+  id              String    @id @default(cuid())
+  reference       String    @unique // shown to the applicant, e.g. APP-2026-0007
+  fullName        String
+  address         String // present address
+  country         String    @default("Maldives")
+  idNumber        String // National ID or passport number
+  phone           String
+  email           String
+  jobTitle        String
+  employer        String // hospital / company
+  profession      String?
+  atoll           String?
+  island          String?
+  category        String? // segment chosen on the join page
+  referredBy      String?
+  idDocFile       String? // private file: copy of ID / passport
+  signatureFile   String? // private file: drawn signature (PNG)
+  declarationDate DateTime?
+  consent         Boolean   @default(false)
+  status          String    @default("PENDING") // PENDING | APPROVED | REJECTED
+  reviewNote      String?
+  receivedBy      String? // name of the officer who processed it (office use)
+  reviewedAt      DateTime? // processed date (office use)
+  memberId        String? // member record created on approval
+  createdAt       DateTime  @default(now())
+}
+
+// ─── Content ────────────────────────────────────────────────────────
+
+model Post {
+  id          String    @id @default(cuid())
+  title       String
+  titleDv     String?
+  slug        String    @unique
+  excerpt     String?
+  excerptDv   String?
+  body        String // Markdown
+  bodyDv      String?
+  coverImage  String?
+  category    String    @default("NEWS") // NEWS | PRESS_RELEASE | STATEMENT | NOTICE | FEATURE
+  tags        String? // comma-separated
+  status      String    @default("DRAFT") // DRAFT | IN_REVIEW | SCHEDULED | PUBLISHED | ARCHIVED
+  visibility  String    @default("PUBLIC") // PUBLIC | MEMBERS
+  featured    Boolean   @default(false)
+  publishAt   DateTime?
+  publishedAt DateTime?
+  reviewNote  String?
+  views       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  authorId   String
+  author     User    @relation("PostAuthor", fields: [authorId], references: [id])
+  reviewerId String?
+  reviewer   User?   @relation("PostReviewer", fields: [reviewerId], references: [id])
+}
+
+model Campaign {
+  id          String   @id @default(cuid())
+  title       String
+  titleDv     String?
+  slug        String   @unique
+  summary     String
+  summaryDv   String?
+  body        String
+  coverImage  String?
+  status      String   @default("ACTIVE") // DRAFT | ACTIVE | WON | CLOSED
+  goal        Int      @default(1000) // petition signature goal
+  hasPetition Boolean  @default(true)
+  petitionAsk String? // the demand people sign
+  featured    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  signatures PetitionSignature[]
+}
+
+model PetitionSignature {
+  id         String   @id @default(cuid())
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  name       String
+  email      String
+  atoll      String?
+  isHealthWorker Boolean @default(false)
+  createdAt  DateTime @default(now())
+
+  @@unique([campaignId, email])
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  titleDv     String?
+  description String
+  startsAt    DateTime
+  endsAt      DateTime?
+  location    String
+  isOnline    Boolean  @default(false)
+  type        String   @default("MEETING") // MEETING | TRAINING | CPD | RALLY | AGM | WEBINAR
+  visibility  String   @default("PUBLIC") // PUBLIC | MEMBERS
+  capacity    Int?
+  cpdHours    Float?
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  rsvps EventRsvp[]
+}
+
+model EventRsvp {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  memberId  String
+  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([eventId, memberId])
+}
+
+model Resource {
+  id          String   @id @default(cuid())
+  title       String
+  titleDv     String?
+  description String?
+  category    String // AGREEMENT | POLICY | FORM | REPORT | GUIDE | CONSTITUTION
+  visibility  String   @default("PUBLIC") // PUBLIC | MEMBERS
+  fileUrl     String
+  fileSize    Int?
+  downloads   Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model Media {
+  id         String   @id @default(cuid())
+  url        String
+  filename   String
+  mimeType   String
+  size       Int
+  alt        String?
+  uploadedById String?
+  uploadedBy User?    @relation(fields: [uploadedById], references: [id])
+  createdAt  DateTime @default(now())
+}
+
+// ─── Member services ────────────────────────────────────────────────
+
+model Case {
+  id          String    @id @default(cuid())
+  reference   String    @unique
+  memberId    String
+  member      Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  type        String // PAY_OVERTIME | WORKING_HOURS | SAFETY | DISCIPLINARY | CONTRACT | VISA_PERMIT | HARASSMENT | OTHER
+  subject     String
+  description String
+  facility    String?
+  urgency     String    @default("NORMAL") // LOW | NORMAL | HIGH | URGENT
+  status      String    @default("OPEN") // OPEN | IN_PROGRESS | AWAITING_MEMBER | RESOLVED | CLOSED
+  assigneeId  String?
+  assignee    User?     @relation("CaseAssignee", fields: [assigneeId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  closedAt    DateTime?
+
+  messages CaseMessage[]
+}
+
+model CaseMessage {
+  id         String   @id @default(cuid())
+  caseId     String
+  case       Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  authorId   String
+  author     User     @relation(fields: [authorId], references: [id])
+  body       String
+  internal   Boolean  @default(false) // staff-only note
+  createdAt  DateTime @default(now())
+}
+
+model Payment {
+  id        String   @id @default(cuid())
+  memberId  String
+  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  amount    Float // MVR
+  period    String // e.g. "2026-11" or "2026"
+  method    String   @default("SALARY_DEDUCTION") // SALARY_DEDUCTION | BANK_TRANSFER | CASH | CARD
+  reference String?
+  paidAt    DateTime @default(now())
+}
+
+model Ballot {
+  id          String    @id @default(cuid())
+  title       String
+  question    String
+  description String?
+  opensAt     DateTime
+  closesAt    DateTime
+  anonymous   Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  options BallotOption[]
+  votes   Vote[]
+}
+
+model BallotOption {
+  id       String @id @default(cuid())
+  ballotId String
+  ballot   Ballot @relation(fields: [ballotId], references: [id], onDelete: Cascade)
+  label    String
+  order    Int    @default(0)
+  votes    Vote[]
+}
+
+model Vote {
+  id        String       @id @default(cuid())
+  ballotId  String
+  ballot    Ballot       @relation(fields: [ballotId], references: [id], onDelete: Cascade)
+  optionId  String
+  option    BallotOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  memberId  String
+  member    Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  createdAt DateTime     @default(now())
+
+  @@unique([ballotId, memberId])
+}
+
+// ─── Site operations ────────────────────────────────────────────────
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  topic     String
+  message   String
+  handled   Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
+model Setting {
+  key   String @id
+  value String
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  entity    String
+  entityId  String?
+  detail    String?
+  createdAt DateTime @default(now())
+}
