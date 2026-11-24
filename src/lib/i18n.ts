@@ -1,4 +1,5 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
+import { makeT } from "./dv";
 import { getSettings } from "./settings";
 
 export type Lang = "en" | "dv";
@@ -43,6 +44,9 @@ export type DictKey = keyof typeof dict;
 
 export async function getLang(): Promise<Lang> {
   if (!(await isDhivehiEnabled())) return "en";
+  // The staff and member portals are English-only (left-to-right) for now.
+  const path = (await headers()).get("x-path") ?? "";
+  if (/^\/(admin|editorial|members)(\/|$)/.test(path)) return "en";
   const v = (await cookies()).get("lang")?.value;
   return v === "dv" ? "dv" : "en";
 }
@@ -50,6 +54,11 @@ export async function getLang(): Promise<Lang> {
 /** Admins can switch the Dhivehi version off in Site settings. */
 export async function isDhivehiEnabled() {
   return (await getSettings()).dhivehiEnabled !== "false";
+}
+
+/** In server components: `const T = await getT(); T("Who we represent")` (see src/lib/dv.ts). */
+export async function getT() {
+  return makeT(await getLang());
 }
 
 export function t(lang: Lang, key: DictKey) {

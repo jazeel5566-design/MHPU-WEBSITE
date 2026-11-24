@@ -6,7 +6,7 @@ import {
 import { db } from "@/lib/db";
 import { cn } from "@/lib/utils";
 import { features } from "@/lib/features-server";
-import { getLang, t, pick } from "@/lib/i18n";
+import { getLang, t, pick, getT } from "@/lib/i18n";
 import { livePosts, liveOrder } from "@/lib/content";
 import { ButtonLink, Progress } from "@/components/ui";
 import { PostCard, CampaignCard, EventCard, SectionHead } from "@/components/public/cards";
@@ -35,6 +35,7 @@ const SECTORS = [
 ];
 
 export default async function HomePage() {
+  const T = await getT();
   const [lang, settings, photos, f] = await Promise.all([getLang(), getSettings(), getSitePhotos(), features()]);
   const [featured, campaigns, posts, events, memberCount, affiliateCount, wins] = await Promise.all([
     db.campaign.findFirst({ where: { featured: true, status: "ACTIVE" }, include: { _count: { select: { signatures: true } } } }),
@@ -71,9 +72,9 @@ export default async function HomePage() {
               {f.path("/get-help") && <ButtonLink href="/get-help" size="lg" className="bg-white text-brand-900 hover:bg-brand-50">{t(lang, "getHelp")}</ButtonLink>}
             </div>}
             {f.on("home.stats") && <dl className="mt-10 grid max-w-lg grid-cols-3 gap-6 border-t border-white/15 pt-6">
-              {memberCount >= 50 && <Stat value={memberCount.toLocaleString()} label="Active members" />}
-              {affiliateCount > 0 && <Stat value={affiliateCount} label="Workplace unions" />}
-              <Stat value="21" label="Atolls & cities" />
+              {memberCount >= 50 && <Stat value={memberCount.toLocaleString()} label={T("Active members")} />}
+              {affiliateCount > 0 && <Stat value={affiliateCount} label={T("Workplace unions")} />}
+              <Stat value="21" label={T("Atolls & cities")} />
             </dl>}
           </div>
 
@@ -81,14 +82,14 @@ export default async function HomePage() {
             <div className="animate-fade-up rounded-3xl bg-white p-6 text-ink shadow-2xl shadow-black/30 [animation-delay:120ms]">
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-coral-600">
                 <span className="relative flex size-2"><span className="absolute inline-flex size-full animate-ping rounded-full bg-coral-400 opacity-75" /><span className="relative inline-flex size-2 rounded-full bg-coral-500" /></span>
-                Live campaign
+                {T("Live campaign")}
               </div>
               <h2 className="mt-3 text-2xl font-extrabold leading-tight">{pick(lang, featured.title, featured.titleDv)}</h2>
               <p className="mt-2 text-sm leading-relaxed text-muted">{pick(lang, featured.summary, featured.summaryDv)}</p>
               <div className="mt-5">
                 <div className="mb-2 flex items-baseline justify-between">
                   <span className="text-3xl font-extrabold">{signed.toLocaleString()}</span>
-                  <span className="text-sm text-muted">of {featured.goal.toLocaleString()} signatures</span>
+                  <span className="text-sm text-muted">{T("of")} {featured.goal.toLocaleString()} {T("signatures")}</span>
                 </div>
                 <Progress value={signed} max={featured.goal} />
               </div>
@@ -102,13 +103,13 @@ export default async function HomePage() {
       {f.on("home.help") && <section className="mx-auto max-w-7xl px-4 py-16">
         <div className="text-center">
           <h2 className="text-3xl font-extrabold tracking-tight">{t(lang, "howHelp")}</h2>
-          <p className="mt-2 text-muted">Pick a topic for practical guidance{f.path("/members/help") && <> — or <Link href="/members/help/new" className="font-semibold text-brand-700 underline underline-offset-2">open a case</Link> if you&apos;re a member</>}.</p>
+          <p className="mt-2 text-muted">{T("Pick a topic for practical guidance")}{f.path("/members/help") && <> {T("— or")} <Link href="/members/help/new" className="font-semibold text-brand-700 underline underline-offset-2">{T("open a case")}</Link> {T("if you're a member")}</>}.</p>
         </div>
         <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {HELP_TASKS.filter((x) => f.path(x.href)).map(({ icon: Icon, label, href }) => (
             <Link key={label} href={href} className="group flex flex-col items-center gap-3 rounded-2xl border border-line bg-white p-5 text-center transition hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-md">
               <span className="grid size-12 place-items-center rounded-2xl bg-brand-50 text-brand-700 transition group-hover:bg-brand-700 group-hover:text-white"><Icon className="size-6" /></span>
-              <span className="text-sm font-semibold leading-snug">{label}</span>
+              <span className="text-sm font-semibold leading-snug">{T(label)}</span>
             </Link>
           ))}
         </div>
@@ -118,7 +119,7 @@ export default async function HomePage() {
       {lead && f.on("home.news") && (
         <section className="bg-sand-50 py-16">
           <div className="mx-auto max-w-7xl px-4">
-            <SectionHead kicker="Newsroom" title={t(lang, "latestNews")} action={<ButtonLink href="/news" variant="outline">{t(lang, "viewAll")}</ButtonLink>} />
+            <SectionHead kicker={T("Newsroom")} title={t(lang, "latestNews")} action={<ButtonLink href="/news" variant="outline">{t(lang, "viewAll")}</ButtonLink>} />
             <div className="grid gap-6 lg:grid-cols-2">
               <PostCard post={lead} lang={lang} large />
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-1">
@@ -142,7 +143,7 @@ export default async function HomePage() {
       {/* ─── Campaigns ────────────────────────────────────────── */}
       {campaigns.length > 0 && f.on("home.campaigns") && (
         <section className="mx-auto max-w-7xl px-4 py-16">
-          <SectionHead kicker={wins > 0 ? `${wins} campaign${wins === 1 ? "" : "s"} won` : "Campaigns"} title={t(lang, "activeCampaigns")} action={<ButtonLink href="/campaigns" variant="outline">{t(lang, "viewAll")}</ButtonLink>} />
+          <SectionHead kicker={wins > 0 ? `${wins} ${T(wins === 1 ? "campaign won" : "campaigns won")}` : T("Campaigns")} title={t(lang, "activeCampaigns")} action={<ButtonLink href="/campaigns" variant="outline">{t(lang, "viewAll")}</ButtonLink>} />
           <div className="grid gap-6 md:grid-cols-3">
             {campaigns.map((c) => <CampaignCard key={c.slug} c={c} lang={lang} fallbackImage={photos.campaigns} />)}
           </div>
@@ -156,12 +157,12 @@ export default async function HomePage() {
         <div className="relative mx-auto max-w-7xl px-4">
           <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr]">
             <div>
-              <div className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-coral-400">Who we represent</div>
-              <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Every health worker. Every island.</h2>
-              <p className="mt-4 text-brand-100">From IGMH in Malé to a two-person health post in the far north, MHPU members bargain together — Maldivian and expatriate, clinical and support staff alike.</p>
+              <div className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-coral-400">{T("Who we represent")}</div>
+              <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{T("Every health worker. Every island.")}</h2>
+              <p className="mt-4 text-brand-100">{T("From IGMH in Malé to a two-person health post in the far north, MHPU members bargain together — Maldivian and expatriate, clinical and support staff alike.")}</p>
               <div className="mt-6 flex flex-wrap gap-3">
-                {f.path("/about") && <ButtonLink href={affiliateCount > 0 && f.on("about.unions") ? "/about#affiliates" : "/about"} className="bg-white text-brand-900 hover:bg-brand-50"><Users className="size-4" /> {affiliateCount > 0 && f.on("about.unions") ? "Our workplace unions" : "About MHPU"}</ButtonLink>}
-                {reps > 0 && f.path("/contact") && <ButtonLink href="/contact#reps" variant="ghost" className="text-white hover:bg-white/10"><MapPinned className="size-4" /> Find your rep</ButtonLink>}
+                {f.path("/about") && <ButtonLink href={affiliateCount > 0 && f.on("about.unions") ? "/about#affiliates" : "/about"} className="bg-white text-brand-900 hover:bg-brand-50"><Users className="size-4" /> {T(affiliateCount > 0 && f.on("about.unions") ? "Our workplace unions" : "About MHPU")}</ButtonLink>}
+                {reps > 0 && f.path("/contact") && <ButtonLink href="/contact#reps" variant="ghost" className="text-white hover:bg-white/10"><MapPinned className="size-4" /> {T("Find your rep")}</ButtonLink>}
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -169,8 +170,8 @@ export default async function HomePage() {
                 <div key={label} className="flex gap-4 rounded-2xl bg-white/[0.07] p-5 ring-1 ring-white/10 backdrop-blur-sm">
                   <Icon className="size-6 shrink-0 text-brand-300" />
                   <div>
-                    <div className="font-bold">{label}</div>
-                    <div className="text-sm text-brand-200">{desc}</div>
+                    <div className="font-bold">{T(label)}</div>
+                    <div className="text-sm text-brand-200">{T(desc)}</div>
                   </div>
                 </div>
               ))}
@@ -182,23 +183,23 @@ export default async function HomePage() {
       {/* ─── Events + Join ────────────────────────────────────── */}
       {(f.on("home.events") || f.on("home.join")) && <section className={cn("mx-auto grid max-w-7xl gap-10 px-4 py-16", f.on("home.events") && f.on("home.join") && "lg:grid-cols-[1.2fr_1fr]")}>
         {f.on("home.events") && <div>
-          <SectionHead kicker="Get involved" title={t(lang, "upcoming")} action={<ButtonLink href="/events" variant="outline">{t(lang, "viewAll")}</ButtonLink>} />
+          <SectionHead kicker={T("Get involved")} title={t(lang, "upcoming")} action={<ButtonLink href="/events" variant="outline">{t(lang, "viewAll")}</ButtonLink>} />
           <div className="space-y-3">
-            {events.length ? events.map((e) => <EventCard key={e.id} e={e} lang={lang} />) : <p className="text-muted">No public events scheduled — check back soon.</p>}
+            {events.length ? events.map((e) => <EventCard key={e.id} e={e} lang={lang} />) : <p className="text-muted">{T("No public events scheduled — check back soon.")}</p>}
           </div>
         </div>}
         {f.on("home.join") && <div className="relative overflow-hidden rounded-3xl bg-coral-500 p-8 text-white">
           <svg className="absolute -end-10 -top-10 size-56 text-white/10" viewBox="0 0 48 48" aria-hidden="true"><path d="M19 9h10v10h10v10H29v10H19V29H9V19h10z" fill="currentColor" /></svg>
           <h2 className="relative text-3xl font-extrabold leading-tight">{t(lang, "joinCtaTitle")}</h2>
-          <p className="relative mt-2 text-sm font-semibold text-white/85">Registration MVR {settings.registrationFee} · Monthly MVR {settings.monthlyDues}</p>
+          <p className="relative mt-2 text-sm font-semibold text-white/85">{T("Registration")} MVR {settings.registrationFee} · {T("Monthly")} MVR {settings.monthlyDues}</p>
           <ul className="relative mt-6 space-y-3 text-sm font-medium">
             {["Confidential advice and representation at work", "A collective voice on pay, overtime and safe staffing", "Digital membership card & member-only resources", "CPD training, events and a say in every ballot"].map((b) => (
-              <li key={b} className="flex gap-2.5"><BadgeCheck className="size-5 shrink-0" />{b}</li>
+              <li key={b} className="flex gap-2.5"><BadgeCheck className="size-5 shrink-0" />{T(b)}</li>
             ))}
           </ul>
           <div className="relative mt-8 flex flex-wrap gap-3">
             <ButtonLink href="/join" size="lg" className="bg-white text-coral-700 hover:bg-coral-50">{t(lang, "join")}</ButtonLink>
-            {f.path("/get-help") && <ButtonLink href="/get-help" size="lg" variant="ghost" className="text-white hover:bg-white/15">Why join?</ButtonLink>}
+            {f.path("/get-help") && <ButtonLink href="/get-help" size="lg" variant="ghost" className="text-white hover:bg-white/15">{T("Why join?")}</ButtonLink>}
           </div>
         </div>}
       </section>}

@@ -4,8 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/lang-provider";
 
 export function MobileNav({ items, footer }: { items: { href: string; label: string }[]; footer?: React.ReactNode }) {
+  const T = useT();
   const [open, setOpen] = useState(false);
   const path = usePathname();
   useEffect(() => setOpen(false), [path]);
@@ -15,7 +17,7 @@ export function MobileNav({ items, footer }: { items: { href: string; label: str
 
   return (
     <div className="lg:hidden">
-      <button onClick={() => setOpen(true)} className="grid size-10 place-items-center rounded-full hover:bg-sand-100" aria-label="Open menu">
+      <button onClick={() => setOpen(true)} className="grid size-10 place-items-center rounded-full hover:bg-sand-100" aria-label={T("Open menu")}>
         <Menu className="size-5" />
       </button>
       {open && (
@@ -23,7 +25,7 @@ export function MobileNav({ items, footer }: { items: { href: string; label: str
           <div className="absolute inset-0 bg-ink/40 backdrop-blur-sm" onClick={() => setOpen(false)} />
           <nav className="absolute inset-y-0 end-0 flex w-[85%] max-w-sm flex-col bg-white p-5 shadow-2xl animate-fade-up">
             <div className="flex justify-end">
-              <button onClick={() => setOpen(false)} className="grid size-10 place-items-center rounded-full hover:bg-sand-100" aria-label="Close menu">
+              <button onClick={() => setOpen(false)} className="grid size-10 place-items-center rounded-full hover:bg-sand-100" aria-label={T("Close menu")}>
                 <X className="size-5" />
               </button>
             </div>

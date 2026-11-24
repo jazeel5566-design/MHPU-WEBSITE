@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { formatDate } from "@/lib/utils";
 import { checkVerifyCode, formLimit } from "@/lib/security";
 import { ButtonLink } from "@/components/ui";
+import { getT } from "@/lib/i18n";
 
 export const metadata = { title: "Membership verification", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -13,6 +14,7 @@ export const dynamic = "force-dynamic";
  * so the sequential membership numbers can't be used to list members. Rate-limited.
  */
 export default async function VerifyResult({ params, searchParams }: { params: Promise<{ no: string }>; searchParams: Promise<{ c?: string }> }) {
+  const T = await getT();
   const [{ no }, { c }] = await Promise.all([params, searchParams]);
   const number = decodeURIComponent(no).toUpperCase().slice(0, 40);
   const limited = await formLimit("verify", 30);
@@ -20,7 +22,7 @@ export default async function VerifyResult({ params, searchParams }: { params: P
     return (
       <div className="mx-auto max-w-md px-4 py-16 text-center">
         <Clock className="mx-auto size-14 text-amber-500" />
-        <h1 className="mt-4 text-xl font-extrabold">Too many lookups</h1>
+        <h1 className="mt-4 text-xl font-extrabold">{T("Too many lookups")}</h1>
         <p className="mt-2 text-muted">{limited}</p>
       </div>
     );
@@ -32,18 +34,18 @@ export default async function VerifyResult({ params, searchParams }: { params: P
   return (
     <div className="mx-auto max-w-md px-4 py-16 text-center">
       {valid ? <BadgeCheck className="mx-auto size-16 text-emerald-600" /> : <XCircle className="mx-auto size-16 text-red-500" />}
-      <h1 className="mt-4 text-2xl font-extrabold">{valid ? "Valid MHPU membership" : m ? "Membership not active" : "No active membership found"}</h1>
+      <h1 className="mt-4 text-2xl font-extrabold">{T(valid ? "Valid MHPU membership" : m ? "Membership not active" : "No active membership found")}</h1>
       <p className="mt-1 font-mono text-sm text-muted">{number}</p>
       {m && fromCard && (
         <dl className="mt-6 divide-y divide-line rounded-2xl border border-line text-start text-sm">
-          <Row k="Name" v={shortName} />
-          <Row k="Profession" v={m.profession} />
-          <Row k="Status" v={m.status} />
-          <Row k="Member since" v={formatDate(m.joinedAt)} />
+          <Row k={T("Name")} v={shortName} />
+          <Row k={T("Profession")} v={T(m.profession)} />
+          <Row k={T("Status")} v={T(m.status === "ACTIVE" ? "Active" : m.status.charAt(0) + m.status.slice(1).toLowerCase())} />
+          <Row k={T("Member since")} v={formatDate(m.joinedAt)} />
         </dl>
       )}
-      {m && !fromCard && <p className="mt-4 text-sm text-muted">Scan the QR code on the member&apos;s card to see their name and profession.</p>}
-      <ButtonLink href="/" variant="outline" className="mt-8">MHPU home</ButtonLink>
+      {m && !fromCard && <p className="mt-4 text-sm text-muted">{T("Scan the QR code on the member's card to see their name and profession.")}</p>}
+      <ButtonLink href="/" variant="outline" className="mt-8">{T("MHPU home")}</ButtonLink>
     </div>
   );
 }

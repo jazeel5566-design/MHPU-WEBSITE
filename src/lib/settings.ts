@@ -30,6 +30,7 @@ export const DEFAULT_SETTINGS = {
   reminderOverdueText: "MHPU: Dear {name}, your union dues ({membershipNo}) are overdue since {dueDate}. Please pay at {payLink} to stay in good standing. Help: {hotline}.",
   alertEnabled: "false",
   alertText: "",
+  alertTextDv: "",
   alertLink: "",
   bankDetails: "",
   monthlyDues: "100",

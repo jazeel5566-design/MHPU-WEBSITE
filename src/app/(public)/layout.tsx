@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Megaphone, Phone, MessageCircle, Mail, MapPin, ArrowRight } from "lucide-react";
-import { getLang, t } from "@/lib/i18n";
+import { getLang, t, getT } from "@/lib/i18n";
 import { getSettings } from "@/lib/settings";
 import { features } from "@/lib/features-server";
 import { getCurrentUser, homeFor } from "@/lib/auth";
@@ -13,6 +13,7 @@ import { ButtonLink } from "@/components/ui";
 import { NewsletterForm } from "@/components/public/newsletter-form";
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
+  const T = await getT();
   const [lang, settings, user, f] = await Promise.all([getLang(), getSettings(), getCurrentUser(), features()]);
   const nav = [
     { href: "/about", label: t(lang, "about") },
@@ -31,10 +32,10 @@ export default async function PublicLayout({ children }: { children: React.React
         <div className="bg-coral-500 text-white">
           <div className="mx-auto flex max-w-7xl items-center justify-center gap-2 px-4 py-2 text-center text-sm font-medium">
             <Megaphone className="size-4 shrink-0" />
-            <span>{settings.alertText}</span>
+            <span className={lang === "dv" && settings.alertTextDv ? "font-thaana" : undefined}>{lang === "dv" && settings.alertTextDv ? settings.alertTextDv : settings.alertText}</span>
             {settings.alertLink && (
               <Link href={settings.alertLink} className="inline-flex items-center gap-1 font-bold underline underline-offset-2">
-                Take action <ArrowRight className="size-3.5 rtl:rotate-180" />
+                {T("Take action")} <ArrowRight className="size-3.5 rtl:rotate-180" />
               </Link>
             )}
           </div>
@@ -60,8 +61,8 @@ export default async function PublicLayout({ children }: { children: React.React
 
       <header className="sticky top-0 z-40 border-b border-line bg-white/90 backdrop-blur-md">
         <div className="mx-auto flex h-18 max-w-7xl items-center justify-between gap-2 px-4 py-3 sm:gap-4">
-          <Link href="/" aria-label="MHPU home" className="shrink-0"><Logo compact /></Link>
-          <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
+          <Link href="/" aria-label={T("MHPU home")} className="shrink-0"><Logo compact /></Link>
+          <nav className="hidden items-center gap-1 lg:flex" aria-label={T("Main")}>
             {nav.map((n) => (
               <NavLink key={n.href} href={n.href}
                 className="rounded-full px-3.5 py-2 text-sm font-semibold transition-colors"
@@ -73,12 +74,12 @@ export default async function PublicLayout({ children }: { children: React.React
           <div className="flex items-center gap-1.5 sm:gap-2">
             {f.path("/get-help") && <ButtonLink href="/get-help" variant="outline" className="hidden md:inline-flex">{t(lang, "getHelp")}</ButtonLink>}
             {f.on("site.portalButton") && <ButtonLink href={portalHref} variant="ghost" className="hidden sm:inline-flex">
-              {user ? `My portal` : t(lang, "login")}
+              {user ? T("My portal") : t(lang, "login")}
             </ButtonLink>}
             {f.path("/join") && <ButtonLink href="/join" variant="coral" className="h-9 px-3.5 sm:h-10 sm:px-4">{t(lang, "join")}</ButtonLink>}
             <MobileNav
               items={[{ href: "/", label: t(lang, "home") }, ...nav, ...(f.path("/get-help") ? [{ href: "/get-help", label: t(lang, "getHelp") }] : [])]}
-              footer={<ButtonLink href={portalHref} variant="primary" className="w-full">{user ? "My portal" : t(lang, "login")}</ButtonLink>}
+              footer={<ButtonLink href={portalHref} variant="primary" className="w-full">{user ? T("My portal") : t(lang, "login")}</ButtonLink>}
             />
           </div>
         </div>
@@ -96,10 +97,10 @@ export default async function PublicLayout({ children }: { children: React.React
               <NewsletterForm label={t(lang, "subscribe")} />
             </div>}
           </div>
-          <FooterCol title="Union" allow={f.path} links={[["/about", "About MHPU"], ["/about#affiliates", "Workplace unions"], ["/resources?category=CONSTITUTION", "Constitution"]]} />
-          <FooterCol title="Members" allow={f.path} links={[["/join", "Join MHPU"], ["/get-help", "Get help at work"], ["/login", "Member portal"], ["/verify", "Verify a membership"]]} />
+          <FooterCol T={T} title={T("Union")} allow={f.path} links={[["/about", "About MHPU"], ["/about#affiliates", "Workplace unions"], ["/resources?category=CONSTITUTION", "Constitution"]]} />
+          <FooterCol T={T} title={T("Members")} allow={f.path} links={[["/join", "Join MHPU"], ["/get-help", "Get help at work"], ["/login", "Member portal"], ["/verify", "Verify a membership"]]} />
           {f.on("site.footerContact") && <div>
-            <div className="mb-3 text-sm font-semibold text-white">Contact</div>
+            <div className="mb-3 text-sm font-semibold text-white">{T("Contact")}</div>
             <ul className="space-y-2.5 text-sm text-brand-200">
               <li className="flex gap-2"><Phone className="mt-0.5 size-4 shrink-0" /><span dir="ltr">{settings.hotline}</span></li>
               <li className="flex gap-2"><Mail className="mt-0.5 size-4 shrink-0" />{settings.email}</li>
@@ -114,8 +115,8 @@ export default async function PublicLayout({ children }: { children: React.React
         </div>
         <div className="border-t border-white/10">
           <div className="mx-auto flex max-w-7xl flex-col justify-between gap-2 px-4 py-5 text-xs text-brand-300 sm:flex-row">
-            <span>© {new Date().getFullYear()} Maldives Health Professionals Union · <span className="font-thaana">{settings.nameDv}</span> · Reg. no. {settings.registrationNo}</span>
-            <span className="flex gap-4">{f.path("/privacy") && <Link href="/privacy" className="hover:text-white">Privacy</Link>}<Link href="/login" className="hover:text-white">Staff login</Link></span>
+            <span>© {new Date().getFullYear()} {lang === "dv" ? <span className="font-thaana">{settings.nameDv}</span> : <>Maldives Health Professionals Union · <span className="font-thaana">{settings.nameDv}</span></>} · {T("Reg. no.")} {settings.registrationNo}</span>
+            <span className="flex gap-4">{f.path("/privacy") && <Link href="/privacy" className="hover:text-white">{T("Privacy")}</Link>}<Link href="/login" className="hover:text-white">{T("Staff login")}</Link></span>
           </div>
         </div>
         {/* Letterhead band: brand blue with a slanted cut into black */}
@@ -128,15 +129,15 @@ export default async function PublicLayout({ children }: { children: React.React
   );
 }
 
-function FooterCol({ title, links, allow }: { title: string; links: [string, string][]; allow: (href: string) => boolean }) {
+function FooterCol({ title, links, allow, T }: { title: string; links: [string, string][]; allow: (href: string) => boolean; T: (s: string) => string }) {
   links = links.filter(([href]) => allow(href));
   if (!links.length) return null;
   return (
     <div>
-      <div className="mb-3 text-sm font-semibold text-white">{title}</div>
+      <div className="mb-3 text-sm font-semibold text-white">{T(title)}</div>
       <ul className="space-y-2.5 text-sm">
         {links.map(([href, label]) => (
-          <li key={href}><Link href={href} className="text-brand-200 hover:text-white">{label}</Link></li>
+          <li key={href}><Link href={href} className="text-brand-200 hover:text-white">{T(label)}</Link></li>
         ))}
       </ul>
     </div>

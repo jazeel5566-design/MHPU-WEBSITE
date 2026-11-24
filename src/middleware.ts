@@ -71,6 +71,7 @@ export async function middleware(req: NextRequest) {
   const policy = csp(nonce);
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set("x-nonce", nonce);
+  requestHeaders.set("x-path", path);
   requestHeaders.set("Content-Security-Policy", policy); // Next.js reads this to tag its scripts
   const res = rewriteTo ? NextResponse.rewrite(rewriteTo, { request: { headers: requestHeaders } }) : NextResponse.next({ request: { headers: requestHeaders } });
   res.headers.set("Content-Security-Policy", policy);

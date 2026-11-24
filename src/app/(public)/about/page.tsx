@@ -1,7 +1,7 @@
 import { Target, Eye, Handshake, Users } from "lucide-react";
 import { db } from "@/lib/db";
 import { features } from "@/lib/features-server";
-import { getLang, pick } from "@/lib/i18n";
+import { getLang, pick, getT } from "@/lib/i18n";
 import { PageHero, SectionHead } from "@/components/public/cards";
 import { ButtonLink, Card } from "@/components/ui";
 import { getSitePhotos } from "@/lib/site-photos";
@@ -16,13 +16,14 @@ const TIMELINE = [
 ];
 
 export default async function AboutPage() {
+  const T = await getT();
   const photos = await getSitePhotos();
   const lang = await getLang();
   const f = await features();
   const affiliates = await db.affiliate.findMany({ where: { active: true }, include: { _count: { select: { members: true } } }, orderBy: { name: "asc" } });
   return (
     <>
-      <PageHero kicker="About us" title="The united voice of Maldivian healthcare workers" desc="MHPU is a national trade union federation that brings together health-worker unions and individual members across public and private healthcare." image={photos.about} />
+      <PageHero kicker={T("About us")} title={T("The united voice of Maldivian healthcare workers")} desc={T("MHPU is a national trade union federation that brings together health-worker unions and individual members across public and private healthcare.")} image={photos.about} />
 
       {f.on("about.values") && <section className="mx-auto grid max-w-7xl gap-6 px-4 py-16 md:grid-cols-3">
         {[
@@ -32,8 +33,8 @@ export default async function AboutPage() {
         ].map(({ icon: Icon, title, body }) => (
           <Card key={title} className="p-7">
             <span className="grid size-12 place-items-center rounded-2xl bg-coral-50 text-coral-600"><Icon className="size-6" /></span>
-            <h2 className="mt-4 text-xl font-bold">{title}</h2>
-            <p className="mt-2 leading-relaxed text-muted">{body}</p>
+            <h2 className="mt-4 text-xl font-bold">{T(title)}</h2>
+            <p className="mt-2 leading-relaxed text-muted">{T(body)}</p>
           </Card>
         ))}
       </section>}
@@ -41,25 +42,25 @@ export default async function AboutPage() {
       {f.on("about.story") && <section className="bg-sand-50 py-16">
         <div className="mx-auto grid max-w-7xl gap-12 px-4 lg:grid-cols-2">
           <div>
-            <SectionHead kicker="Our story" title="From a pay campaign to a national federation" />
+            <SectionHead kicker={T("Our story")} title={T("From a pay campaign to a national federation")} />
             <ol className="relative space-y-6 border-s-2 border-brand-200 ps-6">
               {TIMELINE.map(([year, text]) => (
                 <li key={year} className="relative">
                   <span className="absolute -start-[33px] top-1 size-4 rounded-full border-4 border-sand-50 bg-coral-500" />
                   <div className="text-sm font-extrabold text-brand-700">{year}</div>
-                  <p className="mt-1 text-ink">{text}</p>
+                  <p className="mt-1 text-ink">{T(text)}</p>
                 </li>
               ))}
             </ol>
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={photos.islands} alt="Aerial view of a Maldivian island" className="h-full min-h-80 w-full rounded-3xl object-cover" />
+          <img src={photos.islands} alt={T("Aerial view of a Maldivian island")} className="h-full min-h-80 w-full rounded-3xl object-cover" />
         </div>
       </section>}
 
       {affiliates.length > 0 && f.on("about.unions") && (
       <section id="affiliates" className="mx-auto max-w-7xl scroll-mt-24 px-4 py-16">
-        <SectionHead kicker="Federation" title="Workplace unions" action={f.path("/contact") ? <ButtonLink href="/contact" variant="outline">Register your workplace union</ButtonLink> : undefined} />
+        <SectionHead kicker={T("Federation")} title={T("Workplace unions")} action={f.path("/contact") ? <ButtonLink href="/contact" variant="outline">{T("Register your workplace union")}</ButtonLink> : undefined} />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {affiliates.map((a) => (
             <Card key={a.id} className="p-6">

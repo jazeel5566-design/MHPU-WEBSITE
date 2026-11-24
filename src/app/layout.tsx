@@ -3,6 +3,8 @@ import { Plus_Jakarta_Sans, Barlow, Barlow_Semi_Condensed } from "next/font/goog
 import { headers } from "next/headers";
 import { getLang } from "@/lib/i18n";
 import { a11yBootScript } from "@/components/a11y-bar";
+import { LangProvider } from "@/components/lang-provider";
+import { tr } from "@/lib/dv";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta", display: "swap" });
@@ -27,9 +29,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body className="min-h-screen font-sans">
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:start-3 focus:top-3 focus:z-[100] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:shadow-lg">
-          Skip to content
+          {tr(lang, "Skip to content")}
         </a>
-        {children}
+        <LangProvider lang={lang}>{children}</LangProvider>
       </body>
     </html>
   );

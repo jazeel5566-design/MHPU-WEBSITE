@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Elections and ballots on mhpu.org</title><link rel="stylesheet" href="guide.css"></head>
+<body>
+
+<section class="cover">
+  <div class="top"><img src="../../public/brand/mhpu-mark.png" alt=""><div class="org"><b>Maldives Health Professionals Union</b><br>Reg. no. CR/113/2019 · mhpu.org</div></div>
+  <div>
+    <div class="band"></div>
+    <h1>Elections and ballots on mhpu.org</h1>
+    <p class="sub">How online voting works, how to run a workplace union ExCom election or a member ballot, and how the website keeps every vote secret.</p>
+  </div>
+  <div class="meta">
+    <b>For</b><span>MHPU ExCom, the website admin, workplace union officers and election officials</span>
+    <b>Covers</b><span>Admin portal → Elections, Admin portal → Ballots, Member portal → Elections / Ballots &amp; votes</span>
+    <b>Version</b><span>1.0 · November 2026</span>
+  </div>
+</section>
+
+<h2><span class="n">1</span>Two kinds of vote</h2>
+<p>The website has two voting tools. Choose the one that fits the decision.</p>
+<table>
+  <tr><th style="width:18%"></th><th>Elections</th><th>Ballots</th></tr>
+  <tr><td><strong>Use it for</strong></td><td>Electing people: the ExCom of a workplace union, or MHPU-wide officers.</td><td>Deciding a question: accepting an agreement, industrial action, a rule change, a motion.</td></tr>
+  <tr><td><strong>What voters see</strong></td><td>One or more <em>positions</em> (e.g. President, Secretary, 3 Committee members), each with a list of candidates.</td><td>One question with two or more answers (e.g. Yes / No / Abstain).</td></tr>
+  <tr><td><strong>Who can vote</strong></td><td>Active members of the chosen workplace union, or all active MHPU members. Optionally only members whose dues are up to date.</td><td>All active MHPU members.</td></tr>
+  <tr><td><strong>Choices per voter</strong></td><td>Up to the number of seats for each position. A position can be left blank (abstain).</td><td>Exactly one answer.</td></tr>
+  <tr><td><strong>Results</strong></td><td>Hidden until voting closes. Admins publish them to members with one click.</td><td>Hidden until voting closes, then shown to admins and members automatically.</td></tr>
+  <tr><td><strong>Where</strong></td><td>Admin portal → <span class="ui">Elections</span><br>Member portal → <span class="ui">Elections</span></td><td>Admin portal → <span class="ui">Ballots</span><br>Member portal → <span class="ui">Ballots &amp; votes</span></td></tr>
+</table>
+<div class="box"><div class="t">Who can set them up</div>Only the <strong>Admin</strong> role can create and manage elections and ballots. Officers (President, General Secretary, Treasurer) can vote as members but can't change an election. Every action is recorded in the <span class="ui">Audit log</span>.</div>
+
+<h2><span class="n">2</span>The life of an election</h2>
+<p>Every election moves through three stages, decided only by the opening and closing times you set.</p>
+<div class="flow">
+  <div><b>Upcoming</b>Before the opening time. Positions and candidates can be added, changed or removed. Members can see the candidates but can't vote.</div>
+  <div><b>Open</b>Between the opening and closing times. Eligible members vote. Everything is <strong>locked</strong>: no candidate or position can be changed. No running totals are shown, only turnout.</div>
+  <div><b>Closed</b>After the closing time. All votes are counted. Admins see the results and decide when to publish them to members.</div>
+</div>
+
+<h2><span class="n">3</span>Running a workplace union ExCom election</h2>
+<h3>Before you start</h3>
+<ul>
+  <li>Follow the workplace union's own constitution for notice, nominations and eligibility. The website runs the <strong>vote</strong>. Nominations, objections and the election committee happen as your rules require.</li>
+  <li>Make sure the union exists under Admin → <span class="ui">Workplace unions</span> and is marked <em>Active</em>, and that its members are assigned to it (each member's record shows their workplace union).</li>
+  <li>Decide whether members must have <strong>paid-up dues</strong> to vote. If so, remind members early: the dues reminders and online payment make this easy.</li>
+</ul>
+<h3>Step by step</h3>
+<ol class="steps">
+  <li><strong>Create the election.</strong> Admin portal → <span class="ui">Elections</span> → fill in:
+    <ul>
+      <li><em>Election title</em>, e.g. "Dharumavantha Union: ExCom election 2027".</li>
+      <li><em>Who votes?</em> Pick the workplace union, or "All MHPU members" for a federation-wide election.</li>
+      <li><em>Voting opens</em> and <em>Voting closes</em> (Maldives time).</li>
+      <li><em>Information for voters</em>: term length, how nominations were held, who to contact with questions.</li>
+      <li><em>Only members whose dues are up to date can vote</em>: ticked by default.</li>
+    </ul></li>
+  <li><strong>Add the positions</strong>, e.g. President (1 seat), Vice President (1), Secretary (1), Treasurer (1), Committee members (3 seats). "Seats" is how many people are elected to that position, and therefore how many a voter may choose.</li>
+  <li><strong>Add the candidates</strong> to each position by <strong>membership number</strong> (e.g. MHPU-0123), with an optional short statement shown on the ballot. The website checks that the candidate is an active member and, for a workplace union election, a member of that union.</li>
+  <li><strong>Check everything</strong> on the election page: spelling of names, positions, seats, times. Ask a second officer to check too.
+    <div class="box warn"><div class="t">Once voting opens, the election is locked</div>Positions and candidates can't be changed after the opening time, so a vote can't be altered while it's running. If you find a mistake before opening, fix it. If you find it after, the election committee must decide what to do (for example, delete the election before anyone votes and create a new one).</div></li>
+  <li><strong>Tell members.</strong> Publish a member notice (Editorial portal), send an SMS (Admin → <span class="ui">SMS</span>), and mention it at meetings. Members find it in the member portal under <span class="ui">Elections</span>. A red badge shows on their menu while an election is open and they haven't voted.</li>
+  <li><strong>While voting is open</strong>, the election page shows <em>Votes cast</em> and <em>Turnout</em> (as a percentage of eligible members). Use turnout to decide whether to send a reminder. Vote counts per candidate are hidden from everyone, including admins.</li>
+  <li><strong>After closing</strong>, open the election page. The results appear immediately: candidates ranked by votes, with winners marked by a trophy. If there's a <strong>tie at the cut-off</strong> (e.g. two candidates level for the last seat), it's flagged. Resolve it as your union rules require (a run-off, a draw, etc.).</li>
+  <li><strong>Publish the results.</strong> Click <span class="ui">Publish results</span>. Members then see the full results in the portal. You can unpublish if needed.</li>
+</ol>
+
+<h2><span class="n">4</span>What members see and do</h2>
+<ol class="steps">
+  <li>Log in at <strong>mhpu.org/login</strong> → <span class="ui">Elections</span> → open the election.</li>
+  <li>If they can't vote, the page tells them why in plain words: not an active member, not in this workplace union, or dues not up to date ("Pay your dues, then come back to vote").</li>
+  <li>For each position, tap the candidates they want, up to the number of seats. Leaving a position empty counts as an abstention for that position.</li>
+  <li>Tap <span class="ui">Review my choices</span>, check the summary, then <span class="ui">Submit my vote</span>. A vote <strong>can't be changed</strong> after it's submitted.</li>
+  <li>They see a confirmation, and the election shows "You voted on [date and time]". Trying to vote again is refused.</li>
+</ol>
+<p class="small">Members vote on a phone or computer. No app is needed. Members who can't vote online can be helped by the office as your rules allow, but staff must never vote on a member's behalf or ask for their password.</p>
+
+<h2><span class="n">5</span>Running a ballot (a yes/no or multiple-choice question)</h2>
+<ol class="steps">
+  <li>Admin portal → <span class="ui">Ballots</span> → <em>Create a ballot</em>.</li>
+  <li>Enter a <em>title</em>, the exact <em>question</em>, an optional <em>description</em> (link to the proposal or agreement), the <em>options one per line</em> (e.g. "Yes, accept the offer" / "No, reject the offer"), and the opening and closing times.</li>
+  <li>Members see it under <span class="ui">Ballots &amp; votes</span> when it opens, choose one option and confirm. A red banner on their dashboard reminds them while it's open.</li>
+  <li>While it's open, the admin page shows only <em>how many have voted</em> and turnout. When it closes, the totals and percentages appear for admins and members.</li>
+</ol>
+<div class="box warn"><div class="t">Check ballots carefully before they open</div>Ballots can't be edited after creation. If there's a mistake, delete the ballot (which also deletes any votes cast) and create it again, ideally before it opens. Deleting a ballot with votes needs a clear decision by the ExCom.</div>
+
+<h2 class="pb"><span class="n">6</span>How the website keeps votes secret</h2>
+<p>A secret ballot means <strong>nobody can find out how a particular member voted</strong>. That includes ExCom members, admins, the website developer and anyone with access to the database. This is how the website achieves it.</p>
+<h3>Two separate records</h3>
+<div class="two">
+  <div class="box"><div class="t">1 · Who has voted</div>The member's name and the time they voted. Used to stop double voting, show "You voted" and calculate turnout. It contains <strong>no choices</strong>.</div>
+  <div class="box"><div class="t">2 · The votes</div>Just the choices: which candidate or option. Each vote has <strong>no name, no membership number and no time</strong>, so it can't be matched to a voter.</div>
+</div>
+<h3>Sealed, then counted in shuffled batches</h3>
+<p>Saving a voter's name and their vote at the same moment could, in theory, let a database expert link the two by their timing or order. To prevent that:</p>
+<ol>
+  <li>When a member votes, the website records <em>that</em> they voted and stores their choices in a <strong>sealed (encrypted)</strong> envelope. The envelope holds no name and can't be read without the website's secret key.</li>
+  <li>Envelopes are only opened and counted <strong>in batches of at least five</strong>, or all together when voting closes. The choices in a batch are <strong>shuffled</strong> and saved as anonymous votes in one go, and the envelopes are destroyed.</li>
+  <li>The website checks for elections and ballots that have closed every morning and when results are viewed, so every vote is counted.</li>
+</ol>
+<h3>No running totals</h3>
+<p>Nobody, including admins, can see how candidates or options are doing while voting is open. This stops early results from influencing voters and stops anyone working out how a recent voter voted by watching the numbers change.</p>
+<h3>What admins <em>can</em> see</h3>
+<ul>
+  <li>Turnout: how many have voted and the percentage of eligible members.</li>
+  <li>Who has voted and when, stored in the database for checking eligibility and disputes. Admins don't see this list on screen, and it never shows choices.</li>
+  <li>The final results after closing.</li>
+</ul>
+<div class="box red"><div class="t">The limits of any online vote</div>
+<ul>
+  <li><strong>Very small electorates.</strong> If only a handful of people vote and the result is unanimous, the result itself reveals how everyone voted. No system can prevent that. For tiny groups, consider whether a secret vote makes sense.</li>
+  <li><strong>Shared passwords.</strong> The website can't tell if someone logs in with another member's password. Remind members never to share their password. Staff must never ask for it.</li>
+  <li><strong>Keep the secret key safe.</strong> The envelope key is a website setting (<code>SESSION_SECRET</code>) kept in Vercel. It must not be changed while a vote is open, or sealed votes can't be counted.</li>
+</ul></div>
+
+<h2><span class="n">7</span>Checklist for the election committee</h2>
+<div class="two">
+<div>
+<h3>Before voting opens</h3>
+<ul class="check">
+  <li>Notice given as the union constitution requires</li>
+  <li>Nominations closed and candidates confirmed</li>
+  <li>Workplace union and its members correct on the website</li>
+  <li>Dues rule decided and announced</li>
+  <li>Election created, positions and seats correct</li>
+  <li>Every candidate added, names checked by a second officer</li>
+  <li>Opening and closing times checked (Maldives time)</li>
+  <li>Members notified: notice, SMS, meetings</li>
+</ul>
+</div>
+<div>
+<h3>During and after</h3>
+<ul class="check">
+  <li>Turnout watched, reminder sent if needed</li>
+  <li>Questions from members answered (eligibility, dues)</li>
+  <li>Results reviewed by the committee after closing</li>
+  <li>Any tie resolved under the rules</li>
+  <li>Results published to members</li>
+  <li>Result announced: notice, SMS, meeting</li>
+  <li>Outcome recorded in the committee's minutes</li>
+</ul>
+</div>
+</div>
+
+<h2><span class="n">8</span>Questions and problems</h2>
+<table>
+  <tr><th style="width:38%">Situation</th><th>What to do</th></tr>
+  <tr><td>A member says they can't vote</td><td>The election page tells them why. Usually their dues aren't up to date, they're in a different workplace union, or their membership isn't active. Check their record in Admin → <span class="ui">Members</span>.</td></tr>
+  <tr><td>A member is in the wrong workplace union</td><td>Correct it on their member record <strong>before</strong> voting opens. Changing union memberships during a vote should be decided by the election committee.</td></tr>
+  <tr><td>A member wants to change their vote</td><td>Not possible. Votes can't be changed or withdrawn after submitting, and the website can't find which vote was theirs.</td></tr>
+  <tr><td>A candidate withdraws</td><td>Before opening: remove them from the position. After opening: the election is locked. The committee decides under the rules, and the result can be read accordingly.</td></tr>
+  <tr><td>Wrong closing time</td><td>Can be edited only while the election is upcoming. After it opens, decide with the committee.</td></tr>
+  <tr><td>Can an election be deleted?</td><td>Only if nobody has voted yet. After that, it stays on record.</td></tr>
+  <tr><td>Will results appear if nobody opens the page?</td><td>Yes. The website counts all sealed votes of closed elections and ballots each morning automatically.</td></tr>
+  <tr><td>Can we turn voting off?</td><td>Yes. Admin → <span class="ui">Pages &amp; features</span> can switch off Elections and/or Ballots for members and admins when they aren't needed.</td></tr>
+</table>
+
+<h2><span class="n">9</span>A short explanation for members</h2>
+<p>You can copy this into a notice or SMS:</p>
+<div class="box"><p><strong>Your vote is secret.</strong> When you vote on mhpu.org, the union records only <em>that</em> you have voted, so you can't vote twice. Your choices are sealed and counted together with other members' votes, with no name or time attached. Nobody, including union officials, can see how you voted, and no one sees any results until voting closes. Log in at mhpu.org/login, open <em>Elections</em> (or <em>Ballots &amp; votes</em>), make your choices and press <em>Submit</em>. Never share your password.</p></div>
+
+</body></html>

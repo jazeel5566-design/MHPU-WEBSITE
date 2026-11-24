@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Clock, Lock } from "lucide-react";
 import { db } from "@/lib/db";
-import { getLang, pick } from "@/lib/i18n";
+import { getLang, pick, getT } from "@/lib/i18n";
 import { getCurrentUser } from "@/lib/auth";
 import { livePosts, liveOrder } from "@/lib/content";
 import { renderMarkdown } from "@/lib/markdown";
@@ -21,6 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
+  const T = await getT();
   const { slug } = await params;
   const [lang, user] = await Promise.all([getLang(), getCurrentUser()]);
   const post = await db.post.findFirst({ where: { slug, ...livePosts(["PUBLIC", "MEMBERS"]) }, include: { author: { select: { name: true, title: true } } } });
@@ -35,17 +36,17 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   return (
     <article>
       <header className="mx-auto max-w-3xl px-4 pt-10">
-        <Link href="/news" className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-700 hover:underline"><ArrowLeft className="size-4 rtl:rotate-180" /> All news</Link>
+        <Link href="/news" className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-700 hover:underline"><ArrowLeft className="size-4 rtl:rotate-180" /> {T("All news")}</Link>
         <div className="mt-6 flex flex-wrap items-center gap-2">
-          <Badge tone="brand">{labelOf(POST_CATEGORIES, post.category)}</Badge>
-          {post.visibility === "MEMBERS" && <Badge tone="violet">Members only</Badge>}
+          <Badge tone="brand">{T(labelOf(POST_CATEGORIES, post.category))}</Badge>
+          {post.visibility === "MEMBERS" && <Badge tone="violet">{T("Members only")}</Badge>}
         </div>
         <h1 className={`mt-4 text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl ${isDv ? "dv-text" : ""}`}>{pick(lang, post.title, post.titleDv)}</h1>
         {post.excerpt && <p className="mt-4 text-xl leading-relaxed text-muted">{pick(lang, post.excerpt, post.excerptDv)}</p>}
         <div className="mt-6 flex flex-wrap items-center gap-4 border-y border-line py-4 text-sm text-muted">
           <span><span className="font-semibold text-ink">{post.author.name}</span>{post.author.title && <span>, {post.author.title}</span>}</span>
           <span>{formatDate(post.publishedAt ?? post.publishAt, { day: "numeric", month: "long", year: "numeric" })}</span>
-          <span className="inline-flex items-center gap-1"><Clock className="size-4" /> {readingTime(body)} min read</span>
+          <span className="inline-flex items-center gap-1"><Clock className="size-4" /> {readingTime(body)} {T("min read")}</span>
         </div>
       </header>
       {post.coverImage && (
@@ -60,11 +61,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         ) : (
           <div className="rounded-3xl border border-violet-200 bg-violet-50 p-8 text-center">
             <Lock className="mx-auto size-10 text-violet-600" />
-            <h2 className="mt-3 text-xl font-bold">This update is for MHPU members</h2>
-            <p className="mt-2 text-muted">Log in to read the full notice, or join today to get member updates.</p>
+            <h2 className="mt-3 text-xl font-bold">{T("This update is for MHPU members")}</h2>
+            <p className="mt-2 text-muted">{T("Log in to read the full notice, or join today to get member updates.")}</p>
             <div className="mt-5 flex justify-center gap-3">
-              <ButtonLink href={`/login?next=/news/${post.slug}`}>Log in</ButtonLink>
-              <ButtonLink href="/join" variant="coral">Join MHPU</ButtonLink>
+              <ButtonLink href={`/login?next=/news/${post.slug}`}>{T("Log in")}</ButtonLink>
+              <ButtonLink href="/join" variant="coral">{T("Join MHPU")}</ButtonLink>
             </div>
           </div>
         )}
@@ -74,13 +75,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           </div>
         )}
         <div className="mt-8 rounded-2xl bg-sand-50 p-5 text-center">
-          <div className="text-sm font-semibold">Share this with your colleagues</div>
+          <div className="text-sm font-semibold">{T("Share this with your colleagues")}</div>
           <ShareButtons />
         </div>
       </div>
       {related.length > 0 && (
         <section className="mx-auto max-w-7xl px-4">
-          <h2 className="mb-6 text-2xl font-extrabold">Related</h2>
+          <h2 className="mb-6 text-2xl font-extrabold">{T("Related")}</h2>
           <div className="grid gap-6 md:grid-cols-3">{related.map((p) => <PostCard key={p.id} post={p} lang={lang} />)}</div>
         </section>
       )}

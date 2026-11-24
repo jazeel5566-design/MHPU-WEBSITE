@@ -5,15 +5,17 @@ import { subscribe, sendContact, signPetition, type FormState } from "@/app/acti
 import { Field, Input, Notice, Select, Textarea, Checkbox } from "@/components/ui";
 import { SubmitButton } from "@/components/submit-button";
 import { ATOLLS } from "@/lib/constants";
+import { useT } from "@/components/lang-provider";
 
 export function NewsletterFormInner({ label }: { label: string }) {
+  const T = useT();
   const [state, action] = useActionState<FormState, FormData>(subscribe, {});
   if (state.ok) return <p className="text-sm font-medium text-brand-200">{state.message}</p>;
   return (
     <form action={action} className="flex max-w-sm gap-2">
       <input type="text" name="company_website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 opacity-0" />
-      <label className="sr-only" htmlFor="nl-email">Email</label>
-      <input id="nl-email" name="email" type="email" required placeholder="you@example.com"
+      <label className="sr-only" htmlFor="nl-email">{T("Email")}</label>
+      <input id="nl-email" name="email" type="email" required placeholder={T("you@example.com")}
         className="h-10 min-w-0 flex-1 rounded-full border border-white/15 bg-white/10 px-4 text-sm text-white placeholder:text-brand-300 focus:border-white focus:outline-none" />
       <SubmitButton variant="coral" pendingText="…">{label}</SubmitButton>
       {state.error && <p className="text-xs text-coral-400">{state.error}</p>}
@@ -22,6 +24,7 @@ export function NewsletterFormInner({ label }: { label: string }) {
 }
 
 export function ContactForm() {
+  const T = useT();
   const [state, action] = useActionState<FormState, FormData>(sendContact, {});
   if (state.ok)
     return (
@@ -34,22 +37,23 @@ export function ContactForm() {
     <form action={action} className="grid gap-4 sm:grid-cols-2">
       <input type="text" name="company_website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 opacity-0" />
       {state.error && <div className="sm:col-span-2"><Notice tone="red">{state.error}</Notice></div>}
-      <Field label="Your name" required><Input name="name" required autoComplete="name" /></Field>
-      <Field label="Email" required><Input name="email" type="email" required autoComplete="email" /></Field>
-      <Field label="Phone (optional)"><Input name="phone" type="tel" autoComplete="tel" /></Field>
-      <Field label="Topic" required>
+      <Field label={T("Your name")} required><Input name="name" required autoComplete="name" /></Field>
+      <Field label={T("Email")} required><Input name="email" type="email" required autoComplete="email" /></Field>
+      <Field label={T("Phone (optional)")}><Input name="phone" type="tel" autoComplete="tel" /></Field>
+      <Field label={T("Topic")} required>
         <Select name="topic" defaultValue="General">
-          {["General", "Membership", "Media enquiry", "Partnership", "Website feedback"].map((x) => <option key={x}>{x}</option>)}
+          {["General", "Membership", "Media enquiry", "Partnership", "Website feedback"].map((x) => <option key={x} value={x}>{T(x)}</option>)}
         </Select>
       </Field>
-      <Field label="Message" className="sm:col-span-2" required><Textarea name="message" required rows={5} /></Field>
-      <p className="text-xs text-muted sm:col-span-2">Need help with a problem at work? Members get faster support through the member portal.</p>
-      <div className="sm:col-span-2"><SubmitButton pendingText="Sending…">Send message</SubmitButton></div>
+      <Field label={T("Message")} className="sm:col-span-2" required><Textarea name="message" required rows={5} /></Field>
+      <p className="text-xs text-muted sm:col-span-2">{T("Need help with a problem at work? Members get faster support through the member portal.")}</p>
+      <div className="sm:col-span-2"><SubmitButton pendingText={T("Sending…")}>{T("Send message")}</SubmitButton></div>
     </form>
   );
 }
 
 export function PetitionForm({ campaignId, ask }: { campaignId: string; ask?: string | null }) {
+  const T = useT();
   const [state, action] = useActionState<FormState, FormData>(signPetition, {});
   if (state.ok)
     return (
@@ -65,14 +69,14 @@ export function PetitionForm({ campaignId, ask }: { campaignId: string; ask?: st
       {ask && <p className="rounded-xl bg-sand-50 p-3 text-sm italic text-ink">“{ask}”</p>}
       {state.error && <Notice tone="red">{state.error}</Notice>}
       <input type="hidden" name="campaignId" value={campaignId} />
-      <Field label="Full name" required><Input name="name" required autoComplete="name" /></Field>
-      <Field label="Email" required><Input name="email" type="email" required autoComplete="email" /></Field>
-      <Field label="Atoll / city">
-        <Select name="atoll" defaultValue=""><option value="">Prefer not to say</option>{ATOLLS.map((a) => <option key={a}>{a}</option>)}</Select>
+      <Field label={T("Full name")} required><Input name="name" required autoComplete="name" /></Field>
+      <Field label={T("Email")} required><Input name="email" type="email" required autoComplete="email" /></Field>
+      <Field label={T("Atoll / city")}>
+        <Select name="atoll" defaultValue=""><option value="">{T("Prefer not to say")}</option>{ATOLLS.map((a) => <option key={a} value={a}>{T(a)}</option>)}</Select>
       </Field>
-      <Checkbox name="isHealthWorker" label="I work in healthcare" />
-      <SubmitButton variant="coral" size="lg" className="w-full" pendingText="Signing…">Add my name</SubmitButton>
-      <p className="text-xs text-muted">We&apos;ll only use your details for this campaign. See our privacy notice.</p>
+      <Checkbox name="isHealthWorker" label={T("I work in healthcare")} />
+      <SubmitButton variant="coral" size="lg" className="w-full" pendingText={T("Signing…")}>{T("Add my name")}</SubmitButton>
+      <p className="text-xs text-muted">{T("We'll only use your details for this campaign. See our privacy notice.")}</p>
     </form>
   );
 }

@@ -177,7 +177,7 @@ export function StaffForm() {
 
 export function SettingsForm({ s, env }: { s: Settings; env: { bml: boolean; bmlMode: string; dhiraagu: boolean; cron: boolean } }) {
   const [state, action] = useActionState<AState, FormData>(saveSettings, {});
-  const F = ({ k, label, hint }: { k: keyof Settings; label: string; hint?: string }) => <Field label={label} hint={hint}><Input name={k} defaultValue={s[k]} /></Field>;
+  const F = ({ k, label, hint }: { k: keyof Settings; label: string; hint?: string }) => <Field label={label} hint={hint}><Input name={k} defaultValue={s[k]} dir="auto" /></Field>;
   return (
     <form action={action} className="space-y-8">
       <Result state={state} />
@@ -189,7 +189,7 @@ export function SettingsForm({ s, env }: { s: Settings; env: { bml: boolean; bml
       <section className="space-y-4">
         <h2 className="font-bold">Alert banner</h2>
         <Checkbox name="alertEnabled" defaultChecked={s.alertEnabled === "true"} label="Show the alert banner across the top of the public site" />
-        <div className="grid gap-4 sm:grid-cols-2"><F k="alertText" label="Banner text" /><F k="alertLink" label="Banner link" hint="e.g. /campaigns/fair-overtime-pay" /></div>
+        <div className="grid gap-4 sm:grid-cols-2"><F k="alertText" label="Banner text" /><F k="alertLink" label="Banner link" hint="e.g. /campaigns/fair-overtime-pay" /><F k="alertTextDv" label="Banner text in Dhivehi (optional)" hint="Shown when visitors switch to ދިވެހި. Leave blank to show the English text." /></div>
       </section>
       <section className="space-y-4">
         <h2 className="font-bold">Organisation</h2>

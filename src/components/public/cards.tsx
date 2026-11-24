@@ -6,6 +6,8 @@ import { Badge, Progress } from "@/components/ui";
 import { IMG } from "@/lib/images";
 import type { Lang } from "@/lib/i18n";
 import { pick } from "@/lib/i18n";
+import { makeT } from "@/lib/dv";
+import { DV_MONTHS, DV_DAYS } from "@/lib/dv";
 
 type PostLite = {
   slug: string; title: string; titleDv?: string | null; excerpt?: string | null; excerptDv?: string | null;
@@ -13,20 +15,21 @@ type PostLite = {
 };
 
 export function PostCard({ post, lang = "en", large = false, href }: { post: PostLite; lang?: Lang; large?: boolean; href?: string }) {
+  const T = makeT(lang);
   return (
     <Link href={href ?? `/news/${post.slug}`} className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-white transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand-900/5">
       <div className={`relative overflow-hidden bg-sand-100 ${large ? "aspect-[16/9]" : "aspect-[16/10]"}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={post.coverImage || IMG.stethoscope} alt="" className="size-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" />
         <div className="absolute start-3 top-3 flex gap-1.5">
-          <Badge tone="brand" className="bg-white/95 shadow-sm">{labelOf(POST_CATEGORIES, post.category)}</Badge>
-          {post.visibility === "MEMBERS" && <Badge tone="violet" className="gap-1 shadow-sm"><Lock className="size-3" /> Members</Badge>}
+          <Badge tone="brand" className="bg-white/95 shadow-sm">{T(labelOf(POST_CATEGORIES, post.category))}</Badge>
+          {post.visibility === "MEMBERS" && <Badge tone="violet" className="gap-1 shadow-sm"><Lock className="size-3" /> {T("Members")}</Badge>}
         </div>
       </div>
       <div className="flex flex-1 flex-col p-5">
         <div className="flex items-center gap-3 text-xs text-muted">
           <span>{formatDate(post.publishedAt)}</span>
-          <span className="inline-flex items-center gap-1"><Clock className="size-3" /> {readingTime(post.body)} min</span>
+          <span className="inline-flex items-center gap-1"><Clock className="size-3" /> {readingTime(post.body)} {T("min")}</span>
         </div>
         <h3 className={`mt-2 font-bold leading-snug text-ink group-hover:text-brand-700 ${large ? "text-2xl" : "text-lg"}`}>
           {pick(lang, post.title, post.titleDv)}
@@ -40,6 +43,7 @@ export function PostCard({ post, lang = "en", large = false, href }: { post: Pos
 type CampaignLite = { slug: string; title: string; titleDv?: string | null; summary: string; summaryDv?: string | null; coverImage?: string | null; goal: number; status: string; hasPetition: boolean; _count?: { signatures: number } };
 
 export function CampaignCard({ c, lang = "en", fallbackImage }: { c: CampaignLite; lang?: Lang; fallbackImage?: string }) {
+  const T = makeT(lang);
   const signed = c._count?.signatures ?? 0;
   return (
     <Link href={`/campaigns/${c.slug}`} className="group relative flex min-h-80 flex-col justify-end overflow-hidden rounded-3xl bg-brand-900 p-6 text-white">
@@ -47,16 +51,16 @@ export function CampaignCard({ c, lang = "en", fallbackImage }: { c: CampaignLit
       <img src={c.coverImage || fallbackImage || IMG.nursesGroup} alt="" className="absolute inset-0 size-full object-cover opacity-50 transition duration-700 group-hover:scale-105 group-hover:opacity-40" loading="lazy" />
       <div className="absolute inset-0 bg-gradient-to-t from-brand-950 via-brand-950/60 to-transparent" />
       <div className="relative">
-        {c.status === "WON" ? <Badge tone="violet">Won</Badge> : <Badge tone="coral">Active campaign</Badge>}
+        {c.status === "WON" ? <Badge tone="violet">{T("Won")}</Badge> : <Badge tone="coral">{T("Active campaign")}</Badge>}
         <h3 className="mt-3 text-2xl font-bold leading-tight">{pick(lang, c.title, c.titleDv)}</h3>
         <p className="mt-2 line-clamp-2 text-sm text-brand-100">{pick(lang, c.summary, c.summaryDv)}</p>
         {c.hasPetition && c.status === "ACTIVE" && (
           <div className="mt-4">
-            <div className="mb-1.5 flex justify-between text-xs font-semibold"><span>{signed.toLocaleString()} signed</span><span className="text-brand-200">Goal {c.goal.toLocaleString()}</span></div>
+            <div className="mb-1.5 flex justify-between text-xs font-semibold"><span>{signed.toLocaleString()} {T("signed")}</span><span className="text-brand-200">{T("Goal")} {c.goal.toLocaleString()}</span></div>
             <Progress value={signed} max={c.goal} />
           </div>
         )}
-        <span className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-coral-400">Take action <ArrowUpRight className="size-4" /></span>
+        <span className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-coral-400">{T("Take action")} <ArrowUpRight className="size-4" /></span>
       </div>
     </Link>
   );
@@ -65,19 +69,20 @@ export function CampaignCard({ c, lang = "en", fallbackImage }: { c: CampaignLit
 type EventLite = { id: string; title: string; titleDv?: string | null; startsAt: Date; location: string; isOnline: boolean; type: string; cpdHours?: number | null; visibility: string; description: string; capacity?: number | null };
 
 export function EventCard({ e, lang = "en", action, rsvpCount }: { e: EventLite; lang?: Lang; action?: React.ReactNode; rsvpCount?: number }) {
+  const T = makeT(lang);
   const d = new Date(e.startsAt);
   return (
     <div className="flex gap-4 rounded-2xl border border-line bg-white p-4 transition hover:border-brand-300">
       <div className="flex w-16 shrink-0 flex-col items-center justify-center rounded-xl bg-brand-50 py-2 text-brand-800">
-        <span className="text-xs font-bold uppercase">{d.toLocaleString("en-GB", { month: "short" })}</span>
+        <span className="text-xs font-bold uppercase">{lang === "dv" ? DV_MONTHS[d.getMonth()] : d.toLocaleString("en-GB", { month: "short" })}</span>
         <span className="text-2xl font-extrabold leading-none">{d.getDate()}</span>
-        <span className="text-[10px] font-medium text-brand-600">{d.toLocaleString("en-GB", { weekday: "short" })}</span>
+        <span className="text-[10px] font-medium text-brand-600">{lang === "dv" ? DV_DAYS[d.getDay()] : d.toLocaleString("en-GB", { weekday: "short" })}</span>
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-1.5">
-          <Badge tone="gray">{e.type.charAt(0) + e.type.slice(1).toLowerCase()}</Badge>
-          {e.cpdHours ? <Badge tone="green">{e.cpdHours} CPD hrs</Badge> : null}
-          {e.visibility === "MEMBERS" && <Badge tone="violet">Members only</Badge>}
+          <Badge tone="gray">{T(e.type.charAt(0) + e.type.slice(1).toLowerCase())}</Badge>
+          {e.cpdHours ? <Badge tone="green">{e.cpdHours} {T("CPD hrs")}</Badge> : null}
+          {e.visibility === "MEMBERS" && <Badge tone="violet">{T("Members only")}</Badge>}
         </div>
         <h3 className="mt-1.5 font-bold text-ink">{pick(lang, e.title, e.titleDv)}</h3>
         <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
