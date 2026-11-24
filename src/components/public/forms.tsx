@@ -11,6 +11,7 @@ export function NewsletterFormInner({ label }: { label: string }) {
   if (state.ok) return <p className="text-sm font-medium text-brand-200">{state.message}</p>;
   return (
     <form action={action} className="flex max-w-sm gap-2">
+      <input type="text" name="company_website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 opacity-0" />
       <label className="sr-only" htmlFor="nl-email">Email</label>
       <input id="nl-email" name="email" type="email" required placeholder="you@example.com"
         className="h-10 min-w-0 flex-1 rounded-full border border-white/15 bg-white/10 px-4 text-sm text-white placeholder:text-brand-300 focus:border-white focus:outline-none" />
@@ -31,6 +32,7 @@ export function ContactForm() {
     );
   return (
     <form action={action} className="grid gap-4 sm:grid-cols-2">
+      <input type="text" name="company_website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 opacity-0" />
       {state.error && <div className="sm:col-span-2"><Notice tone="red">{state.error}</Notice></div>}
       <Field label="Your name" required><Input name="name" required autoComplete="name" /></Field>
       <Field label="Email" required><Input name="email" type="email" required autoComplete="email" /></Field>
@@ -59,6 +61,7 @@ export function PetitionForm({ campaignId, ask }: { campaignId: string; ask?: st
     );
   return (
     <form action={action} className="space-y-3">
+      <input type="text" name="company_website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 opacity-0" />
       {ask && <p className="rounded-xl bg-sand-50 p-3 text-sm italic text-ink">“{ask}”</p>}
       {state.error && <Notice tone="red">{state.error}</Notice>}
       <input type="hidden" name="campaignId" value={campaignId} />

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, CheckCircle2, Lock, Trophy } from "lucide-react";
 import { db } from "@/lib/db";
+import { flushBallots } from "@/lib/ballots";
 import { requireMember } from "@/lib/auth";
 import { phaseOf, ineligibleReason, tally } from "@/lib/elections";
 import { formatDateTime } from "@/lib/utils";
@@ -12,6 +13,10 @@ export const dynamic = "force-dynamic";
 
 export default async function MemberElection({ params }: { params: Promise<{ id: string }> }) {
   const [{ id }, { member }] = await Promise.all([params, requireMember()]);
+  {
+    const basic = await db.election.findUnique({ where: { id }, select: { closesAt: true } });
+    if (basic && basic.closesAt < new Date()) await flushBallots(id, true); // count sealed ballots before showing results
+  }
   const e = await db.election.findUnique({
     where: { id },
     include: {

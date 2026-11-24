@@ -1,5 +1,7 @@
 /** Minimum length for passwords people choose themselves (staff and members). */
 export const MIN_PASSWORD_LENGTH = 5;
+/** Staff accounts can see members' personal data, so they need longer passwords. */
+export const MIN_STAFF_PASSWORD_LENGTH = 10;
 
 export const ROLES = ["ADMIN", "PRESIDENT", "GENERAL_SECRETARY", "TREASURER", "EDITOR", "AUTHOR", "CASEWORKER", "MEMBER"] as const;
 

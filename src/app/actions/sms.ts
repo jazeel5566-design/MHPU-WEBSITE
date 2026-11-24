@@ -1,5 +1,4 @@
 "use server";
-import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { requireRole } from "@/lib/auth";
@@ -9,14 +8,11 @@ import { fillTemplate, sendBulk } from "@/lib/sms";
 import { normaliseMvMobile } from "@/lib/phone";
 import { getSettings } from "@/lib/settings";
 import { findReminderCandidates, sendDueReminders } from "@/lib/reminders";
+import { siteUrl } from "@/lib/security";
 
 export type SmsState = { ok?: boolean; error?: string; message?: string; count?: number; invalid?: number; sample?: string };
 const MAX_RECIPIENTS = 1000;
 
-async function siteUrl() {
-  const h = await headers();
-  return `${h.get("x-forwarded-proto") ?? "https"}://${h.get("host")}`;
-}
 
 type Recipient = { to: string; memberId: string | null; vars: Record<string, string> };
 

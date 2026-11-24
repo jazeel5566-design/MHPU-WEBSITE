@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Barlow, Barlow_Semi_Condensed } from "next/font/google";
+import { headers } from "next/headers";
 import { getLang } from "@/lib/i18n";
 import { a11yBootScript } from "@/components/a11y-bar";
 import "./globals.css";
@@ -17,10 +18,11 @@ export const viewport: Viewport = { themeColor: "#2c2f3b" };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const lang = await getLang();
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
   return (
     <html lang={lang} dir={lang === "dv" ? "rtl" : "ltr"} className={`${jakarta.variable} ${barlow.variable} ${wordmark.variable}`} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: a11yBootScript }} />
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: a11yBootScript }} />
         {lang === "dv" && <link rel="preload" href="/fonts/Faruma.ttf" as="font" type="font/ttf" crossOrigin="anonymous" />}
       </head>
       <body className="min-h-screen font-sans">

@@ -44,7 +44,9 @@ export async function changePassword(_: MState, fd: FormData): Promise<MState> {
   if (next.length < MIN_PASSWORD_LENGTH) return { error: `New password must be at least ${MIN_PASSWORD_LENGTH} characters.` };
   if (next !== str(fd, "confirm")) return { error: "New passwords don't match." };
   if (!(await bcrypt.compare(current, user.passwordHash))) return { error: "Current password is incorrect." };
-  await db.user.update({ where: { id: user.id }, data: { passwordHash: await bcrypt.hash(next, 10) } });
+  const updated = await db.user.update({ where: { id: user.id }, data: { passwordHash: await bcrypt.hash(next, 10), sessionVersion: { increment: 1 } } });
+  const { createSession } = await import("@/lib/auth");
+  await createSession(updated);
   await audit(user.id, "change_password", "User", user.id);
   return { ok: true, message: "Password changed." };
 }
@@ -120,16 +122,15 @@ export async function castVote(_: MState, fd: FormData): Promise<MState> {
 
 // ─── Online dues payments ───────────────────────────────────────────
 
-/** Test checkout is only for trying the flow: admins on the live site, anyone in development. */
+/** Test checkout is only for trying the flow: admins, or local test machines that set ALLOW_TEST_CHECKOUT=1. */
 export async function testCheckoutAllowed(role: string) {
-  return role === "ADMIN" || process.env.VERCEL_ENV !== "production";
+  return role === "ADMIN" || (process.env.ALLOW_TEST_CHECKOUT === "1" && !process.env.VERCEL);
 }
 
 export async function startOnlinePayment(fd: FormData) {
   const { user, member } = await requireMember();
   const { getSettings } = await import("@/lib/settings");
   const { startCheckout } = await import("@/lib/payments");
-  const { headers } = await import("next/headers");
   const s = await getSettings();
   if (s.paymentsEnabled !== "true") redirect("/members/dues?payment=off");
   const provider = s.paymentProvider === "BML" ? "BML" : "TEST";
@@ -137,9 +138,8 @@ export async function startOnlinePayment(fd: FormData) {
   const months = [1, 3, 6, 12].includes(Number(str(fd, "months"))) ? Number(str(fd, "months")) : 1;
   const amount = months * (Number(s.monthlyDues) || 100);
   const intent = await db.paymentIntent.create({ data: { memberId: member.id, months, amount, provider } });
-  const h = await headers();
-  const base = `${h.get("x-forwarded-proto") ?? "https"}://${h.get("host")}`;
-  const r = await startCheckout(intent, base);
+  const { siteUrl } = await import("@/lib/security");
+  const r = await startCheckout(intent, await siteUrl());
   if (!r.ok) {
     await db.paymentIntent.update({ where: { id: intent.id }, data: { status: "FAILED" } });
     redirect("/members/dues?payment=error&msg=" + encodeURIComponent(r.error));

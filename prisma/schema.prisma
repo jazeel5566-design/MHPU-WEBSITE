@@ -24,6 +24,7 @@ model User {
   title        String? // position shown when logged in, e.g. "President", "General Secretary" (ExCom)
   active       Boolean   @default(true)
   lastLoginAt  DateTime?
+  sessionVersion Int     @default(0) // bump to sign out all of this user's sessions
   createdAt    DateTime  @default(now())
 
   member        Member?
@@ -475,4 +476,25 @@ model SmsMessage {
   createdAt   DateTime @default(now())
 
   @@index([memberId, kind, createdAt])
+}
+
+// ─── Security ───────────────────────────────────────────────────────
+
+/** Fixed-window counters for login throttling and public-form rate limits. */
+model RateLimit {
+  key     String   @id // e.g. "login:acct:someone@example.mv", "form:join:203.0.113.7"
+  count   Int      @default(0)
+  resetAt DateTime
+}
+
+/**
+ * Sealed ballots waiting to be counted. The choices are encrypted, and they are
+ * moved into ElectionVote in shuffled batches (in a separate transaction), so a
+ * counted vote can't be linked back to the ElectionVoter row even with direct
+ * database access.
+ */
+model ElectionPendingBallot {
+  id         String @id @default(uuid())
+  electionId String
+  sealed     String // AES-256-GCM encrypted JSON of {positionId, candidateId}[]
 }

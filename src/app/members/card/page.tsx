@@ -1,8 +1,8 @@
-import { headers } from "next/headers";
 import QRCode from "qrcode";
 import { ShieldCheck } from "lucide-react";
 import { requireMember } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { siteUrl, verifyCode } from "@/lib/security";
 import { formatDate } from "@/lib/utils";
 import { LogoMark } from "@/components/logo";
 import { PageHeader, Card } from "@/components/ui";
@@ -13,9 +13,7 @@ export const metadata = { title: "Membership card" };
 export default async function CardPage() {
   const { member } = await requireMember();
   const affiliate = member.affiliateId ? await db.affiliate.findUnique({ where: { id: member.affiliateId } }) : null;
-  const h = await headers();
-  const origin = `${h.get("x-forwarded-proto") ?? "http"}://${h.get("host")}`;
-  const verifyUrl = `${origin}/verify/${member.membershipNo}`;
+  const verifyUrl = `${await siteUrl()}/verify/${member.membershipNo}?c=${verifyCode(member.membershipNo)}`;
   const qr = await QRCode.toDataURL(verifyUrl, { margin: 1, width: 240, color: { dark: "#0d3335", light: "#ffffff" } });
   const active = member.status === "ACTIVE";
 
@@ -45,7 +43,7 @@ export default async function CardPage() {
         </div>
         <Card className="p-6 print:hidden">
           <div className="flex items-center gap-2 font-bold"><ShieldCheck className="size-5 text-brand-600" /> How verification works</div>
-          <p className="mt-2 text-sm text-muted">Scanning the QR code opens a secure MHPU page that confirms whether your membership is active. It shows only your first name, last initial and profession — never your ID number or contact details.</p>
+          <p className="mt-2 text-sm text-muted">Scanning the QR code opens a secure MHPU page that confirms your membership is active and shows only your first name, last initial and profession — never your ID number or contact details. Typing your number by hand only shows whether it is valid.</p>
           <dl className="mt-5 grid grid-cols-2 gap-4 text-sm">
             <div><dt className="text-muted">Workplace</dt><dd className="font-semibold">{member.employer}</dd></div>
             <div><dt className="text-muted">Atoll</dt><dd className="font-semibold">{member.atoll}</dd></div>

@@ -6,6 +6,8 @@ import { requireRole, requireMember } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { str, optStr } from "@/lib/utils";
 import { phaseOf, ineligibleReason } from "@/lib/elections";
+import { seal } from "@/lib/security";
+import { flushBallots } from "@/lib/ballots";
 
 export type EState = { ok?: boolean; error?: string; message?: string };
 const ADMIN = ["ADMIN"] as const;
@@ -94,6 +96,7 @@ export async function publishResults(fd: FormData) {
   const admin = await requireRole([...ADMIN], "/admin");
   const e = await db.election.findUnique({ where: { id: str(fd, "id") } });
   if (!e || phaseOf(e) !== "CLOSED") return;
+  await flushBallots(e.id, true);
   await db.election.update({ where: { id: e.id }, data: { resultsPublished: fd.get("publish") === "1" } });
   await audit(admin.id, fd.get("publish") === "1" ? "election_publish" : "election_unpublish", "Election", e.id, e.title);
   revalidatePath(`/admin/elections/${e.id}`);
@@ -129,14 +132,17 @@ export async function castElectionBallot(_: EState, fd: FormData): Promise<EStat
     }
   }
   try {
+    // Record THAT the member voted, plus a SEALED (encrypted) ballot with no link to them.
+    // The choices are only counted later, shuffled together with other ballots, in a
+    // separate transaction — see src/lib/ballots.ts.
     await db.$transaction([
       db.electionVoter.create({ data: { electionId: e.id, memberId: member.id } }),
-      // Shuffle so insertion order can't hint at who voted when.
-      ...choices.sort(() => Math.random() - 0.5).map((c) => db.electionVote.create({ data: c })),
+      db.electionPendingBallot.create({ data: { electionId: e.id, sealed: seal(choices) } }),
     ]);
   } catch {
     return { error: "You have already voted in this election." };
   }
+  await flushBallots(e.id).catch(() => {}); // counts only once enough ballots are waiting
   await audit(user.id, "election_vote", "Election", e.id);
   revalidatePath("/members/elections");
   return { ok: true, message: "Your vote has been recorded. Thank you for taking part!" };

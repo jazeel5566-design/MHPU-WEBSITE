@@ -129,7 +129,7 @@ export async function resetPassword(_: AState, fd: FormData): Promise<AState> {
   const u = await db.user.findUnique({ where: { id: userId } });
   if (!u) return { error: "No login account." };
   const pw = tempPassword();
-  await db.user.update({ where: { id: userId }, data: { passwordHash: await bcrypt.hash(pw, 10) } });
+  await db.user.update({ where: { id: userId }, data: { passwordHash: await bcrypt.hash(pw, 10), sessionVersion: { increment: 1 } } });
   await audit(admin.id, "password_reset", "User", userId);
   return { ok: true, message: "Temporary password created. Share it securely:", tempPassword: `${u.email} / ${pw}` };
 }
@@ -248,7 +248,10 @@ export async function updateStaff(fd: FormData) {
     return;
   }
   const role = str(fd, "role");
-  await db.user.update({ where: { id }, data: { role, title, active: fd.get("active") === "on" } });
+  const before = await db.user.findUnique({ where: { id }, select: { role: true, active: true } });
+  const active = fd.get("active") === "on";
+  const changed = before && (before.role !== role || before.active !== active);
+  await db.user.update({ where: { id }, data: { role, title, active, ...(changed ? { sessionVersion: { increment: 1 } } : {}) } });
   await audit(admin.id, "user_update", "User", id, role);
   revalidatePath("/admin/users");
 }

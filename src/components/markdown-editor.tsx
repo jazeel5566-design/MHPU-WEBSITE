@@ -1,6 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
-import { marked } from "marked";
+import { renderSafeMarkdown } from "@/lib/markdown-safe";
 import { Bold, Heading2, Italic, Link2, List, ListOrdered, Quote, Image as ImageIcon, Eye, PencilLine } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -86,7 +86,7 @@ export function MarkdownEditor({ name, defaultValue = "", rtl = false, placehold
         <div
           dir={rtl ? "rtl" : "ltr"}
           className={cn("prose-mhpu min-h-64 px-5 py-4", rtl && "dv-text")}
-          dangerouslySetInnerHTML={{ __html: value ? (marked.parse(value.replace(/<(?=[a-zA-Z!/])/g, "&lt;"), { async: false }) as string) : "<p style='color:#5b6b73'>Nothing to preview yet.</p>" }}
+          dangerouslySetInnerHTML={{ __html: value ? renderSafeMarkdown(value) : "<p style='color:#5b6b73'>Nothing to preview yet.</p>" }}
         />
       )}
     </div>

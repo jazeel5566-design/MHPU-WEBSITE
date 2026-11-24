@@ -5,8 +5,8 @@ import { db } from "./db";
 import { SESSION_COOKIE, SESSION_MAX_AGE, signSession, verifySession } from "./session";
 import type { Role } from "./constants";
 
-export async function createSession(user: { id: string; role: string; name: string }) {
-  const token = await signSession({ uid: user.id, role: user.role, name: user.name });
+export async function createSession(user: { id: string; role: string; name: string; sessionVersion?: number }) {
+  const token = await signSession({ uid: user.id, role: user.role, name: user.name, sv: user.sessionVersion ?? 0 });
   (await cookies()).set(SESSION_COOKIE, token, {
     httpOnly: true,
     sameSite: "lax",
@@ -27,6 +27,7 @@ export async function getCurrentUser() {
   if (!s) return null;
   const user = await db.user.findUnique({ where: { id: s.uid }, include: { member: true } });
   if (!user || !user.active) return null;
+  if ((s.sv ?? 0) !== user.sessionVersion) return null; // signed out everywhere (password changed / reset / deactivated)
   return user;
 }
 

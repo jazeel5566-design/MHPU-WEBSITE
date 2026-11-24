@@ -37,7 +37,7 @@ async function main() {
     throw new Error("Refusing to load demo data into a non-local database. (Set ALLOW_REMOTE_SEED=yes to override.)");
   }
   console.log("Resetting database…");
-  for (const m of ["electionVote", "electionVoter", "electionCandidate", "electionPosition", "election", "paymentIntent", "smsMessage", "eventAttendance", "vote", "ballotOption", "ballot", "caseMessage", "case", "payment", "eventRsvp", "event", "petitionSignature", "campaign", "post", "resource", "media", "member", "application", "affiliate", "auditLog", "contactMessage", "subscriber", "setting", "user"] as const) {
+  for (const m of ["electionPendingBallot", "rateLimit", "electionVote", "electionVoter", "electionCandidate", "electionPosition", "election", "paymentIntent", "smsMessage", "eventAttendance", "vote", "ballotOption", "ballot", "caseMessage", "case", "payment", "eventRsvp", "event", "petitionSignature", "campaign", "post", "resource", "media", "member", "application", "affiliate", "auditLog", "contactMessage", "subscriber", "setting", "user"] as const) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (db[m] as any).deleteMany();
   }

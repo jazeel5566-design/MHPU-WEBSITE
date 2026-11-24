@@ -4,7 +4,7 @@ import { SignJWT, jwtVerify } from "jose";
 export const SESSION_COOKIE = "mhpu_session";
 const MAX_AGE = 60 * 60 * 8; // 8 hours
 
-export type SessionPayload = { uid: string; role: string; name: string };
+export type SessionPayload = { uid: string; role: string; name: string; sv?: number };
 
 function key() {
   const secret = process.env.SESSION_SECRET;

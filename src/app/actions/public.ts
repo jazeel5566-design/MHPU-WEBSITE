@@ -3,6 +3,10 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { str } from "@/lib/utils";
+import { formLimit } from "@/lib/security";
+
+/** Hidden field real people never see; bots that fill it get a fake success. */
+const isBot = (fd: FormData) => str(fd, "company_website") !== "";
 import { saveIdDocument, saveSignature } from "@/lib/storage";
 import { matchWorkplaceUnion } from "@/lib/workplace";
 
@@ -11,6 +15,9 @@ export type FormState = { ok?: boolean; error?: string; message?: string };
 const email = z.string().trim().toLowerCase().email("Enter a valid email address");
 
 export async function subscribe(_: FormState, fd: FormData): Promise<FormState> {
+  if (isBot(fd)) return { ok: true, message: "You're subscribed. Thank you!" };
+  const limited = await formLimit("subscribe", 10);
+  if (limited) return { error: limited };
   const parsed = email.safeParse(str(fd, "email"));
   if (!parsed.success) return { error: "Enter a valid email address." };
   await db.subscriber.upsert({ where: { email: parsed.data }, update: {}, create: { email: parsed.data } });
@@ -26,6 +33,9 @@ const contactSchema = z.object({
 });
 
 export async function sendContact(_: FormState, fd: FormData): Promise<FormState> {
+  if (isBot(fd)) return { ok: true, message: "Message sent. Our team usually replies within two working days." };
+  const limited = await formLimit("contact", 5);
+  if (limited) return { error: limited };
   const r = contactSchema.safeParse(Object.fromEntries(fd));
   if (!r.success) return { error: r.error.issues[0].message };
   await db.contactMessage.create({ data: r.data });
@@ -53,6 +63,9 @@ const joinSchema = z.object({
 });
 
 export async function applyToJoin(_: FormState, fd: FormData): Promise<FormState> {
+  if (isBot(fd)) return { ok: true, message: "Thank you|APP-PENDING" };
+  const limited = await formLimit("join", 5);
+  if (limited) return { error: limited };
   const fields = Object.fromEntries([...fd.entries()].filter(([, v]) => typeof v === "string"));
   const r = joinSchema.safeParse(fields);
   if (!r.success) return { error: r.error.issues[0].message };
@@ -105,6 +118,9 @@ const signSchema = z.object({
 });
 
 export async function signPetition(_: FormState, fd: FormData): Promise<FormState> {
+  if (isBot(fd)) return { ok: true, message: "Thank you for signing! Share this campaign with your colleagues." };
+  const limited = await formLimit("petition", 20);
+  if (limited) return { error: limited };
   const r = signSchema.safeParse(Object.fromEntries(fd));
   if (!r.success) return { error: r.error.issues[0].message };
   const c = await db.campaign.findUnique({ where: { id: r.data.campaignId } });
@@ -118,8 +134,4 @@ export async function signPetition(_: FormState, fd: FormData): Promise<FormStat
   }
   revalidatePath(`/campaigns/${c.slug}`);
   return { ok: true, message: "Thank you for signing! Share this campaign with your colleagues." };
-}
-
-export async function trackDownload(id: string) {
-  await db.resource.update({ where: { id }, data: { downloads: { increment: 1 } } }).catch(() => null);
 }

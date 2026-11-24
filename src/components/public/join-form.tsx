@@ -72,6 +72,7 @@ export function JoinForm({ dues, registration, unions }: { dues: number; registr
     <form action={action} className="space-y-6" onSubmit={(e) => {
       if (!signed) { e.preventDefault(); document.getElementById("sig")?.scrollIntoView({ behavior: "smooth", block: "center" }); alert("Please sign in the signature box before submitting."); }
     }}>
+      <input type="text" name="company_website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 opacity-0" />
       <Step n={1} title="Which best describes you?">
         <p className="-mt-1 mb-4 text-sm text-muted">Optional — helps us connect you with the right affiliated union and rep.</p>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

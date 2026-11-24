@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ShieldCheck, IdCard, MessageSquare, Vote } from "lucide-react";
 import { getCurrentUser, homeFor } from "@/lib/auth";
+import { safePath } from "@/lib/security";
 import { Logo } from "@/components/logo";
 import { Notice } from "@/components/ui";
 import { LoginForm } from "./login-form";
@@ -13,7 +14,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const photos = await getSitePhotos();
   const sp = await searchParams;
   const user = await getCurrentUser();
-  if (user && !sp.denied) redirect(sp.next?.startsWith("/") ? sp.next : homeFor(user.role));
+  if (user && !sp.denied) redirect(safePath(sp.next, homeFor(user.role)));
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
@@ -27,7 +28,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             {sp.out && <Notice tone="brand">You&apos;ve been signed out.</Notice>}
             {sp.nomember && <Notice tone="amber">This account isn&apos;t linked to a membership record. Please contact the membership office.</Notice>}
           </div>
-          <div className="mt-6"><LoginForm next={sp.next} /></div>
+          <div className="mt-6"><LoginForm next={safePath(sp.next, "")} /></div>
           <p className="mt-6 text-center text-sm text-muted">Forgot your password? Call the help line or email the membership office.</p>
           <p className="mt-2 text-center text-sm">Not a member? <Link href="/join" className="font-semibold text-coral-600 hover:underline">Join MHPU</Link></p>
           {process.env.NODE_ENV !== "production" && (

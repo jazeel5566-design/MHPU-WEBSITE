@@ -46,9 +46,9 @@ function supabase() {
   return client;
 }
 
-function safeName(name: string) {
-  const ext = path.extname(name).toLowerCase().replace(/[^.a-z0-9]/g, "").slice(0, 6);
-  const base = path.basename(name, path.extname(name)).toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 40) || "file";
+/** Storage name: a cleaned base name + random suffix + the extension of the VERIFIED type. */
+function safeName(name: string, ext: string) {
+  const base = path.basename(name, path.extname(name)).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "file";
   return `${base}-${randomBytes(6).toString("hex")}${ext}`;
 }
 
@@ -82,21 +82,62 @@ function publicUrl(bucket: Bucket, name: string) {
 
 const tooBig = () => new Error("File is larger than 4 MB. Please upload a smaller file.");
 
+/** Identify a file from its first bytes. The uploader's file name and declared type are never trusted. */
+function sniff(buf: Buffer): { mime: string; ext: string } | null {
+  const hex = buf.subarray(0, 12).toString("hex");
+  const ascii = buf.subarray(0, 12).toString("latin1");
+  if (hex.startsWith("89504e470d0a1a0a")) return { mime: "image/png", ext: ".png" };
+  if (hex.startsWith("ffd8ff")) return { mime: "image/jpeg", ext: ".jpg" };
+  if (ascii.startsWith("GIF87a") || ascii.startsWith("GIF89a")) return { mime: "image/gif", ext: ".gif" };
+  if (ascii.startsWith("RIFF") && ascii.slice(8, 12) === "WEBP") return { mime: "image/webp", ext: ".webp" };
+  if (ascii.slice(4, 8) === "ftyp") {
+    const brand = ascii.slice(8, 12);
+    if (brand.startsWith("avif") || brand.startsWith("avis")) return { mime: "image/avif", ext: ".avif" };
+    if (["heic", "heix", "hevc", "mif1", "msf1", "heis"].includes(brand)) return { mime: "image/heic", ext: ".heic" };
+  }
+  if (ascii.startsWith("%PDF-")) return { mime: "application/pdf", ext: ".pdf" };
+  if (hex.startsWith("504b0304")) return { mime: "application/zip", ext: ".zip" }; // docx/xlsx (refined below)
+  if (hex.startsWith("d0cf11e0a1b11ae1")) return { mime: "application/x-ole", ext: ".ole" }; // doc/xls (refined below)
+  return null;
+}
+
+/** Check the real content matches an allowed type; returns the safe MIME type and extension to store. */
+function verifyContent(buf: Buffer, declared: string, allowed: string[]): { mime: string; ext: string } {
+  const s = sniff(buf);
+  if (!s) throw new Error("That file type isn't allowed.");
+  if (s.mime === "application/zip") {
+    if (declared.includes("wordprocessingml") && allowed.includes(declared)) return { mime: declared, ext: ".docx" };
+    if (declared.includes("spreadsheetml") && allowed.includes(declared)) return { mime: declared, ext: ".xlsx" };
+    throw new Error("That file type isn't allowed.");
+  }
+  if (s.mime === "application/x-ole") {
+    if (declared === "application/msword" && allowed.includes(declared)) return { mime: declared, ext: ".doc" };
+    if (declared === "application/vnd.ms-excel" && allowed.includes(declared)) return { mime: declared, ext: ".xls" };
+    throw new Error("That file type isn't allowed.");
+  }
+  if (!allowed.includes(s.mime) && !(s.mime === "image/heic" && allowed.includes("image/heif"))) throw new Error("That file type isn't allowed.");
+  return s;
+}
+
 // ─── Article images (public) ────────────────────────────────────────
 export async function saveImage(file: File) {
-  if (!IMAGE_TYPES.includes(file.type)) throw new Error("Only JPG, PNG, WebP, GIF or AVIF images are allowed.");
   if (file.size > MAX_UPLOAD) throw tooBig();
-  const name = safeName(file.name);
-  await put("media", name, Buffer.from(await file.arrayBuffer()), file.type);
-  return { url: publicUrl("media", name), filename: file.name, mimeType: file.type, size: file.size };
+  const buf = Buffer.from(await file.arrayBuffer());
+  let t;
+  try { t = verifyContent(buf, file.type, IMAGE_TYPES); } catch { throw new Error("Only JPG, PNG, WebP, GIF or AVIF images are allowed."); }
+  const name = safeName(file.name, t.ext);
+  await put("media", name, buf, t.mime);
+  return { url: publicUrl("media", name), filename: file.name.slice(0, 120), mimeType: t.mime, size: file.size };
 }
 
 // ─── Documents (public or members-only; always streamed via the app) ─
 export async function saveDocument(file: File) {
-  if (!DOC_TYPES.includes(file.type)) throw new Error("Upload a PDF, Word, Excel or image file.");
   if (file.size > MAX_UPLOAD) throw tooBig();
-  const name = safeName(file.name);
-  await put("resources", name, Buffer.from(await file.arrayBuffer()), file.type);
+  const buf = Buffer.from(await file.arrayBuffer());
+  let t;
+  try { t = verifyContent(buf, file.type, DOC_TYPES); } catch { throw new Error("Upload a PDF, Word, Excel or image file."); }
+  const name = safeName(file.name, t.ext);
+  await put("resources", name, buf, t.mime);
   return { fileUrl: `storage:${name}`, size: file.size };
 }
 
@@ -106,11 +147,12 @@ export async function readDocument(fileUrl: string) {
 
 // ─── Membership applications (ADMIN-only) ───────────────────────────
 export async function saveIdDocument(file: File) {
-  if (!ID_DOC_TYPES.includes(file.type)) throw new Error("Upload your ID or passport as a photo (JPG/PNG) or PDF.");
   if (file.size > MAX_UPLOAD) throw new Error("The ID/passport file is larger than 4 MB. Please upload a smaller photo or PDF.");
-  const ext = path.extname(file.name) || (file.type === "application/pdf" ? ".pdf" : ".jpg");
-  const name = safeName(`id${ext}`);
-  await put("applications", name, Buffer.from(await file.arrayBuffer()), file.type);
+  const buf = Buffer.from(await file.arrayBuffer());
+  let t;
+  try { t = verifyContent(buf, file.type, ID_DOC_TYPES); } catch { throw new Error("Upload your ID or passport as a photo (JPG/PNG) or PDF."); }
+  const name = safeName("id", t.ext);
+  await put("applications", name, buf, t.mime);
   return name;
 }
 
@@ -122,7 +164,7 @@ export async function saveSignature(dataUrl: string) {
   if (buf.length < 500) throw new Error("Please sign in the signature box.");
   if (buf.length > 1024 * 1024) throw new Error("Signature image is too large.");
   if (buf.subarray(0, 8).toString("hex") !== "89504e470d0a1a0a") throw new Error("Invalid signature image.");
-  const name = safeName("signature.png");
+  const name = safeName("signature", ".png");
   await put("applications", name, buf, "image/png");
   return name;
 }

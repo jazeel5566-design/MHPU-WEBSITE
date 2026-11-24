@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Trash2, Trophy, Lock } from "lucide-react";
 import { db } from "@/lib/db";
+import { flushBallots } from "@/lib/ballots";
 import { requireRole } from "@/lib/auth";
 import { phaseOf, eligibleWhere, tally } from "@/lib/elections";
 import { toLocalInput } from "@/lib/dates";
@@ -16,6 +17,10 @@ export const dynamic = "force-dynamic";
 export default async function ElectionAdmin({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ error?: string }> }) {
   await requireRole(["ADMIN"], "/admin");
   const [{ id }, { error }] = await Promise.all([params, searchParams]);
+  {
+    const basic = await db.election.findUnique({ where: { id }, select: { closesAt: true } });
+    if (basic && basic.closesAt < new Date()) await flushBallots(id, true); // count sealed ballots before showing results
+  }
   const e = await db.election.findUnique({
     where: { id },
     include: {

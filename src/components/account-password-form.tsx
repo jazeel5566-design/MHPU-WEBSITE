@@ -3,7 +3,7 @@ import { useActionState, useEffect, useRef } from "react";
 import { changeOwnPassword, type PwState } from "@/app/actions/auth";
 import { Field, Input, Notice } from "@/components/ui";
 import { SubmitButton } from "@/components/submit-button";
-import { MIN_PASSWORD_LENGTH } from "@/lib/constants";
+import { MIN_STAFF_PASSWORD_LENGTH as MIN_PASSWORD_LENGTH } from "@/lib/constants";
 
 export function AccountPasswordForm() {
   const [state, action] = useActionState<PwState, FormData>(changeOwnPassword, {});

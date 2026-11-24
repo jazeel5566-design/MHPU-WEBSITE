@@ -1,9 +1,6 @@
-import { marked } from "marked";
+import { renderSafeMarkdown } from "./markdown-safe";
 
-marked.setOptions({ gfm: true, breaks: true });
-
-/** Render trusted-staff markdown. Raw HTML is escaped so authors can't inject script. */
+/** Render trusted-staff markdown safely (raw HTML escaped, unsafe link schemes removed). */
 export function renderMarkdown(md: string) {
-  const escaped = md.replace(/<(?=[a-zA-Z!/])/g, "&lt;");
-  return marked.parse(escaped, { async: false }) as string;
+  return renderSafeMarkdown(md);
 }
