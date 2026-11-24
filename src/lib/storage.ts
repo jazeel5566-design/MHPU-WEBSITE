@@ -1,5 +1,5 @@
 import "server-only";
-import { mkdir, writeFile, readFile } from "node:fs/promises";
+import { mkdir, writeFile, readFile, unlink } from "node:fs/promises";
 import path from "node:path";
 import { randomBytes } from "node:crypto";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
@@ -129,6 +129,19 @@ export async function saveSignature(dataUrl: string) {
 
 export async function readApplicationFile(name: string) {
   return get("applications", name);
+}
+
+/** Permanently delete an applicant's files (ID copy, signature). */
+export async function removeApplicationFiles(names: (string | null | undefined)[]) {
+  const list = names.filter((n): n is string => !!n).map((n) => path.basename(n));
+  if (!list.length) return;
+  const sb = supabase();
+  if (sb) {
+    const { error } = await sb.storage.from(BUCKETS.applications).remove(list);
+    if (error) throw new Error(`Could not delete files: ${error.message}`);
+    return;
+  }
+  await Promise.all(list.map((n) => unlink(path.join(LOCAL_DIRS.applications, n)).catch(() => {})));
 }
 
 /** Create the buckets if missing (run by scripts/bootstrap-prod.ts). */

@@ -9,6 +9,7 @@ import { audit } from "@/lib/audit";
 import { str, optStr } from "@/lib/utils";
 import { DEFAULT_SETTINGS } from "@/lib/settings";
 import { ROLES } from "@/lib/constants";
+import { removeApplicationFiles } from "@/lib/storage";
 
 export type AState = { ok?: boolean; error?: string; message?: string; tempPassword?: string };
 
@@ -63,6 +64,18 @@ export async function rejectApplication(fd: FormData) {
   const id = str(fd, "id");
   await db.application.update({ where: { id }, data: { status: "REJECTED", reviewedAt: new Date(), receivedBy: admin.name, reviewNote: optStr(fd, "note") } });
   await audit(admin.id, "application_reject", "Application", id);
+  revalidatePath("/admin", "layout");
+}
+
+/** Permanently delete an application and the applicant's ID copy + signature
+ *  (spam, duplicates, or a data-removal request). Member records are not affected. */
+export async function deleteApplication(fd: FormData) {
+  const admin = await requireRole([...ADMIN], "/admin");
+  const app = await db.application.findUnique({ where: { id: str(fd, "id") } });
+  if (!app) return;
+  await removeApplicationFiles([app.idDocFile, app.signatureFile]);
+  await db.application.delete({ where: { id: app.id } });
+  await audit(admin.id, "application_delete", "Application", app.id, `${app.reference} ${app.fullName}`);
   revalidatePath("/admin", "layout");
 }
 

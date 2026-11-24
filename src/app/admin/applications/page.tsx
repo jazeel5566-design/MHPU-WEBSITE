@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { Download, FileText, ExternalLink } from "lucide-react";
+import { Download, FileText, ExternalLink, Trash2 } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireRole } from "@/lib/auth";
-import { rejectApplication } from "@/app/actions/admin";
+import { rejectApplication, deleteApplication } from "@/app/actions/admin";
 import { JOIN_CATEGORIES, labelOf } from "@/lib/constants";
 import { formatDate, timeAgo, cn } from "@/lib/utils";
 import { Badge, Card, EmptyState, Input, PageHeader, StatusBadge, buttonClass } from "@/components/ui";
@@ -70,6 +70,12 @@ export default async function ApplicationsPage({ searchParams }: { searchParams:
                       {a.reviewNote && <p className="pt-1 text-muted">Note: {a.reviewNote}</p>}
                     </dl>
                   )}
+                  <form action={deleteApplication} className="border-t border-line pt-3">
+                    <input type="hidden" name="id" value={a.id} />
+                    <SubmitButton size="sm" variant="ghost" className="w-full text-red-600" confirm={`Permanently delete ${a.reference} (${a.fullName}) including the ID copy and signature? This can't be undone.`}>
+                      <Trash2 className="size-4" /> Delete permanently
+                    </SubmitButton>
+                  </form>
                 </div>
               </div>
               {a.status === "PENDING" && (
