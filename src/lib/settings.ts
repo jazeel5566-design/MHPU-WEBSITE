@@ -8,7 +8,7 @@ export const DEFAULT_SETTINGS = {
   tagline: "United for safe care and fair work",
   hotline: "+960 992 1992",
   whatsapp: "+960 994 9439",
-  email: "maldiveshealthunion@gmail.com",
+  email: "info@mhpu.org",
   address: "Flat 83/01/06, Rabarugas Magu, Hulhumalé, Republic of Maldives",
   facebook: "",
   instagram: "",
