@@ -56,6 +56,20 @@ Access is enforced twice: `src/middleware.ts` gates each portal by role, and eve
 - **Colours** (from the brand palette, defined in `src/app/globals.css`): slate `#434656`, red `#D42027`, sky blue `#2AA6D8`, light blue `#9DD3E8`, greys `#D6D6DC` / `#F7F7FA`.
 - **Organisation details** (registration CR/113/2019, Hulhumalé address, phone numbers, email, Dhivehi name) are editable in Admin → Site settings.
 
+
+## Integrations (switch on in Admin → Site settings)
+
+Everything ships **off / in test mode**. Secrets live only in Vercel → Environment Variables:
+
+| Feature | Vercel environment variables | Notes |
+|---|---|---|
+| Daily automation (dues reminders, auto-pay, payment re-checks) | `CRON_SECRET` | Runs every day at 09:00 Maldives time (`vercel.json`). |
+| Online dues payments (BML Connect) | `BML_API_KEY`, `BML_MODE` (`sandbox` or `production`) | Built from BML's own SDK. Test with BML UAT keys first. A payment is recorded only after the site confirms it with BML. |
+| Automatic card charging | (needs BML recurring payments) | Until BML confirms tokenised/recurring payments for MHPU's merchant account, auto-pay sends a one-tap pay link by SMS instead. |
+| SMS (Dhiraagu Bulk SMS) | `DHIRAAGU_SMS_USERNAME`, `DHIRAAGU_SMS_PASSWORD`, optional `DHIRAAGU_SMS_URL` | XML gateway used by community SDKs; confirm the endpoint with Dhiraagu Business. |
+
+Other features added: workplace unions (auto-matched from the hospital on the membership form, using each union's comma-separated workplace names), ExCom elections with a secret ballot, Google Meet links on events with a members-only **Join** button and attendance, and a **Treasurer** role with Financial reports (CSV and print).
+
 ## Tech
 
 - Next.js 15 (App Router, server actions), React 19, TypeScript, Tailwind CSS v4
