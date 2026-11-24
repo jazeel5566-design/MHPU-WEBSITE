@@ -4,6 +4,8 @@ import {
   Hospital, Ambulance, FlaskConical, Building2, Users, MapPinned, BadgeCheck,
 } from "lucide-react";
 import { db } from "@/lib/db";
+import { cn } from "@/lib/utils";
+import { features } from "@/lib/features-server";
 import { getLang, t, pick } from "@/lib/i18n";
 import { livePosts, liveOrder } from "@/lib/content";
 import { ButtonLink, Progress } from "@/components/ui";
@@ -33,7 +35,7 @@ const SECTORS = [
 ];
 
 export default async function HomePage() {
-  const [lang, settings, photos] = await Promise.all([getLang(), getSettings(), getSitePhotos()]);
+  const [lang, settings, photos, f] = await Promise.all([getLang(), getSettings(), getSitePhotos(), features()]);
   const [featured, campaigns, posts, events, memberCount, affiliateCount, wins] = await Promise.all([
     db.campaign.findFirst({ where: { featured: true, status: "ACTIVE" }, include: { _count: { select: { signatures: true } } } }),
     db.campaign.findMany({ where: { status: { in: ["ACTIVE", "WON"] } }, include: { _count: { select: { signatures: true } } }, orderBy: [{ featured: "desc" }, { updatedAt: "desc" }], take: 3 }),
@@ -64,18 +66,18 @@ export default async function HomePage() {
             </div>
             <h1 className="mt-5 text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-6xl">{t(lang, "heroTitle")}</h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-brand-100">{t(lang, "heroBody")}</p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <ButtonLink href="/join" variant="coral" size="lg">{t(lang, "join")} <ArrowRight className="size-4 rtl:rotate-180" /></ButtonLink>
-              <ButtonLink href="/get-help" size="lg" className="bg-white text-brand-900 hover:bg-brand-50">{t(lang, "getHelp")}</ButtonLink>
-            </div>
-            <dl className="mt-10 grid max-w-lg grid-cols-3 gap-6 border-t border-white/15 pt-6">
+            {f.on("home.heroButtons") && (f.path("/join") || f.path("/get-help")) && <div className="mt-8 flex flex-wrap gap-3">
+              {f.path("/join") && <ButtonLink href="/join" variant="coral" size="lg">{t(lang, "join")} <ArrowRight className="size-4 rtl:rotate-180" /></ButtonLink>}
+              {f.path("/get-help") && <ButtonLink href="/get-help" size="lg" className="bg-white text-brand-900 hover:bg-brand-50">{t(lang, "getHelp")}</ButtonLink>}
+            </div>}
+            {f.on("home.stats") && <dl className="mt-10 grid max-w-lg grid-cols-3 gap-6 border-t border-white/15 pt-6">
               {memberCount >= 50 && <Stat value={memberCount.toLocaleString()} label="Active members" />}
               {affiliateCount > 0 && <Stat value={affiliateCount} label="Workplace unions" />}
               <Stat value="21" label="Atolls & cities" />
-            </dl>
+            </dl>}
           </div>
 
-          {featured && (
+          {featured && f.on("home.featured") && (
             <div className="animate-fade-up rounded-3xl bg-white p-6 text-ink shadow-2xl shadow-black/30 [animation-delay:120ms]">
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-coral-600">
                 <span className="relative flex size-2"><span className="absolute inline-flex size-full animate-ping rounded-full bg-coral-400 opacity-75" /><span className="relative inline-flex size-2 rounded-full bg-coral-500" /></span>
@@ -97,23 +99,23 @@ export default async function HomePage() {
       </section>
 
       {/* ─── Task router ──────────────────────────────────────── */}
-      <section className="mx-auto max-w-7xl px-4 py-16">
+      {f.on("home.help") && <section className="mx-auto max-w-7xl px-4 py-16">
         <div className="text-center">
           <h2 className="text-3xl font-extrabold tracking-tight">{t(lang, "howHelp")}</h2>
-          <p className="mt-2 text-muted">Pick a topic for practical guidance — or <Link href="/members/help/new" className="font-semibold text-brand-700 underline underline-offset-2">open a case</Link> if you&apos;re a member.</p>
+          <p className="mt-2 text-muted">Pick a topic for practical guidance{f.path("/members/help") && <> — or <Link href="/members/help/new" className="font-semibold text-brand-700 underline underline-offset-2">open a case</Link> if you&apos;re a member</>}.</p>
         </div>
         <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {HELP_TASKS.map(({ icon: Icon, label, href }) => (
+          {HELP_TASKS.filter((x) => f.path(x.href)).map(({ icon: Icon, label, href }) => (
             <Link key={label} href={href} className="group flex flex-col items-center gap-3 rounded-2xl border border-line bg-white p-5 text-center transition hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-md">
               <span className="grid size-12 place-items-center rounded-2xl bg-brand-50 text-brand-700 transition group-hover:bg-brand-700 group-hover:text-white"><Icon className="size-6" /></span>
               <span className="text-sm font-semibold leading-snug">{label}</span>
             </Link>
           ))}
         </div>
-      </section>
+      </section>}
 
       {/* ─── News ─────────────────────────────────────────────── */}
-      {lead && (
+      {lead && f.on("home.news") && (
         <section className="bg-sand-50 py-16">
           <div className="mx-auto max-w-7xl px-4">
             <SectionHead kicker="Newsroom" title={t(lang, "latestNews")} action={<ButtonLink href="/news" variant="outline">{t(lang, "viewAll")}</ButtonLink>} />
@@ -138,7 +140,7 @@ export default async function HomePage() {
       )}
 
       {/* ─── Campaigns ────────────────────────────────────────── */}
-      {campaigns.length > 0 && (
+      {campaigns.length > 0 && f.on("home.campaigns") && (
         <section className="mx-auto max-w-7xl px-4 py-16">
           <SectionHead kicker={wins > 0 ? `${wins} campaign${wins === 1 ? "" : "s"} won` : "Campaigns"} title={t(lang, "activeCampaigns")} action={<ButtonLink href="/campaigns" variant="outline">{t(lang, "viewAll")}</ButtonLink>} />
           <div className="grid gap-6 md:grid-cols-3">
@@ -148,7 +150,7 @@ export default async function HomePage() {
       )}
 
       {/* ─── Sectors ──────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-brand-900 py-20 text-white">
+      {f.on("home.sectors") && <section className="relative overflow-hidden bg-brand-900 py-20 text-white">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={photos.islands} alt="" className="absolute inset-0 size-full object-cover opacity-20" />
         <div className="relative mx-auto max-w-7xl px-4">
@@ -158,8 +160,8 @@ export default async function HomePage() {
               <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Every health worker. Every island.</h2>
               <p className="mt-4 text-brand-100">From IGMH in Malé to a two-person health post in the far north, MHPU members bargain together — Maldivian and expatriate, clinical and support staff alike.</p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <ButtonLink href={affiliateCount > 0 ? "/about#affiliates" : "/about"} className="bg-white text-brand-900 hover:bg-brand-50"><Users className="size-4" /> {affiliateCount > 0 ? "Our workplace unions" : "About MHPU"}</ButtonLink>
-                {reps > 0 && <ButtonLink href="/contact#reps" variant="ghost" className="text-white hover:bg-white/10"><MapPinned className="size-4" /> Find your rep</ButtonLink>}
+                {f.path("/about") && <ButtonLink href={affiliateCount > 0 && f.on("about.unions") ? "/about#affiliates" : "/about"} className="bg-white text-brand-900 hover:bg-brand-50"><Users className="size-4" /> {affiliateCount > 0 && f.on("about.unions") ? "Our workplace unions" : "About MHPU"}</ButtonLink>}
+                {reps > 0 && f.path("/contact") && <ButtonLink href="/contact#reps" variant="ghost" className="text-white hover:bg-white/10"><MapPinned className="size-4" /> Find your rep</ButtonLink>}
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -175,17 +177,17 @@ export default async function HomePage() {
             </div>
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* ─── Events + Join ────────────────────────────────────── */}
-      <section className="mx-auto grid max-w-7xl gap-10 px-4 py-16 lg:grid-cols-[1.2fr_1fr]">
-        <div>
+      {(f.on("home.events") || f.on("home.join")) && <section className={cn("mx-auto grid max-w-7xl gap-10 px-4 py-16", f.on("home.events") && f.on("home.join") && "lg:grid-cols-[1.2fr_1fr]")}>
+        {f.on("home.events") && <div>
           <SectionHead kicker="Get involved" title={t(lang, "upcoming")} action={<ButtonLink href="/events" variant="outline">{t(lang, "viewAll")}</ButtonLink>} />
           <div className="space-y-3">
             {events.length ? events.map((e) => <EventCard key={e.id} e={e} lang={lang} />) : <p className="text-muted">No public events scheduled — check back soon.</p>}
           </div>
-        </div>
-        <div className="relative overflow-hidden rounded-3xl bg-coral-500 p-8 text-white">
+        </div>}
+        {f.on("home.join") && <div className="relative overflow-hidden rounded-3xl bg-coral-500 p-8 text-white">
           <svg className="absolute -end-10 -top-10 size-56 text-white/10" viewBox="0 0 48 48" aria-hidden="true"><path d="M19 9h10v10h10v10H29v10H19V29H9V19h10z" fill="currentColor" /></svg>
           <h2 className="relative text-3xl font-extrabold leading-tight">{t(lang, "joinCtaTitle")}</h2>
           <p className="relative mt-2 text-sm font-semibold text-white/85">Registration MVR {settings.registrationFee} · Monthly MVR {settings.monthlyDues}</p>
@@ -196,10 +198,10 @@ export default async function HomePage() {
           </ul>
           <div className="relative mt-8 flex flex-wrap gap-3">
             <ButtonLink href="/join" size="lg" className="bg-white text-coral-700 hover:bg-coral-50">{t(lang, "join")}</ButtonLink>
-            <ButtonLink href="/get-help" size="lg" variant="ghost" className="text-white hover:bg-white/15">Why join?</ButtonLink>
+            {f.path("/get-help") && <ButtonLink href="/get-help" size="lg" variant="ghost" className="text-white hover:bg-white/15">Why join?</ButtonLink>}
           </div>
-        </div>
-      </section>
+        </div>}
+      </section>}
     </>
   );
 }

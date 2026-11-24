@@ -1,4 +1,5 @@
 "use server";
+import { featureOffError } from "@/lib/features-server";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
@@ -15,6 +16,7 @@ export type FormState = { ok?: boolean; error?: string; message?: string };
 const email = z.string().trim().toLowerCase().email("Enter a valid email address");
 
 export async function subscribe(_: FormState, fd: FormData): Promise<FormState> {
+  { const off = await featureOffError("site.newsletter"); if (off) return { error: off }; }
   if (isBot(fd)) return { ok: true, message: "You're subscribed. Thank you!" };
   const limited = await formLimit("subscribe", 10);
   if (limited) return { error: limited };
@@ -33,6 +35,7 @@ const contactSchema = z.object({
 });
 
 export async function sendContact(_: FormState, fd: FormData): Promise<FormState> {
+  { const off = await featureOffError("page.contact"); if (off) return { error: off }; }
   if (isBot(fd)) return { ok: true, message: "Message sent. Our team usually replies within two working days." };
   const limited = await formLimit("contact", 5);
   if (limited) return { error: limited };
@@ -63,6 +66,7 @@ const joinSchema = z.object({
 });
 
 export async function applyToJoin(_: FormState, fd: FormData): Promise<FormState> {
+  { const off = await featureOffError("page.join"); if (off) return { error: off }; }
   if (isBot(fd)) return { ok: true, message: "Thank you|APP-PENDING" };
   const limited = await formLimit("join", 5);
   if (limited) return { error: limited };
@@ -118,6 +122,7 @@ const signSchema = z.object({
 });
 
 export async function signPetition(_: FormState, fd: FormData): Promise<FormState> {
+  { const off = await featureOffError("page.campaigns"); if (off) return { error: off }; }
   if (isBot(fd)) return { ok: true, message: "Thank you for signing! Share this campaign with your colleagues." };
   const limited = await formLimit("petition", 20);
   if (limited) return { error: limited };

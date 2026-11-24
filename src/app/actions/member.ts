@@ -1,4 +1,5 @@
 "use server";
+import { featureOffError } from "@/lib/features-server";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
@@ -60,6 +61,7 @@ const caseSchema = z.object({
 });
 
 export async function openCase(_: MState, fd: FormData): Promise<MState> {
+  { const off = await featureOffError("members.help"); if (off) return { error: off }; }
   const { user, member } = await requireMember();
   const r = caseSchema.safeParse(Object.fromEntries(fd));
   if (!r.success) return { error: r.error.issues[0].message };
@@ -73,6 +75,7 @@ export async function openCase(_: MState, fd: FormData): Promise<MState> {
 }
 
 export async function replyToCase(_: MState, fd: FormData): Promise<MState> {
+  { const off = await featureOffError("members.help"); if (off) return { error: off }; }
   const { user, member } = await requireMember();
   const caseId = str(fd, "caseId");
   const body = str(fd, "body");
@@ -87,6 +90,7 @@ export async function replyToCase(_: MState, fd: FormData): Promise<MState> {
 }
 
 export async function toggleRsvp(fd: FormData) {
+  if (await featureOffError("members.events")) return;
   const { member } = await requireMember();
   const eventId = str(fd, "eventId");
   const existing = await db.eventRsvp.findUnique({ where: { eventId_memberId: { eventId, memberId: member.id } } });
@@ -101,6 +105,7 @@ export async function toggleRsvp(fd: FormData) {
 }
 
 export async function castVote(_: MState, fd: FormData): Promise<MState> {
+  { const off = await featureOffError("members.ballots"); if (off) return { error: off }; }
   const { user, member } = await requireMember();
   if (member.status !== "ACTIVE") return { error: "Only members in good standing can vote." };
   const ballotId = str(fd, "ballotId");
@@ -128,6 +133,7 @@ export async function testCheckoutAllowed(role: string) {
 }
 
 export async function startOnlinePayment(fd: FormData) {
+  if (await featureOffError("members.dues")) return;
   const { user, member } = await requireMember();
   const { getSettings } = await import("@/lib/settings");
   const { startCheckout } = await import("@/lib/payments");
@@ -166,6 +172,7 @@ export async function completeTestPayment(fd: FormData) {
 }
 
 export async function setAutopay(fd: FormData) {
+  if (await featureOffError("members.dues")) return;
   const { user, member } = await requireMember();
   const on = str(fd, "autopay") === "on";
   const months = [1, 3, 6, 12].includes(Number(str(fd, "months"))) ? Number(str(fd, "months")) : 1;

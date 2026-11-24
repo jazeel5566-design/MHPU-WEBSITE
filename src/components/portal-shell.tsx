@@ -6,6 +6,7 @@ import { Avatar } from "@/components/ui";
 import { NavLink } from "@/components/nav-link";
 import { MobileNav } from "@/components/mobile-nav";
 import { ROLE_LABELS, type Role } from "@/lib/constants";
+import { features } from "@/lib/features-server";
 
 export type NavItem = { href: string; label: string; icon: React.ElementType; exact?: boolean; badge?: number };
 export type NavGroup = { title?: string; items: NavItem[] };
@@ -16,7 +17,7 @@ const ACCENT = {
   admin: { bar: "bg-coral-500", label: "Admin portal" },
 };
 
-export function PortalShell({ portal, groups, user, children, switcher }: {
+export async function PortalShell({ portal, groups: allGroups, user, children, switcher }: {
   portal: keyof typeof ACCENT;
   groups: NavGroup[];
   user: { name: string; role: string; email: string; title?: string | null };
@@ -24,6 +25,9 @@ export function PortalShell({ portal, groups, user, children, switcher }: {
   switcher?: { href: string; label: string }[];
 }) {
   const a = ACCENT[portal];
+  // Hide tabs the admin has switched off (Admin → Pages & features).
+  const f = await features();
+  const groups = allGroups.map((g) => ({ ...g, items: g.items.filter((i) => f.path(i.href)) })).filter((g) => g.items.length);
   const flat = groups.flatMap((g) => g.items);
   return (
     <div className="min-h-screen bg-sand-50/60">

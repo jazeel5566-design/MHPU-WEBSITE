@@ -1,4 +1,5 @@
 "use server";
+import { featureOffError } from "@/lib/features-server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
@@ -115,6 +116,7 @@ export async function deleteElection(fd: FormData) {
 
 /** Cast a secret ballot: records that the member voted, and (separately, unlinked) their choices. */
 export async function castElectionBallot(_: EState, fd: FormData): Promise<EState> {
+  { const off = await featureOffError("members.elections"); if (off) return { error: off }; }
   const { user, member } = await requireMember();
   const e = await db.election.findUnique({ where: { id: str(fd, "electionId") }, include: { positions: { include: { candidates: { select: { id: true } } } } } });
   if (!e) return { error: "Election not found." };

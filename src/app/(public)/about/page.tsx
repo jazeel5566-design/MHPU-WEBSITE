@@ -1,5 +1,6 @@
 import { Target, Eye, Handshake, Users } from "lucide-react";
 import { db } from "@/lib/db";
+import { features } from "@/lib/features-server";
 import { getLang, pick } from "@/lib/i18n";
 import { PageHero, SectionHead } from "@/components/public/cards";
 import { ButtonLink, Card } from "@/components/ui";
@@ -17,12 +18,13 @@ const TIMELINE = [
 export default async function AboutPage() {
   const photos = await getSitePhotos();
   const lang = await getLang();
+  const f = await features();
   const affiliates = await db.affiliate.findMany({ where: { active: true }, include: { _count: { select: { members: true } } }, orderBy: { name: "asc" } });
   return (
     <>
       <PageHero kicker="About us" title="The united voice of Maldivian healthcare workers" desc="MHPU is a national trade union federation that brings together health-worker unions and individual members across public and private healthcare." image={photos.about} />
 
-      <section className="mx-auto grid max-w-7xl gap-6 px-4 py-16 md:grid-cols-3">
+      {f.on("about.values") && <section className="mx-auto grid max-w-7xl gap-6 px-4 py-16 md:grid-cols-3">
         {[
           { icon: Target, title: "Our mission", body: "To protect and advance the rights, pay and wellbeing of every health worker in the Maldives through collective action, representation and dialogue." },
           { icon: Eye, title: "Our vision", body: "A health system where staff are safe, fairly paid and properly resourced — so every island community gets the care it deserves." },
@@ -34,9 +36,9 @@ export default async function AboutPage() {
             <p className="mt-2 leading-relaxed text-muted">{body}</p>
           </Card>
         ))}
-      </section>
+      </section>}
 
-      <section className="bg-sand-50 py-16">
+      {f.on("about.story") && <section className="bg-sand-50 py-16">
         <div className="mx-auto grid max-w-7xl gap-12 px-4 lg:grid-cols-2">
           <div>
             <SectionHead kicker="Our story" title="From a pay campaign to a national federation" />
@@ -53,11 +55,11 @@ export default async function AboutPage() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={photos.islands} alt="Aerial view of a Maldivian island" className="h-full min-h-80 w-full rounded-3xl object-cover" />
         </div>
-      </section>
+      </section>}
 
-      {affiliates.length > 0 && (
+      {affiliates.length > 0 && f.on("about.unions") && (
       <section id="affiliates" className="mx-auto max-w-7xl scroll-mt-24 px-4 py-16">
-        <SectionHead kicker="Federation" title="Workplace unions" action={<ButtonLink href="/contact" variant="outline">Register your workplace union</ButtonLink>} />
+        <SectionHead kicker="Federation" title="Workplace unions" action={f.path("/contact") ? <ButtonLink href="/contact" variant="outline">Register your workplace union</ButtonLink> : undefined} />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {affiliates.map((a) => (
             <Card key={a.id} className="p-6">

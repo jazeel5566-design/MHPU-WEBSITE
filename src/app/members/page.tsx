@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { IdCard, LifeBuoy, Vote, CalendarDays, ArrowRight, AlertTriangle, MessageSquarePlus } from "lucide-react";
 import { db } from "@/lib/db";
+import { features } from "@/lib/features-server";
 import { requireMember } from "@/lib/auth";
 import { livePosts, liveOrder } from "@/lib/content";
 import { formatDate, timeAgo } from "@/lib/utils";
@@ -11,6 +12,7 @@ export const dynamic = "force-dynamic";
 
 export default async function MemberDashboard() {
   const { member } = await requireMember();
+  const f = await features();
   const now = new Date();
   const [cases, ballots, events, notices] = await Promise.all([
     db.case.findMany({ where: { memberId: member.id, status: { notIn: ["CLOSED"] } }, orderBy: { updatedAt: "desc" }, take: 3 }),
@@ -30,19 +32,19 @@ export default async function MemberDashboard() {
           <p className="mt-1 text-sm text-brand-100">{member.membershipNo} · {member.profession} · {member.employer}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <ButtonLink href="/members/help/new" variant="coral"><MessageSquarePlus className="size-4" /> Get help</ButtonLink>
-          <ButtonLink href="/members/card" className="bg-white/15 text-white hover:bg-white/25"><IdCard className="size-4" /> My card</ButtonLink>
+          {f.on("members.help") && <ButtonLink href="/members/help/new" variant="coral"><MessageSquarePlus className="size-4" /> Get help</ButtonLink>}
+          {f.on("members.card") && <ButtonLink href="/members/card" className="bg-white/15 text-white hover:bg-white/25"><IdCard className="size-4" /> My card</ButtonLink>}
         </div>
       </div>
 
       {!duesOk && (
         <Notice tone="amber">
           <span className="inline-flex items-center gap-2 font-semibold"><AlertTriangle className="size-4" /> Your dues are not up to date.</span>{" "}
-          Members need to be in good standing to vote and receive representation. <Link href="/members/dues" className="font-bold underline">View dues</Link>
+          Members need to be in good standing to vote and receive representation. {f.on("members.dues") ? <Link href="/members/dues" className="font-bold underline">View dues</Link> : "Please contact the office."}
         </Notice>
       )}
 
-      {ballots.some((b) => b.votes.length === 0) && (
+      {f.on("members.ballots") && ballots.some((b) => b.votes.length === 0) && (
         <Link href="/members/ballots" className="flex items-center gap-4 rounded-2xl border-2 border-coral-200 bg-coral-50 p-5 transition hover:border-coral-400">
           <span className="grid size-12 place-items-center rounded-2xl bg-coral-500 text-white"><Vote className="size-6" /></span>
           <div className="flex-1">
@@ -53,8 +55,8 @@ export default async function MemberDashboard() {
         </Link>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
+      {(f.on("members.help") || f.on("members.events")) && <div className={f.on("members.help") && f.on("members.events") ? "grid gap-6 lg:grid-cols-2" : "grid gap-6"}>
+        {f.on("members.help") && <Card>
           <CardHeader title="My open cases" action={<Link href="/members/help" className="text-sm font-semibold text-brand-700">All cases</Link>} />
           {cases.length === 0 ? (
             <div className="p-5"><EmptyState icon={<LifeBuoy className="size-8" />} title="No open cases" desc="Problem at work? Our organisers are here to help." action={<ButtonLink href="/members/help/new" size="sm">Open a case</ButtonLink>} /></div>
@@ -73,9 +75,9 @@ export default async function MemberDashboard() {
               ))}
             </ul>
           )}
-        </Card>
+        </Card>}
 
-        <Card>
+        {f.on("members.events") && <Card>
           <CardHeader title="Coming up" action={<Link href="/members/events" className="text-sm font-semibold text-brand-700">All events</Link>} />
           <ul className="divide-y divide-line">
             {events.map((e) => (
@@ -93,10 +95,10 @@ export default async function MemberDashboard() {
             ))}
             {events.length === 0 && <li className="px-5 py-6 text-sm text-muted"><CalendarDays className="me-2 inline size-4" />No upcoming events.</li>}
           </ul>
-        </Card>
-      </div>
+        </Card>}
+      </div>}
 
-      <Card>
+      {f.on("members.news") && <Card>
         <CardHeader title="Latest from MHPU" action={<Link href="/members/news" className="text-sm font-semibold text-brand-700">Member notices</Link>} />
         <ul className="grid divide-y divide-line sm:grid-cols-2 sm:divide-y-0">
           {notices.map((p) => (
@@ -108,7 +110,7 @@ export default async function MemberDashboard() {
             </li>
           ))}
         </ul>
-      </Card>
+      </Card>}
     </div>
   );
 }

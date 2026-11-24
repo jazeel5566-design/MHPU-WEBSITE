@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Megaphone, Phone, MessageCircle, Mail, MapPin, ArrowRight } from "lucide-react";
 import { getLang, t } from "@/lib/i18n";
 import { getSettings } from "@/lib/settings";
+import { features } from "@/lib/features-server";
 import { getCurrentUser, homeFor } from "@/lib/auth";
 import { Logo } from "@/components/logo";
 import { A11yControls } from "@/components/a11y-bar";
@@ -12,7 +13,7 @@ import { ButtonLink } from "@/components/ui";
 import { NewsletterForm } from "@/components/public/newsletter-form";
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
-  const [lang, settings, user] = await Promise.all([getLang(), getSettings(), getCurrentUser()]);
+  const [lang, settings, user, f] = await Promise.all([getLang(), getSettings(), getCurrentUser(), features()]);
   const nav = [
     { href: "/about", label: t(lang, "about") },
     { href: "/news", label: t(lang, "news") },
@@ -20,7 +21,7 @@ export default async function PublicLayout({ children }: { children: React.React
     { href: "/events", label: t(lang, "events") },
     { href: "/resources", label: t(lang, "resources") },
     { href: "/contact", label: t(lang, "contact") },
-  ];
+  ].filter((n) => f.path(n.href));
   const tel = settings.hotline.replace(/[^\d+]/g, "");
   const portalHref = user ? homeFor(user.role) : "/login";
 
@@ -40,7 +41,7 @@ export default async function PublicLayout({ children }: { children: React.React
         </div>
       )}
 
-      <div className="bg-brand-900 text-brand-100">
+      {f.on("site.topbar") && <div className="bg-brand-900 text-brand-100">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-1.5 text-xs">
           <div className="flex items-center gap-4">
             <a href={`tel:${tel}`} className="inline-flex items-center gap-1.5 font-semibold text-white hover:underline">
@@ -51,11 +52,11 @@ export default async function PublicLayout({ children }: { children: React.React
             </a>
           </div>
           <div className="flex items-center gap-2">
-            <A11yControls />
+            {f.on("site.a11y") && <A11yControls />}
             {settings.dhivehiEnabled !== "false" && <LangSwitch lang={lang} />}
           </div>
         </div>
-      </div>
+      </div>}
 
       <header className="sticky top-0 z-40 border-b border-line bg-white/90 backdrop-blur-md">
         <div className="mx-auto flex h-18 max-w-7xl items-center justify-between gap-2 px-4 py-3 sm:gap-4">
@@ -70,13 +71,13 @@ export default async function PublicLayout({ children }: { children: React.React
             ))}
           </nav>
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <ButtonLink href="/get-help" variant="outline" className="hidden md:inline-flex">{t(lang, "getHelp")}</ButtonLink>
-            <ButtonLink href={portalHref} variant="ghost" className="hidden sm:inline-flex">
+            {f.path("/get-help") && <ButtonLink href="/get-help" variant="outline" className="hidden md:inline-flex">{t(lang, "getHelp")}</ButtonLink>}
+            {f.on("site.portalButton") && <ButtonLink href={portalHref} variant="ghost" className="hidden sm:inline-flex">
               {user ? `My portal` : t(lang, "login")}
-            </ButtonLink>
-            <ButtonLink href="/join" variant="coral" className="h-9 px-3.5 sm:h-10 sm:px-4">{t(lang, "join")}</ButtonLink>
+            </ButtonLink>}
+            {f.path("/join") && <ButtonLink href="/join" variant="coral" className="h-9 px-3.5 sm:h-10 sm:px-4">{t(lang, "join")}</ButtonLink>}
             <MobileNav
-              items={[{ href: "/", label: t(lang, "home") }, ...nav, { href: "/get-help", label: t(lang, "getHelp") }]}
+              items={[{ href: "/", label: t(lang, "home") }, ...nav, ...(f.path("/get-help") ? [{ href: "/get-help", label: t(lang, "getHelp") }] : [])]}
               footer={<ButtonLink href={portalHref} variant="primary" className="w-full">{user ? "My portal" : t(lang, "login")}</ButtonLink>}
             />
           </div>
@@ -90,31 +91,31 @@ export default async function PublicLayout({ children }: { children: React.React
           <div className="lg:col-span-2">
             <Logo light />
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-brand-200">{t(lang, "footerAbout")}</p>
-            <div className="mt-6">
+            {f.on("site.newsletter") && <div className="mt-6">
               <div className="mb-2 text-sm font-semibold text-white">{t(lang, "newsletter")}</div>
               <NewsletterForm label={t(lang, "subscribe")} />
-            </div>
+            </div>}
           </div>
-          <FooterCol title="Union" links={[["/about", "About MHPU"], ["/about#affiliates", "Workplace unions"], ["/resources?category=CONSTITUTION", "Constitution"]]} />
-          <FooterCol title="Members" links={[["/join", "Join MHPU"], ["/get-help", "Get help at work"], ["/login", "Member portal"], ["/verify", "Verify a membership"]]} />
-          <div>
+          <FooterCol title="Union" allow={f.path} links={[["/about", "About MHPU"], ["/about#affiliates", "Workplace unions"], ["/resources?category=CONSTITUTION", "Constitution"]]} />
+          <FooterCol title="Members" allow={f.path} links={[["/join", "Join MHPU"], ["/get-help", "Get help at work"], ["/login", "Member portal"], ["/verify", "Verify a membership"]]} />
+          {f.on("site.footerContact") && <div>
             <div className="mb-3 text-sm font-semibold text-white">Contact</div>
             <ul className="space-y-2.5 text-sm text-brand-200">
               <li className="flex gap-2"><Phone className="mt-0.5 size-4 shrink-0" /><span dir="ltr">{settings.hotline}</span></li>
               <li className="flex gap-2"><Mail className="mt-0.5 size-4 shrink-0" />{settings.email}</li>
               <li className="flex gap-2"><MapPin className="mt-0.5 size-4 shrink-0" />{settings.address}</li>
             </ul>
-            <div className="mt-4 flex gap-3 text-sm">
+            {f.on("site.social") && <div className="mt-4 flex gap-3 text-sm">
               {settings.facebook && <a href={settings.facebook} className="hover:text-white">Facebook</a>}
               {settings.instagram && <a href={settings.instagram} className="hover:text-white">Instagram</a>}
               {settings.x && <a href={settings.x} className="hover:text-white">X</a>}
-            </div>
-          </div>
+            </div>}
+          </div>}
         </div>
         <div className="border-t border-white/10">
           <div className="mx-auto flex max-w-7xl flex-col justify-between gap-2 px-4 py-5 text-xs text-brand-300 sm:flex-row">
             <span>© {new Date().getFullYear()} Maldives Health Professionals Union · <span className="font-thaana">{settings.nameDv}</span> · Reg. no. {settings.registrationNo}</span>
-            <span className="flex gap-4"><Link href="/privacy" className="hover:text-white">Privacy</Link><Link href="/login" className="hover:text-white">Staff login</Link></span>
+            <span className="flex gap-4">{f.path("/privacy") && <Link href="/privacy" className="hover:text-white">Privacy</Link>}<Link href="/login" className="hover:text-white">Staff login</Link></span>
           </div>
         </div>
         {/* Letterhead band: brand blue with a slanted cut into black */}
@@ -127,7 +128,9 @@ export default async function PublicLayout({ children }: { children: React.React
   );
 }
 
-function FooterCol({ title, links }: { title: string; links: [string, string][] }) {
+function FooterCol({ title, links, allow }: { title: string; links: [string, string][]; allow: (href: string) => boolean }) {
+  links = links.filter(([href]) => allow(href));
+  if (!links.length) return null;
   return (
     <div>
       <div className="mb-3 text-sm font-semibold text-white">{title}</div>

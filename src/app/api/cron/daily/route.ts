@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { featureOffError } from "@/lib/features-server";
 import { sendDueReminders, reconcilePendingPayments, runAutopay } from "@/lib/reminders";
 import { audit } from "@/lib/audit";
 import { timingSafeEqual } from "node:crypto";
@@ -17,8 +18,10 @@ export async function GET(req: Request) {
   await purgeExpiredLimits();
   const ballots = await flushClosedElections();
   const payments = await reconcilePendingPayments();
-  const autopay = await runAutopay(site);
-  const reminders = await sendDueReminders(site);
+  // If the admin has switched off "Dues & payments", don't charge cards or text pay links.
+  const duesOn = !(await featureOffError("members.dues"));
+  const autopay = duesOn ? await runAutopay(site) : { skipped: "dues switched off" };
+  const reminders = duesOn ? await sendDueReminders(site) : { skipped: "dues switched off" };
   await audit(null, "cron_daily", "System", undefined, JSON.stringify({ payments, autopay, reminders, ballots }));
   return NextResponse.json({ ok: true, payments, autopay, reminders, ballots });
 }
