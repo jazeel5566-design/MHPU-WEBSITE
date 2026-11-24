@@ -1,5 +1,6 @@
 import { Vote, CheckCircle2, Lock } from "lucide-react";
 import { db } from "@/lib/db";
+import { flushClosedBallots } from "@/lib/ballots";
 import { requireMember } from "@/lib/auth";
 import { formatDateTime } from "@/lib/utils";
 import { Badge, Card, PageHeader, EmptyState } from "@/components/ui";
@@ -10,19 +11,20 @@ export const metadata = { title: "Ballots" };
 export default async function BallotsPage() {
   const { member } = await requireMember();
   const now = new Date();
+  await flushClosedBallots(); // count any sealed votes once a ballot has closed
   const ballots = await db.ballot.findMany({
-    include: { options: { orderBy: { order: "asc" }, include: { _count: { select: { votes: true } } } }, votes: { where: { memberId: member.id } }, _count: { select: { votes: true } } },
+    include: { options: { orderBy: { order: "asc" }, include: { _count: { select: { votes: true } } } }, voters: { where: { memberId: member.id }, select: { id: true } }, _count: { select: { votes: true } } },
     orderBy: { closesAt: "desc" },
   });
   return (
     <div>
-      <PageHeader title="Ballots & votes" desc="MHPU is member-led. Vote on agreements, industrial action and union elections. Votes are secret." />
+      <PageHeader title="Ballots & votes" desc="MHPU is member-led. Vote on agreements, industrial action and other union questions. Your vote is secret: MHPU records that you voted, never what you chose." />
       {ballots.length === 0 && <EmptyState icon={<Vote className="size-10" />} title="No ballots yet" />}
       <div className="space-y-6">
         {ballots.map((b) => {
           const open = b.opensAt <= now && b.closesAt >= now;
           const closed = b.closesAt < now;
-          const voted = b.votes.length > 0;
+          const voted = b.voters.length > 0;
           return (
             <Card key={b.id} className="p-6">
               <div className="flex flex-wrap items-center gap-2">

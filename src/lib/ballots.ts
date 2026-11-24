@@ -34,3 +34,27 @@ export async function flushClosedElections() {
   for (const e of closed) n += await flushBallots(e.id, true);
   return n;
 }
+
+/** Same as flushBallots, for general ballots (yes/no and multiple-choice questions). */
+export async function flushBallotVotes(ballotId: string, force = false) {
+  return db.$transaction(async (tx) => {
+    const pending = await tx.ballotPendingVote.findMany({ where: { ballotId } });
+    if (!pending.length || (!force && pending.length < FLUSH_THRESHOLD)) return 0;
+    const optionIds = pending.map((p) => unseal<string>(p.sealed));
+    for (let i = optionIds.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [optionIds[i], optionIds[j]] = [optionIds[j], optionIds[i]];
+    }
+    await tx.vote.createMany({ data: optionIds.map((optionId) => ({ ballotId, optionId })) });
+    await tx.ballotPendingVote.deleteMany({ where: { id: { in: pending.map((p) => p.id) } } });
+    return pending.length;
+  });
+}
+
+/** Count every remaining sealed vote for ballots that have closed. */
+export async function flushClosedBallots() {
+  const closed = await db.ballot.findMany({ where: { closesAt: { lt: new Date() } }, select: { id: true } });
+  let n = 0;
+  for (const b of closed) n += await flushBallotVotes(b.id, true);
+  return n;
+}

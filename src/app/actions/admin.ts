@@ -191,6 +191,7 @@ export async function createBallot(_: AState, fd: FormData): Promise<AState> {
 export async function deleteBallot(fd: FormData) {
   const admin = await requireRole([...ADMIN], "/admin");
   const id = str(fd, "id");
+  await db.ballotPendingVote.deleteMany({ where: { ballotId: id } });
   await db.ballot.delete({ where: { id } });
   await audit(admin.id, "ballot_delete", "Ballot", id);
   revalidatePath("/admin/ballots");

@@ -37,7 +37,7 @@ async function main() {
     throw new Error("Refusing to load demo data into a non-local database. (Set ALLOW_REMOTE_SEED=yes to override.)");
   }
   console.log("Resetting database…");
-  for (const m of ["electionPendingBallot", "rateLimit", "electionVote", "electionVoter", "electionCandidate", "electionPosition", "election", "paymentIntent", "smsMessage", "eventAttendance", "vote", "ballotOption", "ballot", "caseMessage", "case", "payment", "eventRsvp", "event", "petitionSignature", "campaign", "post", "resource", "media", "member", "application", "affiliate", "auditLog", "contactMessage", "subscriber", "setting", "user"] as const) {
+  for (const m of ["ballotPendingVote", "ballotVoter", "electionPendingBallot", "rateLimit", "electionVote", "electionVoter", "electionCandidate", "electionPosition", "election", "paymentIntent", "smsMessage", "eventAttendance", "vote", "ballotOption", "ballot", "caseMessage", "case", "payment", "eventRsvp", "event", "petitionSignature", "campaign", "post", "resource", "media", "member", "application", "affiliate", "auditLog", "contactMessage", "subscriber", "setting", "user"] as const) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (db[m] as any).deleteMany();
   }
@@ -244,8 +244,8 @@ async function main() {
     options: { create: [{ label: "Remove the overtime cap", order: 0 }, { label: "Across-the-board pay rise", order: 1 }, { label: "Island & hardship allowances", order: 2 }, { label: "Minimum staffing standards", order: 3 }] } }, include: { options: true } });
   const b2 = await db.ballot.create({ data: { title: "Constitutional amendment: expatriate officer", question: "Create an elected Expatriate Workers' Officer post on the executive committee?", opensAt: days(-40), closesAt: days(-30),
     options: { create: [{ label: "Yes", order: 0 }, { label: "No", order: 1 }] } }, include: { options: true } });
-  for (const [i, m] of members.slice(1, 50).entries()) await db.vote.create({ data: { ballotId: b1.id, memberId: m.id, optionId: b1.options[i % 7 < 3 ? 0 : i % 7 < 5 ? 3 : i % 2 ? 1 : 2].id } });
-  for (const [i, m] of members.slice(0, 61).entries()) await db.vote.create({ data: { ballotId: b2.id, memberId: m.id, optionId: b2.options[i % 5 === 0 ? 1 : 0].id } });
+  for (const [i, m] of members.slice(1, 50).entries()) { await db.ballotVoter.create({ data: { ballotId: b1.id, memberId: m.id } }); await db.vote.create({ data: { ballotId: b1.id, optionId: b1.options[i % 7 < 3 ? 0 : i % 7 < 5 ? 3 : i % 2 ? 1 : 2].id } }); }
+  for (const [i, m] of members.slice(0, 61).entries()) { await db.ballotVoter.create({ data: { ballotId: b2.id, memberId: m.id } }); await db.vote.create({ data: { ballotId: b2.id, optionId: b2.options[i % 5 === 0 ? 1 : 0].id } }); }
 
   // ── Workplace union elections (sample) ──
   const igmh = affs[0];

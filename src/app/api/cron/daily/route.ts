@@ -4,7 +4,7 @@ import { sendDueReminders, reconcilePendingPayments, runAutopay } from "@/lib/re
 import { audit } from "@/lib/audit";
 import { timingSafeEqual } from "node:crypto";
 import { siteUrl, purgeExpiredLimits } from "@/lib/security";
-import { flushClosedElections } from "@/lib/ballots";
+import { flushClosedElections, flushClosedBallots } from "@/lib/ballots";
 
 export const maxDuration = 60;
 
@@ -16,7 +16,7 @@ export async function GET(req: Request) {
   if (!secret || given.length !== expected.length || !timingSafeEqual(given, expected)) return new NextResponse("Unauthorized", { status: 401 });
   const site = await siteUrl();
   await purgeExpiredLimits();
-  const ballots = await flushClosedElections();
+  const ballots = (await flushClosedElections()) + (await flushClosedBallots());
   const payments = await reconcilePendingPayments();
   // If the admin has switched off "Dues & payments", don't charge cards or text pay links.
   const duesOn = !(await featureOffError("members.dues"));

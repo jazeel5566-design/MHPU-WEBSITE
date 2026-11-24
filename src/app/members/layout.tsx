@@ -7,7 +7,7 @@ export default async function MembersLayout({ children }: { children: React.Reac
   const { user, member } = await requireMember();
   const now = new Date();
   const [openBallots, awaiting, openElections] = await Promise.all([
-    db.ballot.count({ where: { opensAt: { lte: now }, closesAt: { gte: now }, votes: { none: { memberId: member.id } } } }),
+    db.ballot.count({ where: { opensAt: { lte: now }, closesAt: { gte: now }, voters: { none: { memberId: member.id } } } }),
     db.case.count({ where: { memberId: member.id, status: "AWAITING_MEMBER" } }),
     db.election.count({ where: { opensAt: { lte: now }, closesAt: { gte: now }, OR: [{ affiliateId: null }, ...(member.affiliateId ? [{ affiliateId: member.affiliateId }] : [])], voters: { none: { memberId: member.id } } } }),
   ]);

@@ -91,7 +91,7 @@ model Member {
   cases      Case[]
   payments   Payment[]
   rsvps      EventRsvp[]
-  votes      Vote[]
+  ballotVoters BallotVoter[]
   paymentIntents PaymentIntent[]
   candidacies    ElectionCandidate[]
   electionVoters ElectionVoter[]
@@ -317,6 +317,7 @@ model Ballot {
 
   options BallotOption[]
   votes   Vote[]
+  voters  BallotVoter[]
 }
 
 model BallotOption {
@@ -328,17 +329,32 @@ model BallotOption {
   votes    Vote[]
 }
 
+// A counted choice. Deliberately holds NO member and NO time, so it can't be linked to a voter.
 model Vote {
-  id        String       @id @default(cuid())
-  ballotId  String
-  ballot    Ballot       @relation(fields: [ballotId], references: [id], onDelete: Cascade)
-  optionId  String
-  option    BallotOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
-  memberId  String
-  member    Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
-  createdAt DateTime     @default(now())
+  id       String       @id @default(uuid())
+  ballotId String
+  ballot   Ballot       @relation(fields: [ballotId], references: [id], onDelete: Cascade)
+  optionId String
+  option   BallotOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+}
+
+// Who has voted (one per member per ballot) — never what they chose.
+model BallotVoter {
+  id       String   @id @default(uuid())
+  ballotId String
+  ballot   Ballot   @relation(fields: [ballotId], references: [id], onDelete: Cascade)
+  memberId String
+  member   Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  votedAt  DateTime @default(now())
 
   @@unique([ballotId, memberId])
+}
+
+// A vote waiting to be counted, encrypted. Counted in shuffled batches (see src/lib/ballots.ts).
+model BallotPendingVote {
+  id       String @id @default(uuid())
+  ballotId String
+  sealed   String
 }
 
 // ─── Site operations ────────────────────────────────────────────────

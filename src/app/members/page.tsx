@@ -16,7 +16,7 @@ export default async function MemberDashboard() {
   const now = new Date();
   const [cases, ballots, events, notices] = await Promise.all([
     db.case.findMany({ where: { memberId: member.id, status: { notIn: ["CLOSED"] } }, orderBy: { updatedAt: "desc" }, take: 3 }),
-    db.ballot.findMany({ where: { opensAt: { lte: now }, closesAt: { gte: now } }, include: { votes: { where: { memberId: member.id }, select: { id: true } } }, orderBy: { closesAt: "asc" } }),
+    db.ballot.findMany({ where: { opensAt: { lte: now }, closesAt: { gte: now } }, include: { voters: { where: { memberId: member.id }, select: { id: true } } }, orderBy: { closesAt: "asc" } }),
     db.event.findMany({ where: { published: true, startsAt: { gte: now } }, include: { rsvps: { where: { memberId: member.id }, select: { id: true } } }, orderBy: { startsAt: "asc" }, take: 3 }),
     db.post.findMany({ where: livePosts(["PUBLIC", "MEMBERS"]), orderBy: liveOrder, take: 4 }),
   ]);
@@ -44,12 +44,12 @@ export default async function MemberDashboard() {
         </Notice>
       )}
 
-      {f.on("members.ballots") && ballots.some((b) => b.votes.length === 0) && (
+      {f.on("members.ballots") && ballots.some((b) => b.voters.length === 0) && (
         <Link href="/members/ballots" className="flex items-center gap-4 rounded-2xl border-2 border-coral-200 bg-coral-50 p-5 transition hover:border-coral-400">
           <span className="grid size-12 place-items-center rounded-2xl bg-coral-500 text-white"><Vote className="size-6" /></span>
           <div className="flex-1">
             <div className="font-bold">A ballot is open — your vote counts</div>
-            <div className="text-sm text-muted">{ballots.find((b) => b.votes.length === 0)?.title} · closes {formatDate(ballots[0].closesAt)}</div>
+            <div className="text-sm text-muted">{ballots.find((b) => b.voters.length === 0)?.title} · closes {formatDate(ballots[0].closesAt)}</div>
           </div>
           <ArrowRight className="size-5 text-coral-600 rtl:rotate-180" />
         </Link>

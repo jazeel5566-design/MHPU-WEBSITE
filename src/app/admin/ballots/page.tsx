@@ -1,5 +1,6 @@
 import { Trash2 } from "lucide-react";
 import { db } from "@/lib/db";
+import { flushClosedBallots } from "@/lib/ballots";
 import { requireRole } from "@/lib/auth";
 import { deleteBallot } from "@/app/actions/admin";
 import { formatDateTime } from "@/lib/utils";
@@ -12,17 +13,19 @@ export const dynamic = "force-dynamic";
 export default async function BallotsAdmin() {
   await requireRole(["ADMIN"], "/admin");
   const now = new Date();
+  await flushClosedBallots(); // count any sealed votes once a ballot has closed
   const [ballots, eligible] = await Promise.all([
-    db.ballot.findMany({ include: { options: { orderBy: { order: "asc" }, include: { _count: { select: { votes: true } } } }, _count: { select: { votes: true } } }, orderBy: { opensAt: "desc" } }),
+    db.ballot.findMany({ include: { options: { orderBy: { order: "asc" }, include: { _count: { select: { votes: true } } } }, _count: { select: { votes: true, voters: true } } }, orderBy: { opensAt: "desc" } }),
     db.member.count({ where: { status: "ACTIVE" } }),
   ]);
   return (
     <div className="space-y-6">
-      <PageHeader title="Ballots & e-voting" desc="One vote per member in good standing. Individual choices are never shown — only totals." />
+      <PageHeader title="Ballots & e-voting" desc="One vote per member in good standing. Votes are secret: the system records who voted, separately from what they chose, and totals appear only after voting closes." />
       <Card><CardHeader title="Create a ballot" /><div className="p-5"><BallotForm /></div></Card>
       {ballots.map((b) => {
         const open = b.opensAt <= now && b.closesAt >= now;
-        const turnout = eligible ? Math.round((b._count.votes / eligible) * 100) : 0;
+        const turnout = eligible ? Math.round((b._count.voters / eligible) * 100) : 0;
+        const closed = b.closesAt < now;
         return (
           <Card key={b.id} className="p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
@@ -33,7 +36,8 @@ export default async function BallotsAdmin() {
               </div>
               <form action={deleteBallot}><input type="hidden" name="id" value={b.id} /><SubmitButton size="sm" variant="ghost" className="text-red-600" confirm="Delete this ballot and all votes?"><Trash2 className="size-4" /></SubmitButton></form>
             </div>
-            <div className="mt-4 space-y-2">
+            {!closed && <p className="mt-4 rounded-xl bg-sand-50 p-3 text-sm text-muted">Results are hidden until voting closes, so nobody (including admins) can see a running tally. Options: {b.options.map((o) => o.label).join(" · ")}</p>}
+            {closed && <div className="mt-4 space-y-2">
               {b.options.map((o) => {
                 const pct = b._count.votes ? Math.round((o._count.votes / b._count.votes) * 100) : 0;
                 return (
@@ -43,8 +47,8 @@ export default async function BallotsAdmin() {
                   </div>
                 );
               })}
-            </div>
-            <p className="mt-3 text-xs text-muted">{b._count.votes} votes · turnout {turnout}% of {eligible} active members</p>
+            </div>}
+            <p className="mt-3 text-xs text-muted">{b._count.voters} voted · turnout {turnout}% of {eligible} active members</p>
           </Card>
         );
       })}

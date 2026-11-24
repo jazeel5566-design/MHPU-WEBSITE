@@ -1,5 +1,7 @@
 "use server";
 import { featureOffError } from "@/lib/features-server";
+import { seal } from "@/lib/security";
+import { flushBallotVotes } from "@/lib/ballots";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
@@ -116,10 +118,15 @@ export async function castVote(_: MState, fd: FormData): Promise<MState> {
   if (!b || b.opensAt > now || b.closesAt < now) return { error: "This ballot is not open." };
   if (!b.options.some((o) => o.id === optionId)) return { error: "Invalid option." };
   try {
-    await db.vote.create({ data: { ballotId, optionId, memberId: member.id } });
+    // Record THAT the member voted, and a sealed copy of the choice with no link to them.
+    await db.$transaction([
+      db.ballotVoter.create({ data: { ballotId, memberId: member.id } }),
+      db.ballotPendingVote.create({ data: { ballotId, sealed: seal(optionId) } }),
+    ]);
   } catch {
     return { error: "You have already voted in this ballot." };
   }
+  await flushBallotVotes(ballotId).catch(() => {});
   await audit(user.id, "vote", "Ballot", ballotId);
   revalidatePath("/members/ballots");
   return { ok: true, message: "Your vote has been recorded. Thank you!" };
