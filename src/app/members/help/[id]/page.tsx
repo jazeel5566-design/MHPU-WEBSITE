@@ -12,7 +12,7 @@ export default async function CaseDetail({ params, searchParams }: { params: Pro
   const [{ id }, sp, { member, user }] = await Promise.all([params, searchParams, requireMember()]);
   const c = await db.case.findFirst({
     where: { id, memberId: member.id },
-    include: { assignee: { select: { name: true } }, messages: { where: { internal: false }, include: { author: { select: { name: true, id: true } } }, orderBy: { createdAt: "asc" } } },
+    include: { assignee: { select: { name: true, title: true } }, messages: { where: { internal: false }, include: { author: { select: { name: true, id: true, title: true } } }, orderBy: { createdAt: "asc" } } },
   });
   if (!c) notFound();
   return (
@@ -29,7 +29,7 @@ export default async function CaseDetail({ params, searchParams }: { params: Pro
           <StatusBadge status={c.status} />
         </div>
         <div className="mt-4 rounded-xl bg-sand-50 p-4 text-sm whitespace-pre-wrap">{c.description}</div>
-        <div className="mt-3 text-sm text-muted">Organiser: <span className="font-semibold text-ink">{c.assignee?.name ?? "Being assigned…"}</span></div>
+        <div className="mt-3 text-sm text-muted">Organiser: <span className="font-semibold text-ink">{c.assignee ? `${c.assignee.name}${c.assignee.title ? `, ${c.assignee.title}` : ""}` : "Being assigned…"}</span></div>
       </Card>
 
       <h2 className="mb-3 mt-8 font-bold">Conversation</h2>
@@ -41,7 +41,7 @@ export default async function CaseDetail({ params, searchParams }: { params: Pro
             <div key={m.id} className={`flex gap-3 ${mine ? "flex-row-reverse" : ""}`}>
               <Avatar name={m.author.name} className={mine ? "bg-coral-100 text-coral-700" : ""} />
               <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${mine ? "bg-brand-700 text-white" : "border border-line bg-white"}`}>
-                <div className={`mb-1 text-xs font-semibold ${mine ? "text-brand-100" : "text-muted"}`}>{mine ? "You" : m.author.name} · {formatDateTime(m.createdAt)}</div>
+                <div className={`mb-1 text-xs font-semibold ${mine ? "text-brand-100" : "text-muted"}`}>{mine ? "You" : `${m.author.name}${m.author.title ? ` (${m.author.title})` : ""}`} · {formatDateTime(m.createdAt)}</div>
                 <div className="whitespace-pre-wrap">{m.body}</div>
               </div>
             </div>

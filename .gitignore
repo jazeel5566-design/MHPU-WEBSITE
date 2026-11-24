@@ -53,3 +53,4 @@ storage/applications/*
 .pgdata/
 .env.production*
 .admin-credentials.txt
+.secrets/

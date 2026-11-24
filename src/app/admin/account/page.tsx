@@ -9,7 +9,7 @@ export default async function AccountPage() {
   const user = await requireRole(["ADMIN", "CASEWORKER"], "/admin/account");
   return (
     <div>
-      <PageHeader title="My account" desc={`${user.name} · ${user.email} · ${ROLE_LABELS[user.role as Role]}`} />
+      <PageHeader title="My account" desc={`${user.name}${user.title ? ` · ${user.title}` : ""} · ${user.email} · ${ROLE_LABELS[user.role as Role]}`} />
       <Card><CardHeader title="Change password" /><div className="p-5"><AccountPasswordForm /></div></Card>
     </div>
   );

@@ -97,7 +97,7 @@ export async function updateMember(_: AState, fd: FormData): Promise<AState> {
       duesPaidUntil: paid ? new Date(paid) : null,
     },
   });
-  if (m.userId) await db.user.update({ where: { id: m.userId }, data: { active: status !== "SUSPENDED" && status !== "RESIGNED", name: str(fd, "fullName") || m.fullName } });
+  if (m.userId) await db.user.update({ where: { id: m.userId }, data: { active: status !== "SUSPENDED" && status !== "RESIGNED", name: str(fd, "fullName") || m.fullName, title: optStr(fd, "userTitle") } });
   await audit(admin.id, "member_update", "Member", id, status !== m.status ? `status ${m.status} → ${status}` : undefined);
   revalidatePath(`/admin/members/${id}`);
   return { ok: true, message: "Member updated." };
@@ -231,7 +231,7 @@ export async function createStaff(_: AState, fd: FormData): Promise<AState> {
   if (!ROLES.includes(role as (typeof ROLES)[number]) || role === "MEMBER") return { error: "Choose a staff role." };
   if (await db.user.findUnique({ where: { email } })) return { error: "A user with that email already exists." };
   const pw = tempPassword();
-  const u = await db.user.create({ data: { email, name, role, passwordHash: await bcrypt.hash(pw, 10) } });
+  const u = await db.user.create({ data: { email, name, role, title: optStr(fd, "title"), passwordHash: await bcrypt.hash(pw, 10) } });
   await audit(admin.id, "user_create", "User", u.id, `${email} (${role})`);
   revalidatePath("/admin/users");
   return { ok: true, message: `Account created for ${name}. Share these login details securely:`, tempPassword: `${email} / ${pw}` };
@@ -240,9 +240,14 @@ export async function createStaff(_: AState, fd: FormData): Promise<AState> {
 export async function updateStaff(fd: FormData) {
   const admin = await requireRole([...ADMIN], "/admin");
   const id = str(fd, "id");
-  if (id === admin.id) return; // can't demote/deactivate yourself
+  const title = optStr(fd, "title");
+  if (id === admin.id) { // you can change your own title, but not demote/deactivate yourself
+    await db.user.update({ where: { id }, data: { title } });
+    revalidatePath("/admin", "layout");
+    return;
+  }
   const role = str(fd, "role");
-  await db.user.update({ where: { id }, data: { role, active: fd.get("active") === "on" } });
+  await db.user.update({ where: { id }, data: { role, title, active: fd.get("active") === "on" } });
   await audit(admin.id, "user_update", "User", id, role);
   revalidatePath("/admin/users");
 }

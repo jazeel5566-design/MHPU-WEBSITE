@@ -3,7 +3,7 @@ import { requireRole } from "@/lib/auth";
 import { updateStaff } from "@/app/actions/admin";
 import { ROLE_LABELS, ROLES } from "@/lib/constants";
 import { timeAgo } from "@/lib/utils";
-import { Card, CardHeader, PageHeader, Select, Table, Td, Th } from "@/components/ui";
+import { Card, CardHeader, Input, PageHeader, Select, Table, Td, Th } from "@/components/ui";
 import { StaffForm } from "@/components/admin/forms";
 import { SubmitButton } from "@/components/submit-button";
 
@@ -26,15 +26,23 @@ export default async function UsersAdmin() {
       <Card><CardHeader title="Add a staff account" /><div className="p-5"><StaffForm /></div></Card>
       <Card>
         <Table>
-          <thead><tr><Th>Name</Th><Th>Role & access</Th><Th>Last login</Th></tr></thead>
+          <thead><tr><Th>Name</Th><Th>Title, role & access</Th><Th>Last login</Th></tr></thead>
           <tbody>
             {staff.map((u) => (
               <tr key={u.id}>
-                <Td><div className="font-semibold">{u.name}</div><div className="text-xs text-muted">{u.email}</div></Td>
+                <Td><div className="font-semibold">{u.name}</div><div className="text-xs text-muted">{u.email}</div>{u.title && <div className="mt-0.5 text-xs font-semibold text-brand-700">{u.title}</div>}</Td>
                 <Td>
-                  {u.id === me.id ? <span className="text-sm text-muted">{ROLE_LABELS[u.role as keyof typeof ROLE_LABELS]} (you)</span> : (
+                  {u.id === me.id ? (
                     <form action={updateStaff} className="flex flex-wrap items-center gap-2">
                       <input type="hidden" name="id" value={u.id} />
+                      <span className="text-sm text-muted">{ROLE_LABELS[u.role as keyof typeof ROLE_LABELS]} (you)</span>
+                      <Input name="title" defaultValue={u.title ?? ""} placeholder="Title, e.g. President" className="h-9 w-48 py-1.5" aria-label="Title / position" />
+                      <SubmitButton size="sm" variant="outline">Save</SubmitButton>
+                    </form>
+                  ) : (
+                    <form action={updateStaff} className="flex flex-wrap items-center gap-2">
+                      <input type="hidden" name="id" value={u.id} />
+                      <Input name="title" defaultValue={u.title ?? ""} placeholder="Title, e.g. Treasurer" className="h-9 w-44 py-1.5" aria-label="Title / position" />
                       <Select name="role" defaultValue={u.role} className="h-9 w-auto py-1.5">{ROLES.filter((r) => r !== "MEMBER").map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}</Select>
                       <label className="flex items-center gap-1.5 text-sm"><input type="checkbox" name="active" defaultChecked={u.active} className="accent-brand-700" /> Active</label>
                       <SubmitButton size="sm" variant="outline">Save</SubmitButton>

@@ -21,6 +21,7 @@ model User {
   name         String
   passwordHash String
   role         String    @default("MEMBER") // ADMIN | EDITOR | AUTHOR | CASEWORKER | MEMBER
+  title        String? // position shown when logged in, e.g. "President", "General Secretary" (ExCom)
   active       Boolean   @default(true)
   lastLoginAt  DateTime?
   createdAt    DateTime  @default(now())

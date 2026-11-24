@@ -45,7 +45,7 @@ export function ApproveForm({ id, affiliates }: { id: string; affiliates: { id: 
   );
 }
 
-type M = { id: string; fullName: string; phone: string; profession: string; role: string | null; employer: string; atoll: string; status: string; affiliateId: string | null; isRep: boolean; notes: string | null; duesPaidUntil: string };
+type M = { userTitle?: string | null; hasLogin?: boolean; id: string; fullName: string; phone: string; profession: string; role: string | null; employer: string; atoll: string; status: string; affiliateId: string | null; isRep: boolean; notes: string | null; duesPaidUntil: string };
 
 export function MemberEditForm({ m, affiliates, readOnly }: { m: M; affiliates: { id: string; name: string }[]; readOnly?: boolean }) {
   const [state, action] = useActionState<AState, FormData>(updateMember, {});
@@ -64,6 +64,7 @@ export function MemberEditForm({ m, affiliates, readOnly }: { m: M; affiliates: 
         <Field label="Affiliate union"><Select name="affiliateId" defaultValue={m.affiliateId ?? ""}><option value="">None</option>{affiliates.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}</Select></Field>
         <Field label="Dues paid until"><Input type="date" name="duesPaidUntil" defaultValue={m.duesPaidUntil} /></Field>
         <div className="flex items-end pb-2"><Checkbox name="isRep" defaultChecked={m.isRep} label="Workplace representative (shown on 'Find your rep')" /></div>
+        {m.hasLogin && <Field label="Title / position (shown when logged in)" hint="For ExCom and officers, e.g. Treasurer. Leave blank for ordinary members."><Input name="userTitle" defaultValue={m.userTitle ?? ""} placeholder="e.g. Vice President" /></Field>}
         <Field label="Internal notes" className="sm:col-span-2"><Textarea name="notes" defaultValue={m.notes ?? ""} rows={3} /></Field>
         {!readOnly && <div><SubmitButton>Save member</SubmitButton></div>}
       </fieldset>
@@ -160,9 +161,10 @@ export function StaffForm() {
   const ref = useRef<HTMLFormElement>(null);
   useEffect(() => { if (state.ok) ref.current?.reset(); }, [state]);
   return (
-    <form ref={ref} action={action} className="grid gap-3 sm:grid-cols-4">
-      <div className="sm:col-span-4"><Result state={state} /></div>
+    <form ref={ref} action={action} className="grid gap-3 sm:grid-cols-5">
+      <div className="sm:col-span-5"><Result state={state} /></div>
       <Field label="Name"><Input name="name" required /></Field>
+      <Field label="Title / position" hint="Optional, e.g. President"><Input name="title" placeholder="e.g. General Secretary" /></Field>
       <Field label="Email"><Input name="email" type="email" required /></Field>
       <Field label="Role"><Select name="role" defaultValue="AUTHOR">{ROLES.filter((r) => r !== "MEMBER").map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}</Select></Field>
       <div className="flex items-end"><SubmitButton>Create account</SubmitButton></div>
