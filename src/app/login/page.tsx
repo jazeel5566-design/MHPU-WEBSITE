@@ -5,11 +5,12 @@ import { getCurrentUser, homeFor } from "@/lib/auth";
 import { Logo } from "@/components/logo";
 import { Notice } from "@/components/ui";
 import { LoginForm } from "./login-form";
-import { IMG } from "@/lib/images";
+import { getSitePhotos } from "@/lib/site-photos";
 
 export const metadata = { title: "Log in" };
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; denied?: string; out?: string; nomember?: string }> }) {
+  const photos = await getSitePhotos();
   const sp = await searchParams;
   const user = await getCurrentUser();
   if (user && !sp.denied) redirect(sp.next?.startsWith("/") ? sp.next : homeFor(user.role));
@@ -39,7 +40,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       </div>
       <div className="relative hidden overflow-hidden bg-brand-900 lg:block">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={IMG.atollBaa} alt="" className="absolute inset-0 size-full object-cover opacity-40" />
+        <img src={photos.islands} alt="" className="absolute inset-0 size-full object-cover opacity-40" />
         <div className="absolute inset-0 bg-gradient-to-t from-brand-950 via-brand-950/60 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 p-12 text-white">
           <h2 className="text-3xl font-extrabold">Your union, in your pocket.</h2>

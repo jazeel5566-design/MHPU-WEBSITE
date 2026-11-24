@@ -39,12 +39,12 @@ export function PostCard({ post, lang = "en", large = false, href }: { post: Pos
 
 type CampaignLite = { slug: string; title: string; titleDv?: string | null; summary: string; summaryDv?: string | null; coverImage?: string | null; goal: number; status: string; hasPetition: boolean; _count?: { signatures: number } };
 
-export function CampaignCard({ c, lang = "en" }: { c: CampaignLite; lang?: Lang }) {
+export function CampaignCard({ c, lang = "en", fallbackImage }: { c: CampaignLite; lang?: Lang; fallbackImage?: string }) {
   const signed = c._count?.signatures ?? 0;
   return (
     <Link href={`/campaigns/${c.slug}`} className="group relative flex min-h-80 flex-col justify-end overflow-hidden rounded-3xl bg-brand-900 p-6 text-white">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={c.coverImage || IMG.nursesGroup} alt="" className="absolute inset-0 size-full object-cover opacity-50 transition duration-700 group-hover:scale-105 group-hover:opacity-40" loading="lazy" />
+      <img src={c.coverImage || fallbackImage || IMG.nursesGroup} alt="" className="absolute inset-0 size-full object-cover opacity-50 transition duration-700 group-hover:scale-105 group-hover:opacity-40" loading="lazy" />
       <div className="absolute inset-0 bg-gradient-to-t from-brand-950 via-brand-950/60 to-transparent" />
       <div className="relative">
         {c.status === "WON" ? <Badge tone="violet">Won</Badge> : <Badge tone="coral">Active campaign</Badge>}

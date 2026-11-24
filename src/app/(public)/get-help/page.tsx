@@ -2,7 +2,7 @@ import { Banknote, Clock, ShieldAlert, Scale, Globe2, Phone, MessageSquarePlus, 
 import { getSettings } from "@/lib/settings";
 import { PageHero } from "@/components/public/cards";
 import { ButtonLink, Card } from "@/components/ui";
-import { IMG } from "@/lib/images";
+import { getSitePhotos } from "@/lib/site-photos";
 
 export const metadata = { title: "Get help at work" };
 
@@ -20,11 +20,12 @@ const TOPICS = [
 ];
 
 export default async function GetHelpPage() {
+  const photos = await getSitePhotos();
   const s = await getSettings();
   const tel = s.hotline.replace(/[^\d+]/g, "");
   return (
     <>
-      <PageHero kicker="Get help" title="Problem at work? We've got your back." desc="Practical first steps for the most common issues — and how to get MHPU's support." image={IMG.doctorSmile}>
+      <PageHero kicker="Get help" title="Problem at work? We've got your back." desc="Practical first steps for the most common issues — and how to get MHPU's support." image={photos.getHelp}>
         <div className="mt-8 flex flex-wrap gap-3">
           <ButtonLink href="/members/help/new" variant="coral" size="lg"><MessageSquarePlus className="size-5" /> Members: open a case</ButtonLink>
           <a href={`tel:${tel}`} className="inline-flex h-12 items-center gap-2 rounded-full bg-white px-6 font-semibold text-brand-900 hover:bg-brand-50"><Phone className="size-5" /> Call {s.hotline}</a>

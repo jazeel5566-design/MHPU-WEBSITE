@@ -9,6 +9,7 @@ import { livePosts, liveOrder } from "@/lib/content";
 import { ButtonLink, Progress } from "@/components/ui";
 import { PostCard, CampaignCard, EventCard, SectionHead } from "@/components/public/cards";
 import { IMG } from "@/lib/images";
+import { getSitePhotos } from "@/lib/site-photos";
 import { getSettings } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
@@ -32,7 +33,7 @@ const SECTORS = [
 ];
 
 export default async function HomePage() {
-  const [lang, settings] = await Promise.all([getLang(), getSettings()]);
+  const [lang, settings, photos] = await Promise.all([getLang(), getSettings(), getSitePhotos()]);
   const [featured, campaigns, posts, events, memberCount, affiliateCount, wins] = await Promise.all([
     db.campaign.findFirst({ where: { featured: true, status: "ACTIVE" }, include: { _count: { select: { signatures: true } } } }),
     db.campaign.findMany({ where: { status: { in: ["ACTIVE", "WON"] } }, include: { _count: { select: { signatures: true } } }, orderBy: [{ featured: "desc" }, { updatedAt: "desc" }], take: 3 }),
@@ -51,7 +52,7 @@ export default async function HomePage() {
       {/* ─── Hero ─────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-brand-950 text-white">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={IMG.heroTeam} alt="" className="absolute inset-0 size-full object-cover opacity-35" />
+        <img src={photos.home} alt="" className="absolute inset-0 size-full object-cover opacity-35" />
         <div className="absolute inset-0 bg-gradient-to-r from-brand-950 via-brand-950/85 to-brand-900/30 rtl:bg-gradient-to-l" />
         <svg className="absolute -bottom-px start-0 w-full text-white" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true">
           <path fill="currentColor" d="M0 40c120-20 240-30 360-20s240 30 360 30 240-20 360-30 240 0 360 20v20H0z" />
@@ -141,7 +142,7 @@ export default async function HomePage() {
         <section className="mx-auto max-w-7xl px-4 py-16">
           <SectionHead kicker={wins > 0 ? `${wins} campaign${wins === 1 ? "" : "s"} won` : "Campaigns"} title={t(lang, "activeCampaigns")} action={<ButtonLink href="/campaigns" variant="outline">{t(lang, "viewAll")}</ButtonLink>} />
           <div className="grid gap-6 md:grid-cols-3">
-            {campaigns.map((c) => <CampaignCard key={c.slug} c={c} lang={lang} />)}
+            {campaigns.map((c) => <CampaignCard key={c.slug} c={c} lang={lang} fallbackImage={photos.campaigns} />)}
           </div>
         </section>
       )}
@@ -149,7 +150,7 @@ export default async function HomePage() {
       {/* ─── Sectors ──────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-brand-900 py-20 text-white">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={IMG.atollBaa} alt="" className="absolute inset-0 size-full object-cover opacity-20" />
+        <img src={photos.islands} alt="" className="absolute inset-0 size-full object-cover opacity-20" />
         <div className="relative mx-auto max-w-7xl px-4">
           <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr]">
             <div>

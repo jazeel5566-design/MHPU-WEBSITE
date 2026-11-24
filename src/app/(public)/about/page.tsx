@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { getLang, pick } from "@/lib/i18n";
 import { PageHero, SectionHead } from "@/components/public/cards";
 import { ButtonLink, Card } from "@/components/ui";
-import { IMG } from "@/lib/images";
+import { getSitePhotos } from "@/lib/site-photos";
 
 export const metadata = { title: "About MHPU" };
 export const dynamic = "force-dynamic";
@@ -15,11 +15,12 @@ const TIMELINE = [
 ];
 
 export default async function AboutPage() {
+  const photos = await getSitePhotos();
   const lang = await getLang();
   const affiliates = await db.affiliate.findMany({ orderBy: { memberCount: "desc" } });
   return (
     <>
-      <PageHero kicker="About us" title="The united voice of Maldivian healthcare workers" desc="MHPU is a national trade union federation that brings together health-worker unions and individual members across public and private healthcare." image={IMG.islandAerial} />
+      <PageHero kicker="About us" title="The united voice of Maldivian healthcare workers" desc="MHPU is a national trade union federation that brings together health-worker unions and individual members across public and private healthcare." image={photos.about} />
 
       <section className="mx-auto grid max-w-7xl gap-6 px-4 py-16 md:grid-cols-3">
         {[
@@ -50,7 +51,7 @@ export default async function AboutPage() {
             </ol>
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={IMG.atollBaa} alt="Aerial view of an island in Baa Atoll" className="h-full min-h-80 w-full rounded-3xl object-cover" />
+          <img src={photos.islands} alt="Aerial view of a Maldivian island" className="h-full min-h-80 w-full rounded-3xl object-cover" />
         </div>
       </section>
 

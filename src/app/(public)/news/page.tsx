@@ -8,12 +8,13 @@ import { POST_CATEGORIES } from "@/lib/constants";
 import { PostCard, PageHero } from "@/components/public/cards";
 import { EmptyState } from "@/components/ui";
 import { cn } from "@/lib/utils";
-import { IMG } from "@/lib/images";
+import { getSitePhotos } from "@/lib/site-photos";
 
 export const metadata = { title: "News & statements" };
 export const dynamic = "force-dynamic";
 
 export default async function NewsPage({ searchParams }: { searchParams: Promise<{ category?: string; q?: string; page?: string }> }) {
+  const photos = await getSitePhotos();
   const { category, q, page = "1" } = await searchParams;
   const lang = await getLang();
   const user = await getCurrentUser();
@@ -38,7 +39,7 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
 
   return (
     <>
-      <PageHero kicker="Newsroom" title="News, statements & press releases" desc="The latest from MHPU on pay, staffing and conditions across the Maldives' health sector." image={IMG.stethoscope} />
+      <PageHero kicker="Newsroom" title="News, statements & press releases" desc="The latest from MHPU on pay, staffing and conditions across the Maldives' health sector." image={photos.news} />
       <div className="mx-auto max-w-7xl px-4 py-10">
         <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-wrap gap-2">

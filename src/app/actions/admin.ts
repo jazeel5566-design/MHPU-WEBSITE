@@ -9,7 +9,8 @@ import { audit } from "@/lib/audit";
 import { str, optStr } from "@/lib/utils";
 import { DEFAULT_SETTINGS } from "@/lib/settings";
 import { ROLES } from "@/lib/constants";
-import { removeApplicationFiles } from "@/lib/storage";
+import { removeApplicationFiles, saveImage } from "@/lib/storage";
+import { SITE_PHOTOS, settingKey, type SitePhotoKey } from "@/lib/site-photos";
 
 export type AState = { ok?: boolean; error?: string; message?: string; tempPassword?: string };
 
@@ -303,6 +304,36 @@ export async function deleteMember(fd: FormData) {
 }
 
 // ─── Settings & inbox ───────────────────────────────────────────────
+
+export type PhotoState = { ok?: boolean; error?: string };
+
+/** Replace one of the site's built-in photos. The upload also goes into the Media library. */
+export async function uploadSitePhoto(_: PhotoState, fd: FormData): Promise<PhotoState> {
+  const admin = await requireRole([...ADMIN], "/admin");
+  const key = str(fd, "key") as SitePhotoKey;
+  if (!(key in SITE_PHOTOS)) return { error: "Unknown photo slot." };
+  const file = fd.get("file");
+  if (!(file instanceof File) || file.size === 0) return { error: "Choose a photo first." };
+  try {
+    const saved = await saveImage(file);
+    await db.media.create({ data: { ...saved, alt: optStr(fd, "alt") ?? SITE_PHOTOS[key].label, uploadedById: admin.id } });
+    await db.setting.upsert({ where: { key: settingKey(key) }, update: { value: saved.url }, create: { key: settingKey(key), value: saved.url } });
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+  await audit(admin.id, "site_photo_update", "Setting", settingKey(key));
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+export async function resetSitePhoto(fd: FormData) {
+  const admin = await requireRole([...ADMIN], "/admin");
+  const key = str(fd, "key") as SitePhotoKey;
+  if (!(key in SITE_PHOTOS)) return;
+  await db.setting.deleteMany({ where: { key: settingKey(key) } });
+  await audit(admin.id, "site_photo_reset", "Setting", settingKey(key));
+  revalidatePath("/", "layout");
+}
 
 export async function saveSettings(_: AState, fd: FormData): Promise<AState> {
   const admin = await requireRole([...ADMIN], "/admin");

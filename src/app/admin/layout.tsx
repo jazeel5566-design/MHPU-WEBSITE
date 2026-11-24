@@ -1,4 +1,4 @@
-import { LayoutDashboard, UserPlus, Users, LifeBuoy, Vote, Building2, ShieldCheck, Inbox, Settings, History, KeyRound } from "lucide-react";
+import { LayoutDashboard, UserPlus, Users, LifeBuoy, Vote, Building2, ShieldCheck, Inbox, Settings, History, KeyRound, Images } from "lucide-react";
 import { requireRole } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { PortalShell, portalSwitcher, type NavItem } from "@/components/portal-shell";
@@ -25,6 +25,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     ...(isAdmin ? [
       { href: "/admin/users", label: "Staff & roles", icon: ShieldCheck },
       { href: "/admin/settings", label: "Site settings", icon: Settings },
+      { href: "/admin/photos", label: "Site photos", icon: Images },
       { href: "/admin/audit", label: "Audit log", icon: History },
     ] : []),
     { href: "/admin/account", label: "My account", icon: KeyRound },

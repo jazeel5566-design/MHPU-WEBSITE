@@ -5,12 +5,13 @@ import { EVENT_TYPES } from "@/lib/constants";
 import { EventCard, PageHero } from "@/components/public/cards";
 import { ButtonLink, EmptyState } from "@/components/ui";
 import { cn } from "@/lib/utils";
-import { IMG } from "@/lib/images";
+import { getSitePhotos } from "@/lib/site-photos";
 
 export const metadata = { title: "Events & CPD" };
 export const dynamic = "force-dynamic";
 
 export default async function EventsPage({ searchParams }: { searchParams: Promise<{ type?: string }> }) {
+  const photos = await getSitePhotos();
   const { type } = await searchParams;
   const lang = await getLang();
   const events = await db.event.findMany({
@@ -19,7 +20,7 @@ export default async function EventsPage({ searchParams }: { searchParams: Promi
   });
   return (
     <>
-      <PageHero kicker="Events" title="Meetings, training & CPD" desc="Branch meetings, rights training and CPD sessions across the atolls — in person and online." image={IMG.labCoat} />
+      <PageHero kicker="Events" title="Meetings, training & CPD" desc="Branch meetings, rights training and CPD sessions across the atolls — in person and online." image={photos.events} />
       <div className="mx-auto max-w-4xl px-4 py-10">
         <div className="mb-6 flex flex-wrap gap-2">
           {[undefined, ...EVENT_TYPES].map((t) => (

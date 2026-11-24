@@ -7,22 +7,10 @@ import { Field, Input, Notice, Select, ButtonLink } from "@/components/ui";
 import { SubmitButton } from "@/components/submit-button";
 import { SignaturePad } from "./signature-pad";
 import { cn } from "@/lib/utils";
+import { shrinkImage } from "@/lib/shrink-image";
 
 const ICONS: Record<string, React.ElementType> = { nurse: HeartPulse, doctor: Stethoscope, allied: FlaskConical, community: Building2, support: Users, expat: Globe2 };
 const MAX = 4 * 1024 * 1024; // server/Vercel limit per upload
-
-/** Shrink a phone photo (often 5–10 MB) to a clear ~2000px JPEG well under the limit. */
-async function shrinkImage(file: File): Promise<File> {
-  if (!/^image\/(jpeg|png|webp)$/.test(file.type) || file.size < 1.5 * 1024 * 1024) return file;
-  const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, 2000 / Math.max(bitmap.width, bitmap.height));
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.round(bitmap.width * scale);
-  canvas.height = Math.round(bitmap.height * scale);
-  canvas.getContext("2d")!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  const blob: Blob = await new Promise((res) => canvas.toBlob((b) => res(b!), "image/jpeg", 0.85));
-  return new File([blob], file.name.replace(/\.\w+$/, "") + ".jpg", { type: "image/jpeg" });
-}
 
 // Official declaration wording from MHPU's membership application form.
 const DECLARATION = "I, the undersigned, apply for membership of the MHPU and declare that the foregoing statements are correct. I wish to join MHPU subject to the rule and constitution of the Union. I hereby undertake, if accepted as a member, to abide the rules of the Union and use my best endeavours to promote its objectives and interests.";

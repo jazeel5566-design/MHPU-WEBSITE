@@ -6,19 +6,20 @@ import { RESOURCE_CATEGORIES, labelOf } from "@/lib/constants";
 import { PageHero } from "@/components/public/cards";
 import { Badge, EmptyState } from "@/components/ui";
 import { cn, formatDate } from "@/lib/utils";
-import { IMG } from "@/lib/images";
+import { getSitePhotos } from "@/lib/site-photos";
 
 export const metadata = { title: "Resources" };
 export const dynamic = "force-dynamic";
 
 export default async function ResourcesPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
+  const photos = await getSitePhotos();
   const { category } = await searchParams;
   const user = await getCurrentUser();
   const isMember = !!user?.member || user?.role === "ADMIN";
   const items = await db.resource.findMany({ where: category ? { category } : {}, orderBy: { createdAt: "desc" } });
   return (
     <>
-      <PageHero kicker="Resources" title="Know your rights" desc="Guides, agreements, forms and reports. Some documents are for members only." image={IMG.doctorPortrait} />
+      <PageHero kicker="Resources" title="Know your rights" desc="Guides, agreements, forms and reports. Some documents are for members only." image={photos.resources} />
       <div className="mx-auto max-w-5xl px-4 py-10">
         <div className="mb-6 flex flex-wrap gap-2">
           <Link href="/resources" className={cn("rounded-full px-4 py-2 text-sm font-semibold", !category ? "bg-brand-700 text-white" : "bg-sand-100 hover:bg-sand-200")}>All</Link>

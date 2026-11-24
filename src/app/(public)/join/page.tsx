@@ -2,15 +2,16 @@ import { ShieldCheck, Megaphone, IdCard, GraduationCap } from "lucide-react";
 import { getSettings } from "@/lib/settings";
 import { JoinForm } from "@/components/public/join-form";
 import { PageHero } from "@/components/public/cards";
-import { IMG } from "@/lib/images";
+import { getSitePhotos } from "@/lib/site-photos";
 
 export const metadata = { title: "Join MHPU" };
 
 export default async function JoinPage() {
+  const photos = await getSitePhotos();
   const s = await getSettings();
   return (
     <>
-      <PageHero kicker="Join" title="Membership application" desc="Anyone who works as a health professional in the Maldives — Maldivian or expatriate — is eligible to join. It takes about five minutes." image={IMG.nursesGroup} />
+      <PageHero kicker="Join" title="Membership application" desc="Anyone who works as a health professional in the Maldives — Maldivian or expatriate — is eligible to join. It takes about five minutes." image={photos.join} />
       <div className="mx-auto grid max-w-7xl gap-12 px-4 py-12 lg:grid-cols-[1fr_320px]">
         <JoinForm dues={Number(s.monthlyDues) || 100} registration={Number(s.registrationFee) || 100} />
         <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
