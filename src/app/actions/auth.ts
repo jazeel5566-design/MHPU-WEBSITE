@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { createSession, destroySession, homeFor, getCurrentUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { str } from "@/lib/utils";
+import { MIN_PASSWORD_LENGTH } from "@/lib/constants";
 
 export type LoginState = { error?: string };
 
@@ -54,7 +55,7 @@ export async function changeOwnPassword(_: PwState, fd: FormData): Promise<PwSta
   if (!user) return { error: "Please sign in again." };
   const current = str(fd, "current");
   const next = str(fd, "next");
-  if (next.length < 10) return { error: "Use at least 10 characters for your new password." };
+  if (next.length < MIN_PASSWORD_LENGTH) return { error: `Use at least ${MIN_PASSWORD_LENGTH} characters for your new password.` };
   if (next !== str(fd, "confirm")) return { error: "New passwords don't match." };
   if (!(await bcrypt.compare(current, user.passwordHash))) return { error: "Current password is incorrect." };
   await db.user.update({ where: { id: user.id }, data: { passwordHash: await bcrypt.hash(next, 12) } });

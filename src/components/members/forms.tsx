@@ -1,7 +1,7 @@
 "use client";
 import { useActionState, useEffect, useRef } from "react";
 import { updateProfile, changePassword, openCase, replyToCase, castVote, type MState } from "@/app/actions/member";
-import { ATOLLS, CASE_TYPES } from "@/lib/constants";
+import { ATOLLS, CASE_TYPES, MIN_PASSWORD_LENGTH } from "@/lib/constants";
 import { Field, Input, Notice, Select, Textarea } from "@/components/ui";
 import { SubmitButton } from "@/components/submit-button";
 import { cn } from "@/lib/utils";
@@ -34,7 +34,7 @@ export function PasswordForm() {
       {state.error && <Notice tone="red">{state.error}</Notice>}
       {state.ok && <Notice>{state.message}</Notice>}
       <Field label="Current password"><Input name="current" type="password" required autoComplete="current-password" /></Field>
-      <Field label="New password" hint="At least 8 characters"><Input name="next" type="password" required minLength={8} autoComplete="new-password" /></Field>
+      <Field label="New password" hint={`At least ${MIN_PASSWORD_LENGTH} characters`}><Input name="next" type="password" required minLength={MIN_PASSWORD_LENGTH} autoComplete="new-password" /></Field>
       <Field label="Confirm new password"><Input name="confirm" type="password" required autoComplete="new-password" /></Field>
       <SubmitButton variant="outline">Change password</SubmitButton>
     </form>

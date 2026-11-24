@@ -7,7 +7,7 @@ import { db } from "@/lib/db";
 import { requireMember } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { str } from "@/lib/utils";
-import { CASE_TYPES } from "@/lib/constants";
+import { CASE_TYPES, MIN_PASSWORD_LENGTH } from "@/lib/constants";
 
 export type MState = { ok?: boolean; error?: string; message?: string };
 
@@ -41,7 +41,7 @@ export async function changePassword(_: MState, fd: FormData): Promise<MState> {
   const { user } = await requireMember();
   const current = str(fd, "current");
   const next = str(fd, "next");
-  if (next.length < 8) return { error: "New password must be at least 8 characters." };
+  if (next.length < MIN_PASSWORD_LENGTH) return { error: `New password must be at least ${MIN_PASSWORD_LENGTH} characters.` };
   if (next !== str(fd, "confirm")) return { error: "New passwords don't match." };
   if (!(await bcrypt.compare(current, user.passwordHash))) return { error: "Current password is incorrect." };
   await db.user.update({ where: { id: user.id }, data: { passwordHash: await bcrypt.hash(next, 10) } });
