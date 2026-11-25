@@ -55,9 +55,9 @@ export default async function AdminHome() {
       <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
         <Card>
           <CardHeader title="New members" desc="Last 12 months" />
-          <div className="flex h-56 items-end gap-2 px-5 pb-4 pt-6">
+          <div className="flex h-56 items-end gap-1 px-3 pb-4 pt-6 sm:gap-2 sm:px-5">
             {months.map((m) => (
-              <div key={m.key} className="flex flex-1 flex-col items-center gap-1.5">
+              <div key={m.key} className="flex min-w-0 flex-1 flex-col items-center gap-1.5">
                 <span className="text-[10px] font-semibold text-muted">{m.n || ""}</span>
                 <div className="w-full rounded-t-md bg-brand-500 transition-all hover:bg-brand-700" style={{ height: `${(m.n / maxJoin) * 150 + 2}px` }} title={`${m.label}: ${m.n}`} />
                 <span className="text-[10px] text-muted">{m.label}</span>

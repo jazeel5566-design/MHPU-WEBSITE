@@ -6,7 +6,7 @@ import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useT } from "@/components/lang-provider";
 
-export function MobileNav({ items, footer }: { items: { href: string; label: string }[]; footer?: React.ReactNode }) {
+export function MobileNav({ items, footer, hideFrom = "lg:hidden" }: { items: { href: string; label: string }[]; footer?: React.ReactNode; hideFrom?: string }) {
   const T = useT();
   const [open, setOpen] = useState(false);
   const path = usePathname();
@@ -16,7 +16,7 @@ export function MobileNav({ items, footer }: { items: { href: string; label: str
   }, [open]);
 
   return (
-    <div className="lg:hidden">
+    <div className={hideFrom}>
       <button onClick={() => setOpen(true)} className="grid size-10 place-items-center rounded-full hover:bg-sand-100" aria-label={T("Open menu")}>
         <Menu className="size-5" />
       </button>

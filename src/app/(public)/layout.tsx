@@ -62,7 +62,7 @@ export default async function PublicLayout({ children }: { children: React.React
       <header className="sticky top-0 z-40 border-b border-line bg-white/90 backdrop-blur-md">
         <div className="mx-auto flex h-18 max-w-7xl items-center justify-between gap-2 px-4 py-3 sm:gap-4">
           <Link href="/" aria-label={T("MHPU home")} className="shrink-0"><Logo compact /></Link>
-          <nav className="hidden items-center gap-1 lg:flex" aria-label={T("Main")}>
+          <nav className="hidden items-center gap-1 xl:flex" aria-label={T("Main")}>
             {nav.map((n) => (
               <NavLink key={n.href} href={n.href}
                 className="rounded-full px-3.5 py-2 text-sm font-semibold transition-colors"
@@ -76,8 +76,9 @@ export default async function PublicLayout({ children }: { children: React.React
             {f.on("site.portalButton") && <ButtonLink href={portalHref} variant="ghost" className="hidden sm:inline-flex">
               {user ? T("My portal") : t(lang, "login")}
             </ButtonLink>}
-            {f.path("/join") && <ButtonLink href="/join" variant="coral" className="h-9 px-3.5 sm:h-10 sm:px-4">{t(lang, "join")}</ButtonLink>}
+            {f.path("/join") && <ButtonLink href="/join" variant="coral" className="min-h-9 whitespace-nowrap px-3.5 sm:min-h-10 sm:px-4">{t(lang, "join")}</ButtonLink>}
             <MobileNav
+              hideFrom="xl:hidden"
               items={[{ href: "/", label: t(lang, "home") }, ...nav, ...(f.path("/get-help") ? [{ href: "/get-help", label: t(lang, "getHelp") }] : [])]}
               footer={<ButtonLink href={portalHref} variant="primary" className="w-full">{user ? T("My portal") : t(lang, "login")}</ButtonLink>}
             />

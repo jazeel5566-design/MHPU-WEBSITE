@@ -98,7 +98,7 @@ export function EventCard({ e, lang = "en", action, rsvpCount }: { e: EventLite;
 
 export function SectionHead({ kicker, title, action }: { kicker?: string; title: string; action?: React.ReactNode }) {
   return (
-    <div className="mb-8 flex items-end justify-between gap-4">
+    <div className="mb-8 flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
       <div>
         {kicker && <div className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-coral-600">{kicker}</div>}
         <h2 className="text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">{title}</h2>

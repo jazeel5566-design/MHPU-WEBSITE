@@ -73,9 +73,9 @@ export default async function DuesPage({ searchParams }: { searchParams: Promise
             <p className="mt-1 text-sm text-muted">Secure card payment{provider === "BML" ? " through Bank of Maldives" : ""}. Your dues update as soon as the bank confirms.</p>
             {provider === "TEST" && <p className="mt-1 text-xs font-semibold text-amber-700">Test mode — only admins see this; no real money is taken.</p>}
           </div>
-          <form action={startOnlinePayment} className="flex items-end gap-2">
-            <label className="text-sm"><span className="mb-1 block font-medium">Pay for</span>
-              <Select name="months" defaultValue="1" className="w-56">
+          <form action={startOnlinePayment} className="flex flex-wrap items-end gap-2">
+            <label className="min-w-0 flex-1 text-sm sm:flex-none"><span className="mb-1 block font-medium">Pay for</span>
+              <Select name="months" defaultValue="1" className="w-full sm:w-56">
                 {[1, 3, 6, 12].map((m) => <option key={m} value={m}>{m} month{m > 1 ? "s" : ""} — MVR {(m * dues).toLocaleString()}</option>)}
               </Select>
             </label>
