@@ -12,6 +12,7 @@ const dict = {
   news: { en: "News", dv: "ޚަބަރު" },
   campaigns: { en: "Campaigns", dv: "ކެމްޕެއިންތައް" },
   events: { en: "Events", dv: "ހަރަކާތްތައް" },
+  photoStories: { en: "Photo stories", dv: "ފޮޓޯ ސްޓޯރީތައް" },
   resources: { en: "Resources", dv: "ވަސީލަތްތައް" },
   getHelp: { en: "Get help", dv: "އެހީ ހޯދާ" },
   join: { en: "Join MHPU", dv: "މެމްބަރުވޭ" },

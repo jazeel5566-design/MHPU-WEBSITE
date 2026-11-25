@@ -3,7 +3,7 @@ import { CalendarDays, MapPin, Clock, Video, Lock, ArrowUpRight, Users } from "l
 import { formatDate, readingTime } from "@/lib/utils";
 import { labelOf, POST_CATEGORIES } from "@/lib/constants";
 import { Badge, Progress } from "@/components/ui";
-import { IMG } from "@/lib/images";
+import { PHOTO } from "@/lib/images";
 import type { Lang } from "@/lib/i18n";
 import { pick } from "@/lib/i18n";
 import { makeT } from "@/lib/dv";
@@ -20,7 +20,7 @@ export function PostCard({ post, lang = "en", large = false, href }: { post: Pos
     <Link href={href ?? `/news/${post.slug}`} className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-white transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand-900/5">
       <div className={`relative overflow-hidden bg-sand-100 ${large ? "aspect-[16/9]" : "aspect-[16/10]"}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={post.coverImage || IMG.stethoscope} alt="" className="size-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" />
+        <img src={post.coverImage || PHOTO.workLifeBalance} alt="" className="size-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" />
         <div className="absolute start-3 top-3 flex gap-1.5">
           <Badge tone="brand" className="bg-white/95 shadow-sm">{T(labelOf(POST_CATEGORIES, post.category))}</Badge>
           {post.visibility === "MEMBERS" && <Badge tone="violet" className="gap-1 shadow-sm"><Lock className="size-3" /> {T("Members")}</Badge>}
@@ -48,7 +48,7 @@ export function CampaignCard({ c, lang = "en", fallbackImage }: { c: CampaignLit
   return (
     <Link href={`/campaigns/${c.slug}`} className="group relative flex min-h-80 flex-col justify-end overflow-hidden rounded-3xl bg-brand-900 p-6 text-white">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={c.coverImage || fallbackImage || IMG.nursesGroup} alt="" className="absolute inset-0 size-full object-cover opacity-50 transition duration-700 group-hover:scale-105 group-hover:opacity-40" loading="lazy" />
+      <img src={c.coverImage || fallbackImage || PHOTO.decentWork} alt="" className="absolute inset-0 size-full object-cover opacity-50 transition duration-700 group-hover:scale-105 group-hover:opacity-40" loading="lazy" />
       <div className="absolute inset-0 bg-gradient-to-t from-brand-950 via-brand-950/60 to-transparent" />
       <div className="relative">
         {c.status === "WON" ? <Badge tone="violet">{T("Won")}</Badge> : <Badge tone="coral">{T("Active campaign")}</Badge>}

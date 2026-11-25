@@ -1,4 +1,4 @@
-import { LayoutDashboard, FileText, Megaphone, CalendarDays, FolderOpen, Images, PenSquare, ClipboardCheck, KeyRound } from "lucide-react";
+import { LayoutDashboard, FileText, Megaphone, CalendarDays, FolderOpen, Images, PenSquare, ClipboardCheck, KeyRound, Camera } from "lucide-react";
 import { requireRole } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { PortalShell, portalSwitcher } from "@/components/portal-shell";
@@ -23,6 +23,7 @@ export default async function EditorialLayout({ children }: { children: React.Re
             { href: "/editorial/posts?status=IN_REVIEW", label: "Review queue", icon: ClipboardCheck, badge: inReview, exact: true },
             { href: "/editorial/campaigns", label: "Campaigns", icon: Megaphone },
             { href: "/editorial/events", label: "Events", icon: CalendarDays },
+            { href: "/editorial/photo-stories", label: "Photo stories", icon: Camera },
             { href: "/editorial/resources", label: "Documents", icon: FolderOpen },
           ] : []),
           { href: "/editorial/media", label: "Media library", icon: Images },
