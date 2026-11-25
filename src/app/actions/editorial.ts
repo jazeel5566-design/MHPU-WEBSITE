@@ -7,6 +7,7 @@ import { requireRole } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { slugify, str, optStr } from "@/lib/utils";
 import { saveImage, saveDocument } from "@/lib/storage";
+import { getPhotoStories, savePhotoStories } from "@/lib/photo-stories";
 
 export type EState = { ok?: boolean; error?: string; message?: string };
 
@@ -259,4 +260,55 @@ export async function deleteResource(fd: FormData) {
   await db.resource.delete({ where: { id } });
   await audit(user.id, "resource_delete", "Resource", id);
   revalidatePath("/editorial/resources");
+}
+
+// ─── Photo stories ──────────────────────────────────────────────────
+
+/** Upload one photo for a story (the browser sends them one at a time, already shrunk). */
+export async function uploadStoryPhoto(fd: FormData): Promise<{ url?: string; error?: string }> {
+  const user = await requireRole([...PUBLISHERS], "/editorial");
+  const file = fd.get("file");
+  if (!(file instanceof File) || file.size === 0) return { error: "Choose a photo." };
+  try {
+    const saved = await saveImage(file);
+    await db.media.create({ data: { ...saved, alt: optStr(fd, "alt"), uploadedById: user.id } });
+    return { url: saved.url };
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+}
+
+export async function savePhotoStory(_: EState, fd: FormData): Promise<EState> {
+  const user = await requireRole([...PUBLISHERS], "/editorial");
+  const id = optStr(fd, "id");
+  const title = str(fd, "title");
+  const date = str(fd, "date");
+  const images = [...new Set(fd.getAll("photo").map(String).filter((u) => u.startsWith("/") || u.startsWith("https://")))];
+  if (title.length < 3) return { error: "Add a title (3+ characters)." };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return { error: "Choose the date of the event." };
+  if (!images.length) return { error: "Add at least one photo." };
+  const list = await getPhotoStories();
+  const root = slugify(str(fd, "slug") || title) || "story";
+  let slug = root;
+  for (let i = 2; list.some((s) => s.slug === slug && s.id !== id); i++) slug = `${root}-${i}`;
+  const cover = images.includes(str(fd, "cover")) ? str(fd, "cover") : images[0];
+  const story = {
+    id: id ?? `${slug}-${Date.now().toString(36)}`, slug, title, titleDv: optStr(fd, "titleDv") ?? undefined,
+    tag: optStr(fd, "tag") ?? undefined, date, summary: optStr(fd, "summary") ?? undefined,
+    cover, images: images.filter((u) => u !== cover), published: fd.get("published") === "on",
+  };
+  await savePhotoStories(id ? list.map((s) => (s.id === id ? story : s)) : [story, ...list]);
+  await audit(user.id, id ? "photo_story_update" : "photo_story_create", "PhotoStory", story.id, title);
+  revalidateContent();
+  if (!id) redirect(`/editorial/photo-stories/${story.id}?saved=1`);
+  return { ok: true, message: "Photo story saved." };
+}
+
+export async function deletePhotoStory(fd: FormData) {
+  const user = await requireRole([...PUBLISHERS], "/editorial");
+  const id = str(fd, "id");
+  await savePhotoStories((await getPhotoStories()).filter((s) => s.id !== id));
+  await audit(user.id, "photo_story_delete", "PhotoStory", id);
+  revalidateContent();
+  redirect("/editorial/photo-stories");
 }

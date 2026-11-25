@@ -19,6 +19,7 @@ export default async function PublicLayout({ children }: { children: React.React
     { href: "/about", label: t(lang, "about") },
     { href: "/news", label: t(lang, "news") },
     { href: "/campaigns", label: t(lang, "campaigns") },
+    { href: "/photo-stories", label: t(lang, "photoStories") },
     { href: "/events", label: t(lang, "events") },
     { href: "/resources", label: t(lang, "resources") },
     { href: "/contact", label: t(lang, "contact") },
@@ -98,7 +99,7 @@ export default async function PublicLayout({ children }: { children: React.React
               <NewsletterForm label={t(lang, "subscribe")} />
             </div>}
           </div>
-          <FooterCol T={T} title={T("Union")} allow={f.path} links={[["/about", "About MHPU"], ["/about#affiliates", "Workplace unions"], ["/resources?category=CONSTITUTION", "Constitution"]]} />
+          <FooterCol T={T} title={T("Union")} allow={f.path} links={[["/about", "About MHPU"], ["/about#affiliates", "Workplace unions"], ["/photo-stories", "Photo stories"], ["/resources?category=CONSTITUTION", "Constitution"]]} />
           <FooterCol T={T} title={T("Members")} allow={f.path} links={[["/join", "Join MHPU"], ["/get-help", "Get help at work"], ["/login", "Member portal"], ["/verify", "Verify a membership"]]} />
           {f.on("site.footerContact") && <div>
             <div className="mb-3 text-sm font-semibold text-white">{T("Contact")}</div>

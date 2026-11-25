@@ -17,6 +17,7 @@ export const FEATURE_GROUPS: FeatureGroup[] = [
       { key: "page.news", label: "News", desc: "The news list and menu link. Single articles stay reachable, so member notices and links already shared keep working.", paths: ["=/news"] },
       { key: "page.campaigns", label: "Campaigns & petitions", paths: ["/campaigns"] },
       { key: "page.events", label: "Events", paths: ["/events"] },
+      { key: "page.photoStories", label: "Photo stories", paths: ["/photo-stories"] },
       { key: "page.resources", label: "Resources (documents)", paths: ["/resources"] },
       { key: "page.contact", label: "Contact & message form", paths: ["/contact"] },
       { key: "page.getHelp", label: "Get help at work", paths: ["/get-help"] },
@@ -92,6 +93,7 @@ export const FEATURE_GROUPS: FeatureGroup[] = [
     items: [
       { key: "editorial.campaigns", label: "Campaigns", paths: ["/editorial/campaigns"] },
       { key: "editorial.events", label: "Events", paths: ["/editorial/events"] },
+      { key: "editorial.photoStories", label: "Photo stories", paths: ["/editorial/photo-stories"] },
       { key: "editorial.resources", label: "Documents", paths: ["/editorial/resources"] },
       { key: "editorial.media", label: "Media library", paths: ["/editorial/media"] },
     ],

@@ -11,7 +11,7 @@ import { getLang, t, pick, getT } from "@/lib/i18n";
 import { livePosts, liveOrder } from "@/lib/content";
 import { ButtonLink, Progress } from "@/components/ui";
 import { PostCard, CampaignCard, EventCard, SectionHead } from "@/components/public/cards";
-import { IMG } from "@/lib/images";
+import { PHOTO } from "@/lib/images";
 import { getSitePhotos } from "@/lib/site-photos";
 import { getSettings } from "@/lib/settings";
 
@@ -127,7 +127,7 @@ export default async function HomePage() {
                 {rest.slice(0, 3).map((p) => (
                   <Link key={p.slug} href={`/news/${p.slug}`} className="group flex gap-4 rounded-2xl border border-line bg-white p-3 transition hover:shadow-md">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={p.coverImage || IMG.stethoscope} alt="" className="aspect-square w-28 shrink-0 rounded-xl object-cover" loading="lazy" />
+                    <img src={p.coverImage || PHOTO.workLifeBalance} alt="" className="aspect-square w-28 shrink-0 rounded-xl object-cover" loading="lazy" />
                     <div className="py-1">
                       <div className="text-xs text-muted">{p.publishedAt?.toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</div>
                       <h3 className="mt-1 font-bold leading-snug group-hover:text-brand-700">{pick(lang, p.title, p.titleDv)}</h3>

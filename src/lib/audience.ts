@@ -16,6 +16,7 @@ export const AUDIENCE_GROUPS: AudienceGroup[] = [
       { key: "page.about", label: "About" },
       { key: "page.news", label: "News" },
       { key: "page.campaigns", label: "Campaigns & petitions" },
+      { key: "page.photoStories", label: "Photo stories" },
       { key: "page.events", label: "Events", desc: "Members also find events under Events & CPD in their portal." },
       { key: "page.resources", label: "Resources (documents)", desc: "Members also find every document under Documents in their portal." },
       { key: "page.getHelp", label: "Get help at work" },
