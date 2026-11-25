@@ -7,6 +7,7 @@ import { str } from "@/lib/utils";
 import { fillTemplate, sendBulk } from "@/lib/sms";
 import { normaliseMvMobile } from "@/lib/phone";
 import { getSettings } from "@/lib/settings";
+import { duesCollectionOf, overdueWhere } from "@/lib/dues";
 import { findReminderCandidates, sendDueReminders } from "@/lib/reminders";
 import { siteUrl } from "@/lib/security";
 
@@ -25,7 +26,7 @@ async function resolveAudience(audience: string, custom: string): Promise<Recipi
     ms.map((m) => ({ to: m.phone, memberId: m.id, vars: { name: m.fullName.split(" ")[0], fullName: m.fullName, membershipNo: m.membershipNo, dueDate: fmt(m.duesPaidUntil), hotline: s.hotline } }));
   const sel = { id: true, fullName: true, phone: true, membershipNo: true, duesPaidUntil: true };
   if (audience === "ALL") return fromMembers(await db.member.findMany({ where: { status: "ACTIVE" }, select: sel }));
-  if (audience === "OVERDUE") return fromMembers(await db.member.findMany({ where: { status: "ACTIVE", OR: [{ duesPaidUntil: null }, { duesPaidUntil: { lt: now } }] }, select: sel }));
+  if (audience === "OVERDUE") return fromMembers(await db.member.findMany({ where: { status: "ACTIVE", ...overdueWhere(duesCollectionOf(s), now) }, select: sel }));
   if (audience.startsWith("UNION:")) return fromMembers(await db.member.findMany({ where: { status: "ACTIVE", affiliateId: audience.slice(6) }, select: sel }));
   if (audience.startsWith("EVENT:")) {
     const rsvps = await db.eventRsvp.findMany({ where: { eventId: audience.slice(6) }, include: { member: { select: sel } } });

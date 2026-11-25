@@ -8,10 +8,10 @@ import { CASE_TYPES, labelOf } from "@/lib/constants";
 import { formatDate, formatDateTime, mvr } from "@/lib/utils";
 import { Card, CardHeader, PageHeader, StatusBadge } from "@/components/ui";
 import { MemberEditForm, PaymentForm, ResetPasswordForm } from "@/components/admin/forms";
-import { deleteMember } from "@/app/actions/admin";
+import { deleteMember, markReviewed } from "@/app/actions/admin";
 import { SubmitButton } from "@/components/submit-button";
 import { Notice } from "@/components/ui";
-import { Trash2 } from "lucide-react";
+import { Trash2, ClipboardCheck } from "lucide-react";
 
 export default async function MemberDetail({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ error?: string }> }) {
   const user = await requireRole(["ADMIN", "GENERAL_SECRETARY", "PRESIDENT", "CASEWORKER", "TREASURER"], "/admin");
@@ -29,10 +29,27 @@ export default async function MemberDetail({ params, searchParams }: { params: P
       <Link href="/admin/members" className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-brand-700"><ArrowLeft className="size-4 rtl:rotate-180" /> Members</Link>
       <PageHeader kicker={m.membershipNo} title={m.fullName} desc={`${m.profession} · ${m.employer} · joined ${formatDate(m.joinedAt)}`} actions={<StatusBadge status={m.status} />} />
       {error && <div className="mb-4"><Notice tone="red">{error}</Notice></div>}
+      {m.needsReview && (
+        <Card className="mb-6 border-amber-300 bg-amber-50 p-5">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 font-bold text-amber-950"><ClipboardCheck className="size-5" /> Needs review</div>
+              <p className="mt-1 text-sm text-amber-900">Some details are missing or may be duplicated. Correct them below, then mark the record as reviewed.</p>
+              {m.reviewNote && <ul className="mt-2 list-disc space-y-0.5 ps-5 text-sm text-amber-950">{m.reviewNote.split(/;\s*/).map((x) => <li key={x}>{x}</li>)}</ul>}
+            </div>
+            {isAdmin && (
+              <form action={markReviewed}>
+                <input type="hidden" name="id" value={m.id} />
+                <SubmitButton size="sm" confirm="Mark this record as reviewed? It will leave the review list.">Mark as reviewed</SubmitButton>
+              </form>
+            )}
+          </div>
+        </Card>
+      )}
       <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
         <div className="space-y-6">
           <Card><CardHeader title="Member details" desc={isAdmin ? undefined : "Read-only for caseworkers"} /><div className="p-5">
-            <MemberEditForm readOnly={!isAdmin} affiliates={affiliates} m={{ ...m, duesPaidUntil: m.duesPaidUntil?.toISOString().slice(0, 10) ?? "", userTitle: m.user?.title ?? null, hasLogin: !!m.user }} />
+            <MemberEditForm readOnly={!isAdmin} affiliates={affiliates} m={{ ...m, duesPaidUntil: m.duesPaidUntil?.toISOString().slice(0, 10) ?? "", joinedAt: m.joinedAt.toISOString().slice(0, 10), userTitle: m.user?.title ?? null, hasLogin: !!m.user }} />
           </div></Card>
           <Card>
             <CardHeader title={`Cases (${m.cases.length})`} />
@@ -46,7 +63,7 @@ export default async function MemberDetail({ params, searchParams }: { params: P
           <Card>
             <CardHeader title="Contact & identity" />
             <dl className="divide-y divide-line text-sm">
-              {[["Email", m.email], ["Phone", m.phone], ["Address", m.address ?? "—"], ["ID / passport", isAdmin ? m.idNumber : m.idNumber.replace(/.(?=.{3})/g, "•")], ["Nationality", m.nationality], ["Location", [m.island, m.atoll].filter(Boolean).join(", ")], ["Last login", formatDateTime(m.user?.lastLoginAt)], ["Automatic payment", m.autopay ? `On · ${m.autopayMonths} month(s)${m.autopayCardLabel ? ` · ${m.autopayCardLabel}` : " · pay link by SMS"}` : "Off"]].map(([k, v]) => <div key={k} className="flex justify-between gap-3 px-5 py-2.5"><dt className="text-muted">{k}</dt><dd className="break-all text-end font-medium">{v}</dd></div>)}
+              {[["Union number", m.unionMemberNo ?? "—"], ["Email", m.email || "—"], ["Phone", m.phone || "—"], ["Address", m.address ?? "—"], ["ID / passport", isAdmin ? m.idNumber : m.idNumber.replace(/.(?=.{3})/g, "•")], ["Nationality", m.nationality], ["Location", [m.island, m.atoll].filter(Boolean).join(", ")], ["Last login", formatDateTime(m.user?.lastLoginAt)], ["Automatic payment", m.autopay ? `On · ${m.autopayMonths} month(s)${m.autopayCardLabel ? ` · ${m.autopayCardLabel}` : " · pay link by SMS"}` : "Off"]].map(([k, v]) => <div key={k} className="flex justify-between gap-3 px-5 py-2.5"><dt className="text-muted">{k}</dt><dd className="break-all text-end font-medium">{v}</dd></div>)}
             </dl>
           </Card>
           {(isAdmin || user.role === "TREASURER") && <Card><CardHeader title="Record a dues payment" /><div className="p-5"><PaymentForm memberId={m.id} dues={Number(s.monthlyDues) || 100} /></div></Card>}

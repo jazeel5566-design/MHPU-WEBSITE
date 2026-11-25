@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { requireMember } from "@/lib/auth";
+import { requireActiveMember } from "@/lib/auth";
 import { toggleRsvp } from "@/app/actions/member";
 import { EventCard } from "@/components/public/cards";
 import { PageHeader, EmptyState } from "@/components/ui";
@@ -11,7 +11,7 @@ import { Notice } from "@/components/ui";
 export const metadata = { title: "Events" };
 
 export default async function MemberEvents({ searchParams }: { searchParams: Promise<{ meeting?: string }> }) {
-  const { member } = await requireMember();
+  const { member } = await requireActiveMember();
   const sp = await searchParams;
   const events = await db.event.findMany({
     where: { published: true, startsAt: { gte: new Date(Date.now() - 864e5) } },

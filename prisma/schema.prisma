@@ -47,6 +47,7 @@ model Affiliate {
   workplace   String? // workplaces shown publicly, comma-separated, e.g. "IGMH, Dharumavantha Hospital"
   matchNames  String? // other spellings/abbreviations used only for matching applicants (not shown)
   active      Boolean  @default(true) // listed on the membership form
+  nextMemberNo Int     @default(1) // next union membership number to hand out (shortName-0001, …); never reused
   createdAt   DateTime @default(now())
 
   members      Member[]
@@ -70,7 +71,7 @@ model Member {
   employer       String // facility name
   atoll          String
   island         String?
-  status         String    @default("ACTIVE") // ACTIVE | LAPSED | SUSPENDED | RESIGNED
+  status         String    @default("ACTIVE") // ACTIVE | INACTIVE (dues not paid yet, not activated) | LAPSED | SUSPENDED | RESIGNED
   joinedAt       DateTime  @default(now())
   duesPaidUntil  DateTime?
   isRep          Boolean   @default(false) // workplace representative
@@ -80,6 +81,9 @@ model Member {
   autopayCardLabel String? // e.g. "Visa •••• 4242" for display
   autopayConsentAt DateTime?
   notes          String?
+  needsReview    Boolean   @default(false) // details missing or possibly duplicated — a staff member checks and corrects them
+  reviewNote     String? // what to check
+  unionMemberNo  String? // number issued by the workplace union, e.g. IGMH-SU-0001 (a new one whenever the union changes)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
@@ -97,6 +101,8 @@ model Member {
   electionVoters ElectionVoter[]
   attendances    EventAttendance[]
   smsMessages    SmsMessage[]
+
+  @@unique([affiliateId, unionMemberNo])
 }
 
 model Application {

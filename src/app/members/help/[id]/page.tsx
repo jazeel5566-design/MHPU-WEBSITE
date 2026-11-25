@@ -2,14 +2,14 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { db } from "@/lib/db";
-import { requireMember } from "@/lib/auth";
+import { requireActiveMember } from "@/lib/auth";
 import { CASE_TYPES, labelOf } from "@/lib/constants";
 import { formatDateTime } from "@/lib/utils";
 import { Avatar, Card, Notice, StatusBadge } from "@/components/ui";
 import { ReplyForm } from "@/components/members/forms";
 
 export default async function CaseDetail({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ new?: string }> }) {
-  const [{ id }, sp, { member, user }] = await Promise.all([params, searchParams, requireMember()]);
+  const [{ id }, sp, { member, user }] = await Promise.all([params, searchParams, requireActiveMember()]);
   const c = await db.case.findFirst({
     where: { id, memberId: member.id },
     include: { assignee: { select: { name: true, title: true } }, messages: { where: { internal: false }, include: { author: { select: { name: true, id: true, title: true } } }, orderBy: { createdAt: "asc" } } },

@@ -79,7 +79,7 @@ export function Badge({ tone = "gray", children, className }: { tone?: Tone; chi
 const STATUS_TONE: Record<string, Tone> = {
   DRAFT: "gray", IN_REVIEW: "amber", SCHEDULED: "blue", PUBLISHED: "green", ARCHIVED: "gray",
   PENDING: "amber", APPROVED: "green", REJECTED: "red",
-  ACTIVE: "green", LAPSED: "amber", SUSPENDED: "red", RESIGNED: "gray",
+  ACTIVE: "green", INACTIVE: "amber", LAPSED: "amber", SUSPENDED: "red", RESIGNED: "gray",
   OPEN: "coral", IN_PROGRESS: "blue", AWAITING_MEMBER: "amber", RESOLVED: "green", CLOSED: "gray",
   WON: "violet", URGENT: "red", HIGH: "coral", NORMAL: "gray", LOW: "gray",
   PUBLIC: "brand", MEMBERS: "violet",

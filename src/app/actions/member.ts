@@ -7,7 +7,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
-import { requireMember } from "@/lib/auth";
+import { requireMember, requireActiveMember } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { str } from "@/lib/utils";
 import { CASE_TYPES, MIN_PASSWORD_LENGTH } from "@/lib/constants";
@@ -64,7 +64,7 @@ const caseSchema = z.object({
 
 export async function openCase(_: MState, fd: FormData): Promise<MState> {
   { const off = await featureOffError("members.help"); if (off) return { error: off }; }
-  const { user, member } = await requireMember();
+  const { user, member } = await requireActiveMember();
   const r = caseSchema.safeParse(Object.fromEntries(fd));
   if (!r.success) return { error: r.error.issues[0].message };
   const year = new Date().getFullYear();
@@ -78,7 +78,7 @@ export async function openCase(_: MState, fd: FormData): Promise<MState> {
 
 export async function replyToCase(_: MState, fd: FormData): Promise<MState> {
   { const off = await featureOffError("members.help"); if (off) return { error: off }; }
-  const { user, member } = await requireMember();
+  const { user, member } = await requireActiveMember();
   const caseId = str(fd, "caseId");
   const body = str(fd, "body");
   if (body.length < 2) return { error: "Write a message first." };
@@ -93,7 +93,7 @@ export async function replyToCase(_: MState, fd: FormData): Promise<MState> {
 
 export async function toggleRsvp(fd: FormData) {
   if (await featureOffError("members.events")) return;
-  const { member } = await requireMember();
+  const { member } = await requireActiveMember();
   const eventId = str(fd, "eventId");
   const existing = await db.eventRsvp.findUnique({ where: { eventId_memberId: { eventId, memberId: member.id } } });
   if (existing) {

@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { APPLICATION_APPROVERS } from "@/lib/constants";
-import { Users, UserPlus, LifeBuoy, Wallet, ArrowRight } from "lucide-react";
+import { Users, UserPlus, LifeBuoy, Wallet, ArrowRight, ClipboardCheck } from "lucide-react";
 import { db } from "@/lib/db";
+import { duesCollection, overdueWhere } from "@/lib/dues";
 import { requireRole } from "@/lib/auth";
 import { mvr, timeAgo } from "@/lib/utils";
 import { Card, CardHeader, PageHeader, StatCard, StatusBadge } from "@/components/ui";
@@ -15,7 +16,8 @@ export default async function AdminHome() {
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const yearAgo = new Date(now.getFullYear(), now.getMonth() - 11, 1);
-  const [active, total, pending, openCases, myCases, duesMonth, joins, byProfession, byAtoll, caseStatus, recentCases, activity, lapsed] = await Promise.all([
+  const dues = await duesCollection();
+  const [active, total, pending, openCases, myCases, duesMonth, joins, byProfession, byAtoll, caseStatus, recentCases, activity, lapsed, toReview] = await Promise.all([
     db.member.count({ where: { status: "ACTIVE" } }),
     db.member.count(),
     db.application.count({ where: { status: "PENDING" } }),
@@ -28,7 +30,8 @@ export default async function AdminHome() {
     db.case.groupBy({ by: ["status"], _count: true }),
     db.case.findMany({ where: { status: { in: ["OPEN", "IN_PROGRESS", "AWAITING_MEMBER"] } }, include: { member: { select: { fullName: true } } }, orderBy: { createdAt: "asc" }, take: 50 }),
     db.auditLog.findMany({ include: { user: { select: { name: true } } }, orderBy: { createdAt: "desc" }, take: 8 }),
-    db.member.count({ where: { status: "ACTIVE", OR: [{ duesPaidUntil: null }, { duesPaidUntil: { lt: now } }] } }),
+    db.member.count({ where: { status: "ACTIVE", ...overdueWhere(dues, now) } }),
+    db.member.count({ where: { needsReview: true } }),
   ]);
 
   const months = Array.from({ length: 12 }, (_, i) => {
@@ -45,6 +48,12 @@ export default async function AdminHome() {
   return (
     <div className="space-y-6">
       <PageHeader title="Dashboard" desc={`${now.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })} — here's how the union is doing.`} />
+      {toReview > 0 && (
+        <Link href="/admin/members?review=1" className="flex items-center justify-between gap-3 rounded-2xl border border-amber-300 bg-amber-50 px-5 py-4 text-sm text-amber-950 hover:bg-amber-100">
+          <span className="flex items-center gap-2"><ClipboardCheck className="size-5 shrink-0" /><span><strong>{toReview} member record{toReview > 1 ? "s" : ""} need{toReview > 1 ? "" : "s"} review</strong>: missing or possibly duplicated details.</span></span>
+          <ArrowRight className="size-4 shrink-0 rtl:rotate-180" />
+        </Link>
+      )}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Link href="/admin/members?status=ACTIVE"><StatCard label="Active members" value={active.toLocaleString()} sub={`${total.toLocaleString()} on record · ${lapsed} dues overdue`} icon={<Users className="size-5" />} /></Link>
         {(APPLICATION_APPROVERS as readonly string[]).includes(user.role) && <Link href="/admin/applications"><StatCard label="Pending applications" value={pending} sub="Awaiting verification" icon={<UserPlus className="size-5" />} tone="amber" /></Link>}

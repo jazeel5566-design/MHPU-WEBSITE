@@ -2,7 +2,7 @@ import Link from "next/link";
 import { IdCard, LifeBuoy, Vote, CalendarDays, ArrowRight, AlertTriangle, MessageSquarePlus } from "lucide-react";
 import { db } from "@/lib/db";
 import { features } from "@/lib/features-server";
-import { requireMember } from "@/lib/auth";
+import { requireActiveMember } from "@/lib/auth";
 import { livePosts, liveOrder } from "@/lib/content";
 import { formatDate, timeAgo } from "@/lib/utils";
 import { CASE_TYPES, labelOf } from "@/lib/constants";
@@ -11,7 +11,7 @@ import { Card, CardHeader, StatusBadge, ButtonLink, EmptyState, Notice } from "@
 export const dynamic = "force-dynamic";
 
 export default async function MemberDashboard() {
-  const { member } = await requireMember();
+  const { member } = await requireActiveMember();
   const f = await features();
   const now = new Date();
   const [cases, ballots, events, notices] = await Promise.all([

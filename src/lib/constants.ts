@@ -84,7 +84,7 @@ export const RESOURCE_CATEGORIES = [
 
 export const EVENT_TYPES = ["MEETING", "TRAINING", "CPD", "RALLY", "AGM", "WEBINAR"] as const;
 
-export const MEMBER_STATUSES = ["ACTIVE", "LAPSED", "SUSPENDED", "RESIGNED"] as const;
+export const MEMBER_STATUSES = ["ACTIVE", "INACTIVE", "LAPSED", "SUSPENDED", "RESIGNED"] as const;
 
 
 export const labelOf = (list: { id: string; label: string }[], id: string) =>

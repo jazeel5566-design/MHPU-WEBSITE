@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { LifeBuoy, Plus } from "lucide-react";
 import { db } from "@/lib/db";
-import { requireMember } from "@/lib/auth";
+import { requireActiveMember } from "@/lib/auth";
 import { CASE_TYPES, labelOf } from "@/lib/constants";
 import { timeAgo } from "@/lib/utils";
 import { ButtonLink, Card, EmptyState, PageHeader, StatusBadge } from "@/components/ui";
@@ -9,7 +9,7 @@ import { ButtonLink, Card, EmptyState, PageHeader, StatusBadge } from "@/compone
 export const metadata = { title: "My cases" };
 
 export default async function CasesPage() {
-  const { member } = await requireMember();
+  const { member } = await requireActiveMember();
   const cases = await db.case.findMany({ where: { memberId: member.id }, include: { _count: { select: { messages: { where: { internal: false } } } } }, orderBy: { updatedAt: "desc" } });
   return (
     <div>

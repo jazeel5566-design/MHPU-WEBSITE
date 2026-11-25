@@ -1,6 +1,7 @@
 import "server-only";
 import { db } from "./db";
 import { getSettings } from "./settings";
+import { duesCollectionOf, owedFrom } from "./dues";
 import { fillTemplate, sendSms } from "./sms";
 import { normaliseMvMobile } from "./phone";
 import { checkWithProvider, markIntentPaid, supportsSavedCards, chargeSavedCard } from "./payments";
@@ -21,21 +22,28 @@ export type ReminderCandidate = { memberId: string; name: string; phone: string;
 export async function findReminderCandidates(siteUrl: string): Promise<ReminderCandidate[]> {
   const s = await getSettings();
   const now = new Date();
-  const before = Math.max(1, Number(s.reminderDaysBefore) || 7);
+  const before = Math.max(1, Number(s.reminderDaysBefore) || 3);
   const repeat = Math.max(1, Number(s.reminderRepeatDays) || 14);
   const maxOverdue = Math.max(0, Number(s.reminderMaxOverdue) || 3);
+  // Nothing to remind about until an admin has started dues collection.
+  const dues = duesCollectionOf(s);
+  if (!dues.on) return [];
+  const start = dues.start;
+  // Members who are not active yet (never paid) are reminded too — paying is how they become active.
+  const PAYING = { in: ["ACTIVE", "INACTIVE"] };
   const members = await db.member.findMany({
-    where: { status: "ACTIVE", duesPaidUntil: { lte: new Date(now.getTime() + before * DAY) } },
+    where: { status: PAYING, duesPaidUntil: { lte: new Date(now.getTime() + before * DAY) } },
     select: { id: true, fullName: true, phone: true, membershipNo: true, duesPaidUntil: true, joinedAt: true, profession: true, autopay: true },
   });
   const neverPaid = await db.member.findMany({
-    where: { status: "ACTIVE", duesPaidUntil: null, joinedAt: { lte: new Date(now.getTime() - 14 * DAY) }, NOT: { profession: "Student" } },
+    where: { status: PAYING, duesPaidUntil: null, joinedAt: { lte: new Date(now.getTime() - 14 * DAY) }, NOT: { profession: "Student" } },
     select: { id: true, fullName: true, phone: true, membershipNo: true, duesPaidUntil: true, joinedAt: true, profession: true, autopay: true },
   });
   const out: ReminderCandidate[] = [];
   for (const m of [...members, ...neverPaid]) {
     if (!normaliseMvMobile(m.phone)) continue;
-    const due = m.duesPaidUntil ?? new Date(m.joinedAt.getTime() + 14 * DAY);
+    const due = m.duesPaidUntil ?? new Date(owedFrom(m.joinedAt, start).getTime() + (start && start > m.joinedAt ? 0 : 14 * DAY));
+    if (due.getTime() > now.getTime() + before * DAY) continue; // not due soon (e.g. dues haven't started yet)
     const vars = { name: m.fullName.split(" ")[0], membershipNo: m.membershipNo, dueDate: fmt(due), payLink: `${siteUrl}/members/dues`, hotline: s.hotline };
     if (due > now) {
       if (m.autopay && s.paymentsEnabled === "true") continue; // auto-pay handles it (charge or pay link)

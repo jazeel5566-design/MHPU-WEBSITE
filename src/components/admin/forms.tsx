@@ -3,7 +3,7 @@ import { useActionState, useEffect, useRef } from "react";
 import { KeyRound } from "lucide-react";
 import {
   approveApplication, updateMember, recordPayment, resetPassword, staffReply, createBallot,
-  saveAffiliate, createStaff, saveSettings, type AState,
+  saveAffiliate, createStaff, saveSettings, startDuesCollection, stopDuesCollection, type AState,
 } from "@/app/actions/admin";
 import { ATOLLS, MEMBER_STATUSES, PROFESSIONS, ROLE_LABELS, ROLES } from "@/lib/constants";
 import { Field, Input, Notice, Select, Textarea, Checkbox } from "@/components/ui";
@@ -45,7 +45,7 @@ export function ApproveForm({ id, affiliates, defaultAffiliateId }: { id: string
   );
 }
 
-type M = { userTitle?: string | null; hasLogin?: boolean; id: string; fullName: string; phone: string; profession: string; role: string | null; employer: string; atoll: string; status: string; affiliateId: string | null; isRep: boolean; notes: string | null; duesPaidUntil: string };
+type M = { userTitle?: string | null; hasLogin?: boolean; id: string; fullName: string; phone: string; email: string; idNumber: string; address: string | null; nationality: string; joinedAt: string; unionMemberNo: string | null; needsReview: boolean; reviewNote: string | null; profession: string; role: string | null; employer: string; atoll: string; status: string; affiliateId: string | null; isRep: boolean; notes: string | null; duesPaidUntil: string };
 
 export function MemberEditForm({ m, affiliates, readOnly }: { m: M; affiliates: { id: string; name: string }[]; readOnly?: boolean }) {
   const [state, action] = useActionState<AState, FormData>(updateMember, {});
@@ -56,15 +56,21 @@ export function MemberEditForm({ m, affiliates, readOnly }: { m: M; affiliates: 
       <fieldset disabled={readOnly} className="contents">
         <Field label="Full name"><Input name="fullName" defaultValue={m.fullName} /></Field>
         <Field label="Phone"><Input name="phone" defaultValue={m.phone} /></Field>
+        <Field label="Email" hint={m.hasLogin ? "Also changes the email they sign in with." : undefined}><Input name="email" type="email" defaultValue={m.email} /></Field>
+        <Field label="ID card / passport no."><Input name="idNumber" defaultValue={m.idNumber} /></Field>
+        <Field label="Present address"><Input name="address" defaultValue={m.address ?? ""} /></Field>
+        <Field label="Nationality"><Input name="nationality" defaultValue={m.nationality} /></Field>
+        <Field label="Member since"><Input type="date" name="joinedAt" defaultValue={m.joinedAt} /></Field>
         <Field label="Profession"><Select name="profession" defaultValue={m.profession}>{PROFESSIONS.map((p) => <option key={p}>{p}</option>)}</Select></Field>
         <Field label="Job title"><Input name="role" defaultValue={m.role ?? ""} /></Field>
         <Field label="Workplace"><Input name="employer" defaultValue={m.employer} /></Field>
         <Field label="Atoll"><Select name="atoll" defaultValue={m.atoll}>{ATOLLS.map((a) => <option key={a}>{a}</option>)}</Select></Field>
         <Field label="Status"><Select name="status" defaultValue={m.status}>{MEMBER_STATUSES.map((s) => <option key={s}>{s}</option>)}</Select></Field>
-        <Field label="Workplace union"><Select name="affiliateId" defaultValue={m.affiliateId ?? ""}><option value="">None</option>{affiliates.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}</Select></Field>
+        <Field label="Workplace union" hint={m.unionMemberNo ? `Union number ${m.unionMemberNo}. Choosing another union gives a new number from that union.` : "Choosing a union gives the member a number from that union."}><Select name="affiliateId" defaultValue={m.affiliateId ?? ""}><option value="">None</option>{affiliates.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}</Select></Field>
         <Field label="Dues paid until"><Input type="date" name="duesPaidUntil" defaultValue={m.duesPaidUntil} /></Field>
         <div className="flex items-end pb-2"><Checkbox name="isRep" defaultChecked={m.isRep} label="Workplace representative (shown on 'Find your rep')" /></div>
         {m.hasLogin && <Field label="Title / position (shown when logged in)" hint="For ExCom and officers, e.g. Treasurer. Leave blank for ordinary members."><Input name="userTitle" defaultValue={m.userTitle ?? ""} placeholder="e.g. Vice President" /></Field>}
+        {m.needsReview && <Field label="To check" hint="Update this as you correct things. Mark the record as reviewed when it's all done." className="sm:col-span-2"><Textarea name="reviewNote" defaultValue={m.reviewNote ?? ""} rows={3} /></Field>}
         <Field label="Internal notes" className="sm:col-span-2"><Textarea name="notes" defaultValue={m.notes ?? ""} rows={3} /></Field>
         {!readOnly && <div><SubmitButton>Save member</SubmitButton></div>}
       </fieldset>
@@ -156,6 +162,27 @@ export function AffiliateForm({ a }: { a?: Aff }) {
       <Field label="Website"><Input name="website" defaultValue={a?.website ?? ""} /></Field>
       <div className="flex items-end"><SubmitButton size="sm">{a?.id ? "Save" : "Add workplace union"}</SubmitButton></div>
     </form>
+  );
+}
+
+export function DuesCollectionForm({ on, startDate }: { on: boolean; startDate: string }) {
+  const [state, action] = useActionState<AState, FormData>(startDuesCollection, {});
+  return (
+    <div className="space-y-3">
+      <Result state={state} />
+      <form action={action} className="flex flex-wrap items-end gap-3">
+        <Field label="Dues collection starts on" required><Input type="date" name="startDate" defaultValue={startDate} required className="h-10 py-2" /></Field>
+        <div className="pb-2"><Checkbox name="reminders" defaultChecked label="Send SMS reminders 3 days before" /></div>
+        <SubmitButton confirm={on ? "Change the date dues collection starts for all members?" : "Start collecting dues from ALL members from this date? Members who don't pay stay 'Not active'."}>
+          {on ? "Update start date" : "Start dues collection for all members"}
+        </SubmitButton>
+      </form>
+      {on && (
+        <form action={stopDuesCollection}>
+          <SubmitButton size="sm" variant="outline" confirm="Stop dues collection? Nobody will be counted as overdue and no reminders will be sent until you start it again.">Stop dues collection</SubmitButton>
+        </form>
+      )}
+    </div>
   );
 }
 

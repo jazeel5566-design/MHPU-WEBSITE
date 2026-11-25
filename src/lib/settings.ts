@@ -23,7 +23,7 @@ export const DEFAULT_SETTINGS = {
   smsProvider: "TEST", // TEST | DHIRAAGU
   // Automatic dues reminders (run daily)
   remindersEnabled: "false",
-  reminderDaysBefore: "7",
+  reminderDaysBefore: "3",
   reminderRepeatDays: "14",
   reminderMaxOverdue: "3",
   reminderUpcomingText: "MHPU: Dear {name}, your union dues ({membershipNo}) are due on {dueDate}. Pay online at {payLink} or contact us on {hotline}.",
@@ -34,6 +34,9 @@ export const DEFAULT_SETTINGS = {
   alertLink: "",
   bankDetails: "",
   monthlyDues: "100",
+  // Dues collection: started by an admin (Finance → Dues collection) from a chosen date.
+  duesCollectionOn: "false",
+  duesStartDate: "",
   registrationFee: "100",
 };
 

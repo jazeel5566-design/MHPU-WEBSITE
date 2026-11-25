@@ -7,6 +7,11 @@ import { getSettings } from "@/lib/settings";
 import { formatDate, mvr } from "@/lib/utils";
 import { Card, CardHeader, PageHeader, Select, StatCard, Table, Td, Th, buttonClass, EmptyState } from "@/components/ui";
 import { PrintButton } from "@/components/members/print-button";
+import { DuesCollectionForm } from "@/components/admin/forms";
+import { duesCollectionOf, collecting } from "@/lib/dues";
+import { normaliseMvMobile } from "@/lib/phone";
+import { featureOffError } from "@/lib/features-server";
+import { CheckCircle2, CircleAlert } from "lucide-react";
 
 export const metadata = { title: "Financial reports" };
 export const dynamic = "force-dynamic";
@@ -14,7 +19,7 @@ export const dynamic = "force-dynamic";
 const iso = (d: Date) => d.toISOString().slice(0, 10);
 
 export default async function FinancePage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
-  await requireRole(["ADMIN", "TREASURER"], "/admin");
+  const user = await requireRole(["ADMIN", "TREASURER"], "/admin");
   const sp = await searchParams;
   const f = parseFilter(sp);
   const [r, unions, s] = await Promise.all([financeReport(f), db.affiliate.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }), getSettings()]);
@@ -28,12 +33,42 @@ export default async function FinancePage({ searchParams }: { searchParams: Prom
     ["This year", new Date(Date.UTC(now.getUTCFullYear(), 0, 1)), now],
     ["Last year", new Date(Date.UTC(now.getUTCFullYear() - 1, 0, 1)), new Date(Date.UTC(now.getUTCFullYear() - 1, 11, 31))],
   ];
+  // Dues collection status + what has to be in place for the reminder SMS to go out.
+  const dues = duesCollectionOf(s);
+  const payers = await db.member.findMany({ where: { status: { in: ["ACTIVE", "INACTIVE"] }, NOT: { profession: "Student" } }, select: { phone: true } });
+  const reachable = payers.filter((p) => normaliseMvMobile(p.phone)).length;
+  const smsDay = dues.start ? new Date(dues.start.getTime() - (Number(s.reminderDaysBefore) || 3) * 864e5) : null;
+  const checks: [boolean, string][] = [
+    [s.smsEnabled === "true", "SMS switched on (Site settings → SMS)"],
+    [s.smsProvider === "DHIRAAGU", s.smsProvider === "DHIRAAGU" ? "SMS provider: Dhiraagu" : "SMS provider is in test mode: messages are logged, not sent"],
+    [s.remindersEnabled === "true", "Automatic dues reminders switched on"],
+    [!!process.env.CRON_SECRET, "Daily job set up (CRON_SECRET) — runs every morning at 9:00"],
+    [!(await featureOffError("members.dues")), "“Dues & payments” page switched on (Pages & features)"],
+    [reachable === payers.length, `${reachable} of ${payers.length} members have a mobile number the SMS can reach`],
+  ];
   const unionName = f.unionId ? (f.unionId === "none" ? "Members without a workplace union" : unions.find((u) => u.id === f.unionId)?.name) : "All workplace unions";
 
   return (
     <div className="space-y-6">
       <PageHeader title="Financial reports" desc={`Dues collected ${formatDate(f.from)} – ${formatDate(f.to)} · ${unionName}${f.method ? ` · ${METHOD_LABELS[f.method] ?? f.method}` : ""}`}
         actions={<div className="flex gap-2 print:hidden"><a href={`/api/export/finance?${qs}`} className={buttonClass("outline")}><Download className="size-4" /> Export CSV</a><PrintButton /></div>} />
+
+      <Card className="print:hidden">
+        <CardHeader title="Dues collection"
+          desc={!dues.on ? "Not started — nobody is asked to pay and nobody counts as overdue. Choose a date to start collecting dues from all members."
+            : collecting(dues, now) ? `Collecting from all members since ${formatDate(dues.start)}.`
+            : `Starts ${formatDate(dues.start)} for all members. Reminder SMS go out ${smsDay && smsDay > now ? `on ${formatDate(smsDay)} (${s.reminderDaysBefore || 3} days before)` : "at the next daily run"}.`} />
+        <div className="grid gap-6 p-5 lg:grid-cols-2">
+          {user.role === "ADMIN" ? <DuesCollectionForm on={dues.on} startDate={s.duesStartDate} /> : <p className="text-sm text-muted">Only administrators can start or change dues collection.</p>}
+          <div>
+            <div className="mb-2 text-sm font-semibold">Before the reminder SMS can go out</div>
+            <ul className="space-y-1.5 text-sm">
+              {checks.map(([ok, label]) => <li key={label} className="flex items-start gap-2">{ok ? <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-600" /> : <CircleAlert className="mt-0.5 size-4 shrink-0 text-amber-600" />}<span className={ok ? "" : "font-medium text-amber-900"}>{label}</span></li>)}
+            </ul>
+            <p className="mt-3 text-xs text-muted">Check or send today&apos;s reminders yourself on the <Link href="/admin/sms" className="font-semibold underline">SMS page</Link>.</p>
+          </div>
+        </div>
+      </Card>
 
       <Card className="p-4 print:hidden">
         <form className="flex flex-wrap items-end gap-3">

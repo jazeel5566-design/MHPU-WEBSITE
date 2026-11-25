@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Vote } from "lucide-react";
 import { db } from "@/lib/db";
-import { requireMember } from "@/lib/auth";
+import { requireActiveMember } from "@/lib/auth";
 import { phaseOf } from "@/lib/elections";
 import { formatDateTime } from "@/lib/utils";
 import { Badge, Card, EmptyState, PageHeader } from "@/components/ui";
@@ -10,7 +10,7 @@ export const metadata = { title: "Elections" };
 export const dynamic = "force-dynamic";
 
 export default async function MemberElections() {
-  const { member } = await requireMember();
+  const { member } = await requireActiveMember();
   const elections = await db.election.findMany({
     where: { OR: [{ affiliateId: null }, ...(member.affiliateId ? [{ affiliateId: member.affiliateId }] : [])] },
     include: { affiliate: { select: { name: true } }, voters: { where: { memberId: member.id }, select: { id: true } } },

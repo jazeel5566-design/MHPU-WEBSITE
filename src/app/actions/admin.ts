@@ -11,6 +11,8 @@ import { DEFAULT_SETTINGS } from "@/lib/settings";
 import { ROLES, APPLICATION_APPROVERS } from "@/lib/constants";
 import { removeApplicationFiles, saveImage } from "@/lib/storage";
 import { SITE_PHOTOS, settingKey, type SitePhotoKey } from "@/lib/site-photos";
+import { duesBase, duesCollection, statusAfterPayment } from "@/lib/dues";
+import { unionNumberFor } from "@/lib/unions";
 
 export type AState = { ok?: boolean; error?: string; message?: string; tempPassword?: string };
 
@@ -24,7 +26,7 @@ function tempPassword() {
   return Array.from(b, (x) => chars[x % chars.length]).join("").replace(/(.{5})/, "$1-");
 }
 
-/** Next number in MHPU's existing sequence: MHPU-0001, MHPU-0002, … */
+/** Next number in MHPU's sequence: MHPU-0001, MHPU-0002, … */
 async function nextMembershipNo() {
   const rows = await db.member.findMany({ select: { membershipNo: true } });
   const max = rows.reduce((m, r) => { const n = /^MHPU-(\d+)$/.exec(r.membershipNo)?.[1]; return n ? Math.max(m, Number(n)) : m; }, 0);
@@ -49,7 +51,8 @@ export async function approveApplication(_: AState, fd: FormData): Promise<AStat
       data: {
         membershipNo, fullName: app.fullName, idNumber: app.idNumber, nationality, address: app.address, phone: app.phone, email: app.email,
         profession: app.profession ?? app.jobTitle, role: app.jobTitle, employer: app.employer, atoll: app.atoll ?? "Not specified", island: app.island,
-        userId: user.id, affiliateId,
+        userId: user.id, status: "ACTIVE", // approved applicants are active straight away
+        ...(await unionNumberFor(tx, affiliateId ?? null)),
       },
     });
     await tx.application.update({ where: { id: app.id }, data: { status: "APPROVED", reviewedAt: new Date(), receivedBy: admin.name, memberId: member.id, reviewNote: optStr(fd, "note") } });
@@ -85,23 +88,49 @@ export async function deleteApplication(fd: FormData) {
 export async function updateMember(_: AState, fd: FormData): Promise<AState> {
   const admin = await requireRole([...ADMIN], "/admin");
   const id = str(fd, "id");
-  const m = await db.member.findUnique({ where: { id } });
+  const m = await db.member.findUnique({ where: { id }, include: { user: { select: { email: true } } } });
   if (!m) return { error: "Member not found." };
   const status = str(fd, "status");
   const paid = str(fd, "duesPaidUntil");
-  await db.member.update({
-    where: { id },
-    data: {
-      fullName: str(fd, "fullName") || m.fullName, phone: str(fd, "phone") || m.phone, profession: str(fd, "profession") || m.profession,
-      employer: str(fd, "employer") || m.employer, atoll: str(fd, "atoll") || m.atoll, role: optStr(fd, "role"),
-      status, affiliateId: optStr(fd, "affiliateId"), isRep: fd.get("isRep") === "on", notes: optStr(fd, "notes"),
-      duesPaidUntil: paid ? new Date(paid) : null,
-    },
+  const joined = str(fd, "joinedAt");
+  const email = str(fd, "email").toLowerCase();
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: "That email address doesn't look right." };
+  // Keep the portal login's email in step (members can also sign in with their membership number).
+  const loginEmail = email && m.userId && m.user?.email !== email ? email : null;
+  if (loginEmail && (await db.user.findFirst({ where: { email: loginEmail, NOT: { id: m.userId! } } }))) return { error: `Another login already uses ${email}.` };
+  const affiliateId = optStr(fd, "affiliateId");
+  await db.$transaction(async (tx) => {
+    await tx.member.update({
+      where: { id },
+      data: {
+        fullName: str(fd, "fullName") || m.fullName, phone: str(fd, "phone") || m.phone, profession: str(fd, "profession") || m.profession,
+        employer: str(fd, "employer") || m.employer, atoll: str(fd, "atoll") || m.atoll, role: optStr(fd, "role"),
+        email, idNumber: str(fd, "idNumber").toUpperCase().replace(/[\s-]/g, "") || m.idNumber, address: optStr(fd, "address"),
+        nationality: str(fd, "nationality") || m.nationality, joinedAt: joined ? new Date(joined) : m.joinedAt,
+        status, isRep: fd.get("isRep") === "on", notes: optStr(fd, "notes"), reviewNote: m.needsReview ? optStr(fd, "reviewNote") : m.reviewNote,
+        duesPaidUntil: paid ? new Date(paid) : null,
+        // Placed in a different workplace union → a new number from that union.
+        ...(affiliateId !== m.affiliateId ? await unionNumberFor(tx, affiliateId) : {}),
+      },
+    });
+    if (m.userId) await tx.user.update({ where: { id: m.userId }, data: { active: status !== "SUSPENDED" && status !== "RESIGNED", name: str(fd, "fullName") || m.fullName, title: optStr(fd, "userTitle"), ...(loginEmail ? { email: loginEmail } : {}) } });
   });
-  if (m.userId) await db.user.update({ where: { id: m.userId }, data: { active: status !== "SUSPENDED" && status !== "RESIGNED", name: str(fd, "fullName") || m.fullName, title: optStr(fd, "userTitle") } });
-  await audit(admin.id, "member_update", "Member", id, status !== m.status ? `status ${m.status} → ${status}` : undefined);
+  const changes = [status !== m.status && `status ${m.status} → ${status}`, affiliateId !== m.affiliateId && "workplace union changed"].filter(Boolean).join("; ");
+  await audit(admin.id, "member_update", "Member", id, changes || undefined);
   revalidatePath(`/admin/members/${id}`);
   return { ok: true, message: "Member updated." };
+}
+
+/** A staff member has checked and corrected an imported/flagged record. */
+export async function markReviewed(fd: FormData) {
+  const staff = await requireRole([...ADMIN], "/admin");
+  const id = str(fd, "id");
+  const m = await db.member.findUnique({ where: { id }, select: { reviewNote: true, notes: true } });
+  if (!m) return;
+  const stamp = `Reviewed by ${staff.name} on ${new Date().toISOString().slice(0, 10)}${m.reviewNote ? ` (was: ${m.reviewNote})` : ""}.`;
+  await db.member.update({ where: { id }, data: { needsReview: false, reviewNote: null, notes: [m.notes, stamp].filter(Boolean).join("\n") } });
+  await audit(staff.id, "member_reviewed", "Member", id);
+  revalidatePath("/admin", "layout");
 }
 
 export async function recordPayment(_: AState, fd: FormData): Promise<AState> {
@@ -112,11 +141,11 @@ export async function recordPayment(_: AState, fd: FormData): Promise<AState> {
   if (!amount || amount <= 0) return { error: "Enter an amount." };
   const m = await db.member.findUnique({ where: { id: memberId } });
   if (!m) return { error: "Member not found." };
-  const base = m.duesPaidUntil && m.duesPaidUntil > new Date() ? new Date(m.duesPaidUntil) : new Date();
+  const base = duesBase(m.duesPaidUntil, (await duesCollection()).start);
   base.setMonth(base.getMonth() + months);
   await db.$transaction([
     db.payment.create({ data: { memberId, amount, period: str(fd, "period") || new Date().toISOString().slice(0, 7), method: str(fd, "method") || "BANK_TRANSFER", reference: optStr(fd, "reference") } }),
-    db.member.update({ where: { id: memberId }, data: { duesPaidUntil: base, status: m.status === "LAPSED" ? "ACTIVE" : m.status } }),
+    db.member.update({ where: { id: memberId }, data: { duesPaidUntil: base, status: statusAfterPayment(m.status) } }),
   ]);
   await audit(admin.id, "payment_record", "Member", memberId, `MVR ${amount}`);
   revalidatePath(`/admin/members/${memberId}`);
@@ -341,16 +370,48 @@ export async function resetSitePhoto(fd: FormData) {
 
 export async function saveSettings(_: AState, fd: FormData): Promise<AState> {
   const admin = await requireRole([...ADMIN], "/admin");
-  const keys = Object.keys(DEFAULT_SETTINGS);
+  const CHECKBOXES = ["alertEnabled", "dhivehiEnabled", "paymentsEnabled", "smsEnabled", "remindersEnabled"];
+  // Only save what this form sends (dues collection is managed on the Finance page).
+  const keys = Object.keys(DEFAULT_SETTINGS).filter((k) => CHECKBOXES.includes(k) || fd.has(k));
   await db.$transaction(
     keys.map((key) => {
-      const value = ["alertEnabled", "dhivehiEnabled", "paymentsEnabled", "smsEnabled", "remindersEnabled"].includes(key) ? (fd.get(key) === "on" ? "true" : "false") : str(fd, key);
+      const value = CHECKBOXES.includes(key) ? (fd.get(key) === "on" ? "true" : "false") : str(fd, key);
       return db.setting.upsert({ where: { key }, update: { value }, create: { key, value } });
     }),
   );
   await audit(admin.id, "settings_update", "Setting");
   revalidatePath("/", "layout");
   return { ok: true, message: "Settings saved — changes are live." };
+}
+
+// ─── Dues collection ────────────────────────────────────────────────
+
+const setSetting = (key: string, value: string) => db.setting.upsert({ where: { key }, update: { value }, create: { key, value } });
+
+/** Start collecting dues from every member from a chosen date. Reminders go out `reminderDaysBefore` (3) days ahead. */
+export async function startDuesCollection(_: AState, fd: FormData): Promise<AState> {
+  const admin = await requireRole([...ADMIN], "/admin");
+  const date = str(fd, "startDate");
+  const start = new Date(date);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || isNaN(+start)) return { error: "Choose the date dues collection starts." };
+  const reminders = fd.get("reminders") === "on";
+  await db.$transaction([
+    setSetting("duesCollectionOn", "true"),
+    setSetting("duesStartDate", date),
+    setSetting("reminderDaysBefore", "3"),
+    ...(reminders ? [setSetting("remindersEnabled", "true")] : []),
+  ]);
+  await audit(admin.id, "dues_collection_start", "Setting", "duesStartDate", `${date}${reminders ? " · reminders on" : ""}`);
+  revalidatePath("/", "layout");
+  const smsDay = new Date(start.getTime() - 3 * 864e5);
+  return { ok: true, message: `Dues collection starts on ${start.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} for all members.${reminders ? ` Reminder SMS go out on the morning of ${smsDay <= new Date() ? "the next daily run (or use “Send reminders now” on the SMS page)" : smsDay.toLocaleDateString("en-GB", { day: "numeric", month: "long" })}.` : ""}` };
+}
+
+export async function stopDuesCollection() {
+  const admin = await requireRole([...ADMIN], "/admin");
+  await setSetting("duesCollectionOn", "false");
+  await audit(admin.id, "dues_collection_stop", "Setting", "duesCollectionOn");
+  revalidatePath("/", "layout");
 }
 
 export async function toggleMessage(fd: FormData) {

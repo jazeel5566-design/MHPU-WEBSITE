@@ -1,6 +1,6 @@
 import { FileText, Download } from "lucide-react";
 import { db } from "@/lib/db";
-import { requireMember } from "@/lib/auth";
+import { requireActiveMember } from "@/lib/auth";
 import { RESOURCE_CATEGORIES, labelOf } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
 import { Badge, Card, PageHeader, EmptyState } from "@/components/ui";
@@ -8,7 +8,7 @@ import { Badge, Card, PageHeader, EmptyState } from "@/components/ui";
 export const metadata = { title: "Documents" };
 
 export default async function DocumentsPage() {
-  await requireMember();
+  await requireActiveMember();
   const docs = await db.resource.findMany({ orderBy: [{ visibility: "desc" }, { createdAt: "desc" }] });
   const groups = RESOURCE_CATEGORIES.map((c) => ({ ...c, items: docs.filter((d) => d.category === c.id) })).filter((g) => g.items.length);
   return (

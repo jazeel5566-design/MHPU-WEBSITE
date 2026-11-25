@@ -6,6 +6,7 @@ import { PortalShell, portalSwitcher } from "@/components/portal-shell";
 export default async function MembersLayout({ children }: { children: React.ReactNode }) {
   const { user, member } = await requireMember();
   const now = new Date();
+  const active = member.status === "ACTIVE";
   const [openBallots, awaiting, openElections] = await Promise.all([
     db.ballot.count({ where: { opensAt: { lte: now }, closesAt: { gte: now }, voters: { none: { memberId: member.id } } } }),
     db.case.count({ where: { memberId: member.id, status: "AWAITING_MEMBER" } }),
@@ -16,7 +17,14 @@ export default async function MembersLayout({ children }: { children: React.Reac
       portal="members"
       user={user}
       switcher={portalSwitcher(user.role, "/members")}
-      groups={[
+      groups={!active ? [
+        // Not active yet (dues unpaid): only the card, paying dues and their own account.
+        { items: [{ href: "/members/card", label: "Membership card", icon: IdCard }] },
+        { title: "Account", items: [
+          { href: "/members/dues", label: "Dues & payments", icon: Wallet },
+          { href: "/members/profile", label: "Profile & security", icon: UserRound },
+        ] },
+      ] : [
         { items: [
           { href: "/members", label: "Dashboard", icon: LayoutDashboard, exact: true },
           { href: "/members/card", label: "Membership card", icon: IdCard },

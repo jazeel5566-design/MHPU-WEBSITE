@@ -2,6 +2,7 @@ import "server-only";
 import type { Prisma } from "@prisma/client";
 import { db } from "./db";
 import { getSettings } from "./settings";
+import { duesCollectionOf, overdueWhere, owedFrom } from "./dues";
 
 export type FinanceFilter = { from: Date; to: Date; unionId?: string; method?: string };
 
@@ -70,11 +71,13 @@ export async function financeReport(f: FinanceFilter) {
 
   // outstanding arrears today (estimate: whole months overdue × monthly dues)
   const now = new Date();
+  const dues = duesCollectionOf(await getSettings());
+  const start = dues.start;
   const overdue = await db.member.findMany({
-    where: { status: "ACTIVE", NOT: { profession: "Student" }, OR: [{ duesPaidUntil: { lt: now } }, { duesPaidUntil: null }], ...(f.unionId ? { affiliateId: f.unionId === "none" ? null : f.unionId } : {}) },
+    where: { status: "ACTIVE", NOT: { profession: "Student" }, ...overdueWhere(dues, now), ...(f.unionId ? { affiliateId: f.unionId === "none" ? null : f.unionId } : {}) },
     select: { duesPaidUntil: true, joinedAt: true },
   });
-  const arrearsMonths = overdue.reduce((a, m) => a + Math.max(1, Math.ceil((now.getTime() - (m.duesPaidUntil ?? m.joinedAt).getTime()) / (30.44 * 864e5))), 0);
+  const arrearsMonths = overdue.reduce((a, m) => a + Math.max(1, Math.ceil((now.getTime() - (m.duesPaidUntil ?? owedFrom(m.joinedAt, start)).getTime()) / (30.44 * 864e5))), 0);
   const activeMembers = await db.member.count({ where: { status: "ACTIVE", ...(f.unionId ? { affiliateId: f.unionId === "none" ? null : f.unionId } : {}) } });
 
   return {

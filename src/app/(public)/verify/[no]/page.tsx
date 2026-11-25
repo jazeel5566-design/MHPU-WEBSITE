@@ -40,7 +40,7 @@ export default async function VerifyResult({ params, searchParams }: { params: P
         <dl className="mt-6 divide-y divide-line rounded-2xl border border-line text-start text-sm">
           <Row k={T("Name")} v={shortName} />
           <Row k={T("Profession")} v={T(m.profession)} />
-          <Row k={T("Status")} v={T(m.status === "ACTIVE" ? "Active" : m.status.charAt(0) + m.status.slice(1).toLowerCase())} />
+          <Row k={T("Status")} v={T(m.status === "ACTIVE" ? "Active" : m.status === "INACTIVE" ? "Not active" : m.status.charAt(0) + m.status.slice(1).toLowerCase())} />
           <Row k={T("Member since")} v={formatDate(m.joinedAt)} />
         </dl>
       )}
