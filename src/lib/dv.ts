@@ -71,6 +71,7 @@ export const DV: Record<string, string> = {
   "Status": "ހާލަތު",
   "Active": "ހަރަކާތްތެރި",
   "Not active": "ހަރަކާތްތެރި ނޫން",
+  "That page is for MHPU members. Log in with your membership number or email to see it.": "މި ޞަފްޙާ އަކީ އެމްއެޗްޕީޔޫގެ މެމްބަރުންނަށް ހާއްސަ ޞަފްޙާއެކެވެ. އެ ބެލުމަށް ތިޔަބޭފުޅާގެ މެމްބަރޝިޕް ނަންބަރު ނުވަތަ އީމެއިލް ބޭނުންކޮށްގެން ލޮގިން ކުރައްވާ.",
   "Lapsed": "މުއްދަތު ހަމަވެފައި",
   "Suspended": "ހުއްޓާލެވިފައި",
   "Resigned": "ވަކިވެފައި",

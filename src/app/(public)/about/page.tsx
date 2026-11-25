@@ -1,4 +1,5 @@
 import { Target, Eye, Handshake, Users } from "lucide-react";
+import { guardMembersOnly } from "@/lib/audience-server";
 import { db } from "@/lib/db";
 import { features } from "@/lib/features-server";
 import { getLang, pick, getT } from "@/lib/i18n";
@@ -16,6 +17,7 @@ const TIMELINE = [
 ];
 
 export default async function AboutPage() {
+  await guardMembersOnly("page.about", "/about");
   const T = await getT();
   const photos = await getSitePhotos();
   const lang = await getLang();

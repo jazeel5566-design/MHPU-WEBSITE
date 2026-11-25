@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { guardMembersOnly } from "@/lib/audience-server";
 import { db } from "@/lib/db";
 import { getLang, getT } from "@/lib/i18n";
 import { EVENT_TYPES } from "@/lib/constants";
@@ -11,6 +12,7 @@ export const metadata = { title: "Events & CPD" };
 export const dynamic = "force-dynamic";
 
 export default async function EventsPage({ searchParams }: { searchParams: Promise<{ type?: string }> }) {
+  await guardMembersOnly("page.events", "/events");
   const T = await getT();
   const photos = await getSitePhotos();
   const { type } = await searchParams;

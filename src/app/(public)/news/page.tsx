@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Search } from "lucide-react";
 import { db } from "@/lib/db";
 import { getLang, getT } from "@/lib/i18n";
-import { getCurrentUser } from "@/lib/auth";
+import { guardMembersOnly } from "@/lib/audience-server";
 import { livePosts, liveOrder } from "@/lib/content";
 import { POST_CATEGORIES } from "@/lib/constants";
 import { PostCard, PageHero } from "@/components/public/cards";
@@ -18,13 +18,15 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
   const photos = await getSitePhotos();
   const { category, q, page = "1" } = await searchParams;
   const lang = await getLang();
-  const user = await getCurrentUser();
-  const vis: ("PUBLIC" | "MEMBERS")[] = user?.member || user?.role === "ADMIN" ? ["PUBLIC", "MEMBERS"] : ["PUBLIC"];
+  const a = await guardMembersOnly("page.news", "/news");
+  if (category) await guardMembersOnly(`news.${category}`, `/news?category=${category}`);
+  const vis: ("PUBLIC" | "MEMBERS")[] = a.isMember ? ["PUBLIC", "MEMBERS"] : ["PUBLIC"];
   const take = 12;
   const where = {
     AND: [
       livePosts(vis),
       category ? { category } : {},
+      { category: { notIn: a.hiddenNews } }, // members-only tabs (e.g. Member notices)
       q ? { OR: [{ title: { contains: q, mode: "insensitive" as const } }, { excerpt: { contains: q, mode: "insensitive" as const } }, { body: { contains: q, mode: "insensitive" as const } }] } : {},
     ],
   };
@@ -45,7 +47,7 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
         <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-wrap gap-2">
             <Chip href={qs({ category: undefined, page: undefined })} active={!category}>{T("All")}</Chip>
-            {POST_CATEGORIES.map((c) => <Chip key={c.id} href={qs({ category: c.id, page: undefined })} active={category === c.id}>{T(c.label)}</Chip>)}
+            {POST_CATEGORIES.filter((c) => !a.hiddenNews.includes(c.id)).map((c) => <Chip key={c.id} href={qs({ category: c.id, page: undefined })} active={category === c.id}>{T(c.label)}</Chip>)}
           </div>
           <form className="relative w-full lg:w-80">
             {category && <input type="hidden" name="category" value={category} />}

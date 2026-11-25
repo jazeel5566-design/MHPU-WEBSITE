@@ -11,7 +11,7 @@ import { getT } from "@/lib/i18n";
 
 export const metadata = { title: "Log in" };
 
-export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; denied?: string; out?: string; nomember?: string }> }) {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; denied?: string; out?: string; nomember?: string; members?: string }> }) {
   const T = await getT();
   const photos = await getSitePhotos();
   const sp = await searchParams;
@@ -28,6 +28,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           <div className="mt-6 space-y-3">
             {sp.denied && <Notice tone="amber">Your account doesn&apos;t have access to that area. {user && <>Signed in as {user.name}.</>}</Notice>}
             {sp.out && <Notice tone="brand">{T("You've been signed out.")}</Notice>}
+            {sp.members && <Notice tone="brand">{T("That page is for MHPU members. Log in with your membership number or email to see it.")}</Notice>}
             {sp.nomember && <Notice tone="amber">{T("This account isn't linked to a membership record. Please contact the membership office.")}</Notice>}
           </div>
           <div className="mt-6"><LoginForm next={safePath(sp.next, "")} /></div>

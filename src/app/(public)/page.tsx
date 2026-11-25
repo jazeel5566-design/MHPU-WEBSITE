@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { audience } from "@/lib/audience-server";
 import {
   ArrowRight, Banknote, Clock, ShieldAlert, Scale, Globe2, GraduationCap, HeartHandshake, Stethoscope,
   Hospital, Ambulance, FlaskConical, Building2, Users, MapPinned, BadgeCheck,
@@ -36,11 +37,11 @@ const SECTORS = [
 
 export default async function HomePage() {
   const T = await getT();
-  const [lang, settings, photos, f] = await Promise.all([getLang(), getSettings(), getSitePhotos(), features()]);
+  const [lang, settings, photos, f, { hiddenNews }] = await Promise.all([getLang(), getSettings(), getSitePhotos(), features(), audience()]);
   const [featured, campaigns, posts, events, memberCount, affiliateCount, wins] = await Promise.all([
     db.campaign.findFirst({ where: { featured: true, status: "ACTIVE" }, include: { _count: { select: { signatures: true } } } }),
     db.campaign.findMany({ where: { status: { in: ["ACTIVE", "WON"] } }, include: { _count: { select: { signatures: true } } }, orderBy: [{ featured: "desc" }, { updatedAt: "desc" }], take: 3 }),
-    db.post.findMany({ where: livePosts(), orderBy: liveOrder, take: 4 }),
+    db.post.findMany({ where: { AND: [livePosts(), { category: { notIn: hiddenNews } }] }, orderBy: liveOrder, take: 4 }),
     db.event.findMany({ where: { published: true, startsAt: { gte: new Date() }, visibility: "PUBLIC" }, orderBy: { startsAt: "asc" }, take: 3 }),
     db.member.count({ where: { status: "ACTIVE" } }),
     db.affiliate.count({ where: { active: true } }),

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { guardMembersOnly } from "@/lib/audience-server";
 import { Users, Trophy } from "lucide-react";
 import { db } from "@/lib/db";
 import { getLang, pick, getT } from "@/lib/i18n";
@@ -17,6 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 export default async function CampaignPage({ params }: { params: Promise<{ slug: string }> }) {
+  await guardMembersOnly("page.campaigns", "/campaigns");
   const T = await getT();
   const { slug } = await params;
   const lang = await getLang();

@@ -1,4 +1,5 @@
 import { Banknote, Clock, ShieldAlert, Scale, Globe2, Phone, MessageSquarePlus, CheckCircle2 } from "lucide-react";
+import { guardMembersOnly } from "@/lib/audience-server";
 import { getSettings } from "@/lib/settings";
 import { PageHero } from "@/components/public/cards";
 import { ButtonLink, Card } from "@/components/ui";
@@ -21,6 +22,7 @@ const TOPICS = [
 ];
 
 export default async function GetHelpPage() {
+  await guardMembersOnly("page.getHelp", "/get-help");
   const T = await getT();
   const photos = await getSitePhotos();
   const s = await getSettings();
