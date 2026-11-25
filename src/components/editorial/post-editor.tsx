@@ -38,7 +38,7 @@ export function PostEditor({ post, canPublish, media, savedMsg }: { post: Editor
 
         <div className="flex gap-1 rounded-full bg-sand-100 p-1 text-sm font-semibold w-fit">
           <button type="button" onClick={() => setLang("en")} className={cn("rounded-full px-4 py-1.5", lang === "en" ? "bg-white shadow-sm" : "text-muted")}>English</button>
-          <button type="button" onClick={() => setLang("dv")} className={cn("rounded-full px-4 py-1.5 font-thaana", lang === "dv" ? "bg-white shadow-sm" : "text-muted")}>ދިވެހި (optional)</button>
+          <button type="button" onClick={() => setLang("dv")} className={cn("rounded-full px-4 py-1.5 font-thaana", lang === "dv" ? "bg-white shadow-sm" : "text-muted")}>ދިވެހި</button>
         </div>
 
         <div className={cn("space-y-5", lang !== "en" && "hidden")}>
@@ -48,10 +48,10 @@ export function PostEditor({ post, canPublish, media, savedMsg }: { post: Editor
             className="w-full border-0 bg-transparent text-3xl font-extrabold tracking-tight placeholder:text-slate-300 focus:outline-none sm:text-4xl"
           />
           <Textarea name="excerpt" defaultValue={post.excerpt ?? ""} rows={2} placeholder="Standfirst — one or two sentences shown on cards and in search results" className="min-h-0 text-base" />
-          <MarkdownEditor name="body" defaultValue={post.body} placeholder="Write your article… Use the toolbar for headings, lists, links and images." />
+          <MarkdownEditor name="body" defaultValue={post.body} placeholder="Write your article… Use the toolbar for headings, lists and images. To show a video, paste its YouTube, Instagram, Facebook or Vimeo address on a line of its own." />
         </div>
         <div className={cn("space-y-5", lang !== "dv" && "hidden")}>
-          <Notice tone="brand">Dhivehi content is shown to visitors who switch the site to ދިވެހި. Leave blank to show English.</Notice>
+          <Notice tone="brand">Write in English, Dhivehi or both. An article written in only one language is shown on both versions of the website (Site settings). To publish in Dhivehi only, leave the English side empty.</Notice>
           <input name="titleDv" defaultValue={post.titleDv ?? ""} dir="rtl" placeholder="ސުރުޚީ" className="dv-text w-full border-0 bg-transparent text-3xl font-bold placeholder:text-slate-300 focus:outline-none" />
           <Textarea name="excerptDv" defaultValue={post.excerptDv ?? ""} dir="rtl" rows={2} className="dv-text min-h-0" placeholder="ކުރު ޚުލާޞާ" />
           <MarkdownEditor name="bodyDv" defaultValue={post.bodyDv ?? ""} rtl placeholder="ލިޔުން…" />

@@ -112,3 +112,8 @@ html[data-contrast="high"] img { filter: grayscale(0.4) contrast(1.1); }
 
 @keyframes fade-up { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .animate-fade-up { animation: fade-up .5s cubic-bezier(.2,.7,.2,1) both; }
+
+/* Videos embedded in articles */
+.video-embed { position: relative; margin: 1.5rem 0; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 1rem; background: #000; }
+.video-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.video-embed-tall { aspect-ratio: auto; height: min(80vh, 760px); max-width: 420px; margin-inline: auto; background: #fff; border: 1px solid var(--color-line, #e5e7eb); }

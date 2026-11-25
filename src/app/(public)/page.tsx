@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { postIn } from "@/lib/post-lang";
 import { audience } from "@/lib/audience-server";
 import {
   ArrowRight, Banknote, Clock, ShieldAlert, Scale, Globe2, GraduationCap, HeartHandshake, Stethoscope,
@@ -8,7 +9,7 @@ import { db } from "@/lib/db";
 import { cn } from "@/lib/utils";
 import { features } from "@/lib/features-server";
 import { getLang, t, pick, getT } from "@/lib/i18n";
-import { livePosts, liveOrder } from "@/lib/content";
+import { livePosts, liveOrder, postsForLang } from "@/lib/content";
 import { ButtonLink, Progress } from "@/components/ui";
 import { PostCard, CampaignCard, EventCard, SectionHead } from "@/components/public/cards";
 import { PHOTO } from "@/lib/images";
@@ -41,7 +42,7 @@ export default async function HomePage() {
   const [featured, campaigns, posts, events, memberCount, affiliateCount, wins] = await Promise.all([
     db.campaign.findFirst({ where: { featured: true, status: "ACTIVE" }, include: { _count: { select: { signatures: true } } } }),
     db.campaign.findMany({ where: { status: { in: ["ACTIVE", "WON"] } }, include: { _count: { select: { signatures: true } } }, orderBy: [{ featured: "desc" }, { updatedAt: "desc" }], take: 3 }),
-    db.post.findMany({ where: { AND: [livePosts(), { category: { notIn: hiddenNews } }] }, orderBy: liveOrder, take: 4 }),
+    db.post.findMany({ where: { AND: [livePosts(), { category: { notIn: hiddenNews } }, await postsForLang(lang)] }, orderBy: liveOrder, take: 4 }),
     db.event.findMany({ where: { published: true, startsAt: { gte: new Date() }, visibility: "PUBLIC" }, orderBy: { startsAt: "asc" }, take: 3 }),
     db.member.count({ where: { status: "ACTIVE" } }),
     db.affiliate.count({ where: { active: true } }),
@@ -130,8 +131,8 @@ export default async function HomePage() {
                     <img src={p.coverImage || PHOTO.workLifeBalance} alt="" className="aspect-square w-28 shrink-0 rounded-xl object-cover" loading="lazy" />
                     <div className="py-1">
                       <div className="text-xs text-muted">{p.publishedAt?.toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</div>
-                      <h3 className="mt-1 font-bold leading-snug group-hover:text-brand-700">{pick(lang, p.title, p.titleDv)}</h3>
-                      <p className="mt-1 line-clamp-2 text-sm text-muted">{pick(lang, p.excerpt ?? "", p.excerptDv)}</p>
+                      <h3 className={`mt-1 font-bold leading-snug group-hover:text-brand-700 ${postIn(p, lang).dv ? "dv-text" : ""}`} dir={postIn(p, lang).dv ? "rtl" : undefined}>{postIn(p, lang).title}</h3>
+                      <p className={`mt-1 line-clamp-2 text-sm text-muted ${postIn(p, lang).dv ? "dv-text" : ""}`} dir={postIn(p, lang).dv ? "rtl" : undefined}>{postIn(p, lang).excerpt}</p>
                     </div>
                   </Link>
                 ))}

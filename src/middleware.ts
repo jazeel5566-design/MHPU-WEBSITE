@@ -34,6 +34,8 @@ function csp(nonce: string) {
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https://images.unsplash.com https://*.supabase.co",
     "font-src 'self' data:",
+    // Videos embedded in articles (see videoEmbed in lib/markdown-safe.ts).
+    "frame-src https://www.youtube-nocookie.com https://player.vimeo.com https://www.instagram.com https://www.facebook.com",
     `connect-src 'self'${dev ? " ws:" : ""}`,
     "frame-ancestors 'none'",
     "base-uri 'self'",

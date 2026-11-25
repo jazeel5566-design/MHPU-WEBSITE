@@ -1,8 +1,9 @@
 import Link from "next/link";
+import { postIn } from "@/lib/post-lang";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Clock, Lock } from "lucide-react";
 import { db } from "@/lib/db";
-import { getLang, pick, getT } from "@/lib/i18n";
+import { getLang, getT } from "@/lib/i18n";
 import { audience } from "@/lib/audience-server";
 import { livePosts, liveOrder } from "@/lib/content";
 import { renderMarkdown } from "@/lib/markdown";
@@ -16,8 +17,10 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const p = await db.post.findUnique({ where: { slug }, select: { title: true, excerpt: true } });
-  return p ? { title: p.title, description: p.excerpt ?? undefined } : {};
+  const p = await db.post.findUnique({ where: { slug }, select: { title: true, titleDv: true, excerpt: true, excerptDv: true } });
+  if (!p) return {};
+  const v = postIn(p, await getLang());
+  return { title: v.title, description: v.excerpt ?? undefined };
 }
 
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
@@ -32,8 +35,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   const canRead = !membersPost || a.isMember;
   if (canRead) await db.post.update({ where: { id: post.id }, data: { views: { increment: 1 } } });
   const related = await db.post.findMany({ where: { AND: [livePosts(), { category: post.category, id: { not: post.id } }, { category: { notIn: a.hiddenNews } }] }, orderBy: liveOrder, take: 3 });
-  const body = pick(lang, post.body, post.bodyDv);
-  const isDv = lang === "dv" && !!post.bodyDv;
+  // The language version for this website; a single-language article shows in its own language.
+  const v = postIn(post, lang);
+  const body = v.body;
+  const isDv = v.dv;
+  const bodyIsDv = isDv || /[\u0780-\u07BF]/.test(body.slice(0, 400)); // Dhivehi text typed in the English box
 
   return (
     <article>
@@ -43,8 +49,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           <Badge tone="brand">{T(labelOf(POST_CATEGORIES, post.category))}</Badge>
           {membersPost && <Badge tone="violet">{T("Members only")}</Badge>}
         </div>
-        <h1 className={`mt-4 text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl ${isDv ? "dv-text" : ""}`}>{pick(lang, post.title, post.titleDv)}</h1>
-        {post.excerpt && <p className="mt-4 text-xl leading-relaxed text-muted">{pick(lang, post.excerpt, post.excerptDv)}</p>}
+        <h1 className={`mt-4 text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl ${isDv ? "dv-text" : ""}`} dir={isDv ? "rtl" : undefined}>{v.title}</h1>
+        {v.excerpt && <p className={`mt-4 text-xl leading-relaxed text-muted ${isDv ? "dv-text" : ""}`} dir={isDv ? "rtl" : undefined}>{v.excerpt}</p>}
         <div className="mt-6 flex flex-wrap items-center gap-4 border-y border-line py-4 text-sm text-muted">
           <span><span className="font-semibold text-ink">{post.author.name}</span>{post.author.title && <span>, {post.author.title}</span>}</span>
           <span>{formatDate(post.publishedAt ?? post.publishAt, { day: "numeric", month: "long", year: "numeric" })}</span>
@@ -59,7 +65,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       )}
       <div className="mx-auto max-w-3xl px-4 py-10">
         {canRead ? (
-          <div className={`prose-mhpu ${isDv ? "dv-text" : ""}`} dir={isDv ? "rtl" : undefined} dangerouslySetInnerHTML={{ __html: renderMarkdown(body) }} />
+          <>
+            {bodyIsDv && lang !== "dv" && <p className="mb-4 rounded-xl bg-sand-50 px-4 py-2 text-sm text-muted">{T("This article is in Dhivehi.")}</p>}
+            {!bodyIsDv && lang === "dv" && <p className="mb-4 rounded-xl bg-sand-50 px-4 py-2 text-sm text-muted dv-text" dir="rtl">{T("This article is in English.")}</p>}
+            <div className={`prose-mhpu ${bodyIsDv ? "dv-text" : ""}`} dir={bodyIsDv ? "rtl" : undefined} dangerouslySetInnerHTML={{ __html: renderMarkdown(body) }} />
+          </>
         ) : (
           <div className="rounded-3xl border border-violet-200 bg-violet-50 p-8 text-center">
             <Lock className="mx-auto size-10 text-violet-600" />

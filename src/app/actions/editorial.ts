@@ -8,6 +8,7 @@ import { audit } from "@/lib/audit";
 import { slugify, str, optStr } from "@/lib/utils";
 import { saveImage, saveDocument } from "@/lib/storage";
 import { getPhotoStories, savePhotoStories } from "@/lib/photo-stories";
+import { importLegacyPosts } from "@/lib/legacy-news";
 
 export type EState = { ok?: boolean; error?: string; message?: string };
 
@@ -34,11 +35,22 @@ function revalidateContent() {
 // ─── Posts ──────────────────────────────────────────────────────────
 
 const postSchema = z.object({
-  title: z.string().trim().min(3, "Add a headline (3+ characters)"),
-  body: z.string().trim().min(1, "The article body is empty"),
+  title: z.string().trim(),
+  body: z.string().trim(),
   category: z.string().min(1),
   visibility: z.enum(["PUBLIC", "MEMBERS"]),
 });
+
+/** An article needs an English or a Dhivehi version (or both); each version needs a headline and text. */
+function checkLanguages(title: string, body: string, titleDv: string, bodyDv: string): string | null {
+  const en = !!(title || body), dv = !!(titleDv || bodyDv);
+  if (!en && !dv) return "Add a headline and the article text, in English or Dhivehi.";
+  if (en && title.length < 3) return "Add an English headline (3+ characters), or clear the English text to publish in Dhivehi only.";
+  if (en && !body) return "The English article text is empty.";
+  if (dv && titleDv.length < 3) return "Add a Dhivehi headline (3+ characters), or clear the Dhivehi text to publish in English only.";
+  if (dv && !bodyDv) return "The Dhivehi article text is empty.";
+  return null;
+}
 
 export async function savePost(_: EState, fd: FormData): Promise<EState> {
   const user = await requireRole([...STAFF], "/editorial");
@@ -48,6 +60,8 @@ export async function savePost(_: EState, fd: FormData): Promise<EState> {
   const intent = str(fd, "intent") || "draft";
   const r = postSchema.safeParse({ title: str(fd, "title"), body: str(fd, "body"), category: str(fd, "category"), visibility: str(fd, "visibility") });
   if (!r.success) return { error: r.error.issues[0].message };
+  const langError = checkLanguages(r.data.title, r.data.body, str(fd, "titleDv"), str(fd, "bodyDv"));
+  if (langError) return { error: langError };
 
   const existing = id ? await db.post.findUnique({ where: { id } }) : null;
   if (id && !existing) return { error: "Post not found." };
@@ -74,7 +88,7 @@ export async function savePost(_: EState, fd: FormData): Promise<EState> {
   }
 
   const slugInput = str(fd, "slug");
-  const slug = await uniqueSlug(slugInput || r.data.title, "post", existing?.id);
+  const slug = await uniqueSlug(slugInput || r.data.title || "article", "post", existing?.id);
 
   const data = {
     ...r.data,
@@ -97,7 +111,7 @@ export async function savePost(_: EState, fd: FormData): Promise<EState> {
     ? await db.post.update({ where: { id: existing.id }, data })
     : await db.post.create({ data: { ...data, authorId: user.id } });
 
-  await audit(user.id, `post_${intent}`, "Post", post.id, post.title);
+  await audit(user.id, `post_${intent}`, "Post", post.id, post.title || post.titleDv || post.slug);
   revalidateContent();
   const messages: Record<string, string> = {
     draft: "Draft saved.", submit: "Sent to editors for review.", publish: "Published! It's now live on the website.",
@@ -311,4 +325,15 @@ export async function deletePhotoStory(fd: FormData) {
   await audit(user.id, "photo_story_delete", "PhotoStory", id);
   revalidateContent();
   redirect("/editorial/photo-stories");
+}
+
+// ─── Old website ────────────────────────────────────────────────────
+
+/** Bring the old website's articles and statements into News (one click; skips ones already here). */
+export async function importOldWebsiteArticles() {
+  const user = await requireRole([...PUBLISHERS], "/editorial");
+  const n = await importLegacyPosts(user.id);
+  await audit(user.id, "legacy_news_import", "Post", undefined, `${n} article(s)`);
+  revalidateContent();
+  redirect(`/editorial/posts?imported=${n}`);
 }

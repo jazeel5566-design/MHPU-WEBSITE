@@ -15,6 +15,8 @@ export const DEFAULT_SETTINGS = {
   instagram: "",
   x: "",
   dhivehiEnabled: "true",
+  // An article written in only one language also appears on the other language's website.
+  singleLanguageBoth: "true",
   // Online payments (keys live in env vars BML_API_KEY / BML_MODE)
   paymentsEnabled: "false",
   paymentProvider: "TEST", // TEST | BML
