@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Clock, Lock } from "lucide-react";
 import { db } from "@/lib/db";
 import { getLang, pick, getT } from "@/lib/i18n";
-import { getCurrentUser } from "@/lib/auth";
+import { audience } from "@/lib/audience-server";
 import { livePosts, liveOrder } from "@/lib/content";
 import { renderMarkdown } from "@/lib/markdown";
 import { formatDate, readingTime } from "@/lib/utils";
@@ -23,13 +23,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const T = await getT();
   const { slug } = await params;
-  const [lang, user] = await Promise.all([getLang(), getCurrentUser()]);
+  const [lang, a] = await Promise.all([getLang(), audience()]);
   const post = await db.post.findFirst({ where: { slug, ...livePosts(["PUBLIC", "MEMBERS"]) }, include: { author: { select: { name: true, title: true } } } });
   if (!post) notFound();
 
-  const canRead = post.visibility === "PUBLIC" || !!user?.member || user?.role === "ADMIN";
+  // Members only: the article itself, its news tab (e.g. Member notices), or the whole News page.
+  const membersPost = post.visibility === "MEMBERS" || a.membersNews.includes(post.category) || a.membersOnly.has("page.news");
+  const canRead = !membersPost || a.isMember;
   if (canRead) await db.post.update({ where: { id: post.id }, data: { views: { increment: 1 } } });
-  const related = await db.post.findMany({ where: { AND: [livePosts(), { category: post.category, id: { not: post.id } }] }, orderBy: liveOrder, take: 3 });
+  const related = await db.post.findMany({ where: { AND: [livePosts(), { category: post.category, id: { not: post.id } }, { category: { notIn: a.hiddenNews } }] }, orderBy: liveOrder, take: 3 });
   const body = pick(lang, post.body, post.bodyDv);
   const isDv = lang === "dv" && !!post.bodyDv;
 
@@ -39,7 +41,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         <Link href="/news" className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-700 hover:underline"><ArrowLeft className="size-4 rtl:rotate-180" /> {T("All news")}</Link>
         <div className="mt-6 flex flex-wrap items-center gap-2">
           <Badge tone="brand">{T(labelOf(POST_CATEGORIES, post.category))}</Badge>
-          {post.visibility === "MEMBERS" && <Badge tone="violet">{T("Members only")}</Badge>}
+          {membersPost && <Badge tone="violet">{T("Members only")}</Badge>}
         </div>
         <h1 className={`mt-4 text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl ${isDv ? "dv-text" : ""}`}>{pick(lang, post.title, post.titleDv)}</h1>
         {post.excerpt && <p className="mt-4 text-xl leading-relaxed text-muted">{pick(lang, post.excerpt, post.excerptDv)}</p>}

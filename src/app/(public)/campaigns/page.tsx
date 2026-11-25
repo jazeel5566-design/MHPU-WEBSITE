@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { guardMembersOnly } from "@/lib/audience-server";
 import { getLang, getT } from "@/lib/i18n";
 import { CampaignCard, PageHero, SectionHead } from "@/components/public/cards";
 import { getSitePhotos } from "@/lib/site-photos";
@@ -7,6 +8,7 @@ export const metadata = { title: "Campaigns" };
 export const dynamic = "force-dynamic";
 
 export default async function CampaignsPage() {
+  await guardMembersOnly("page.campaigns", "/campaigns");
   const T = await getT();
   const photos = await getSitePhotos();
   const lang = await getLang();

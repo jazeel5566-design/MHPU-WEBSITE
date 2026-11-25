@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
+import { getMembersOnly } from "@/lib/audience-server";
 import { readDocument, mimeFor } from "@/lib/storage";
 import { slugify } from "@/lib/utils";
 
@@ -9,7 +10,9 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   const r = await db.resource.findUnique({ where: { id } });
   if (!r) return new NextResponse("Not found", { status: 404 });
 
-  if (r.visibility === "MEMBERS") {
+  const membersOnly = await getMembersOnly();
+  const forMembers = r.visibility === "MEMBERS" || membersOnly.has(`resource.${r.category}`) || membersOnly.has("page.resources");
+  if (forMembers) {
     const user = await getCurrentUser();
     const allowed = user && (user.member?.status === "ACTIVE" || user.role !== "MEMBER");
     if (!allowed) return NextResponse.redirect(new URL("/login?next=/members/documents", req.url));
@@ -24,7 +27,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       headers: {
         "Content-Type": mimeFor(r.fileUrl),
         "Content-Disposition": `inline; filename="${slugify(r.title)}.${ext}"`,
-        "Cache-Control": r.visibility === "MEMBERS" ? "private, no-store" : "public, max-age=3600",
+        "Cache-Control": forMembers ? "private, no-store" : "public, max-age=3600",
       },
     });
   } catch {
