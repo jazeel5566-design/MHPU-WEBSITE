@@ -71,6 +71,8 @@ export const DV: Record<string, string> = {
   "Status": "ހާލަތު",
   "Active": "ހަރަކާތްތެރި",
   "Not active": "ހަރަކާތްތެރި ނޫން",
+  "This article is in Dhivehi.": "މި ލިޔުމަކީ ދިވެހި ބަހުން ލިޔެފައިވާ ލިޔުމެކެވެ.",
+  "This article is in English.": "މި ލިޔުމަކީ އިނގިރޭސި ބަހުން ލިޔެފައިވާ ލިޔުމެކެވެ.",
   "Photo stories": "ފޮޓޯ ސްޓޯރީތައް",
   "Our union in pictures": "ފޮޓޯތަކުން ފެންނަ އަހަރެމެންގެ ޔޫނިއަން",
   "Rallies, campaigns and gatherings of health workers across the Maldives.": "ދިވެހިރާއްޖޭގެ ހުރިހާ ސަރަހައްދެއްގައި ހެލްތް ވޯކަރުން ބައިވެރިވި ރެލީތަކާއި ކެމްޕެއިންތަކާއި ބައްދަލުވުންތައް.",

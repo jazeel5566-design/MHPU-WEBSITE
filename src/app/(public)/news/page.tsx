@@ -3,7 +3,7 @@ import { Search } from "lucide-react";
 import { db } from "@/lib/db";
 import { getLang, getT } from "@/lib/i18n";
 import { guardMembersOnly } from "@/lib/audience-server";
-import { livePosts, liveOrder } from "@/lib/content";
+import { livePosts, liveOrder, postsForLang } from "@/lib/content";
 import { POST_CATEGORIES } from "@/lib/constants";
 import { PostCard, PageHero } from "@/components/public/cards";
 import { EmptyState } from "@/components/ui";
@@ -25,6 +25,7 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
   const where = {
     AND: [
       livePosts(vis),
+      await postsForLang(lang),
       category ? { category } : {},
       { category: { notIn: a.hiddenNews } }, // members-only tabs (e.g. Member notices)
       q ? { OR: [{ title: { contains: q, mode: "insensitive" as const } }, { excerpt: { contains: q, mode: "insensitive" as const } }, { body: { contains: q, mode: "insensitive" as const } }] } : {},

@@ -370,7 +370,7 @@ export async function resetSitePhoto(fd: FormData) {
 
 export async function saveSettings(_: AState, fd: FormData): Promise<AState> {
   const admin = await requireRole([...ADMIN], "/admin");
-  const CHECKBOXES = ["alertEnabled", "dhivehiEnabled", "paymentsEnabled", "smsEnabled", "remindersEnabled"];
+  const CHECKBOXES = ["alertEnabled", "dhivehiEnabled", "singleLanguageBoth", "paymentsEnabled", "smsEnabled", "remindersEnabled"];
   // Only save what this form sends (dues collection is managed on the Finance page).
   const keys = Object.keys(DEFAULT_SETTINGS).filter((k) => CHECKBOXES.includes(k) || fd.has(k));
   await db.$transaction(

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { postIn } from "@/lib/post-lang";
 import { CalendarDays, MapPin, Clock, Video, Lock, ArrowUpRight, Users } from "lucide-react";
 import { formatDate, readingTime } from "@/lib/utils";
 import { labelOf, POST_CATEGORIES } from "@/lib/constants";
@@ -11,11 +12,12 @@ import { DV_MONTHS, DV_DAYS } from "@/lib/dv";
 
 type PostLite = {
   slug: string; title: string; titleDv?: string | null; excerpt?: string | null; excerptDv?: string | null;
-  coverImage?: string | null; category: string; publishedAt?: Date | null; body: string; visibility: string;
+  coverImage?: string | null; category: string; publishedAt?: Date | null; body: string; bodyDv?: string | null; visibility: string;
 };
 
 export function PostCard({ post, lang = "en", large = false, href }: { post: PostLite; lang?: Lang; large?: boolean; href?: string }) {
   const T = makeT(lang);
+  const v = postIn(post, lang);
   return (
     <Link href={href ?? `/news/${post.slug}`} className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-white transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand-900/5">
       <div className={`relative overflow-hidden bg-sand-100 ${large ? "aspect-[16/9]" : "aspect-[16/10]"}`}>
@@ -29,12 +31,12 @@ export function PostCard({ post, lang = "en", large = false, href }: { post: Pos
       <div className="flex flex-1 flex-col p-5">
         <div className="flex items-center gap-3 text-xs text-muted">
           <span>{formatDate(post.publishedAt)}</span>
-          <span className="inline-flex items-center gap-1"><Clock className="size-3" /> {readingTime(post.body)} {T("min")}</span>
+          <span className="inline-flex items-center gap-1"><Clock className="size-3" /> {readingTime(v.body || post.body)} {T("min")}</span>
         </div>
-        <h3 className={`mt-2 font-bold leading-snug text-ink group-hover:text-brand-700 ${large ? "text-2xl" : "text-lg"}`}>
-          {pick(lang, post.title, post.titleDv)}
+        <h3 className={`mt-2 font-bold leading-snug text-ink group-hover:text-brand-700 ${large ? "text-2xl" : "text-lg"} ${v.dv ? "dv-text" : ""}`} dir={v.dv ? "rtl" : undefined}>
+          {v.title}
         </h3>
-        {post.excerpt && <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted">{pick(lang, post.excerpt, post.excerptDv)}</p>}
+        {v.excerpt && <p className={`mt-2 line-clamp-3 text-sm leading-relaxed text-muted ${v.dv ? "dv-text" : ""}`} dir={v.dv ? "rtl" : undefined}>{v.excerpt}</p>}
       </div>
     </Link>
   );

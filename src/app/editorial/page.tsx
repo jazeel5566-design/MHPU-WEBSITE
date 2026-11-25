@@ -19,7 +19,7 @@ export default async function EditorialHome() {
     db.post.findMany({ where: { ...mine, status: { in: ["DRAFT", "IN_REVIEW"] } }, orderBy: { updatedAt: "desc" }, take: 5 }),
     pub ? db.post.findMany({ where: { status: "IN_REVIEW" }, include: { author: { select: { name: true } } }, orderBy: { updatedAt: "asc" }, take: 6 }) : Promise.resolve([]),
     db.post.findMany({ where: { status: "SCHEDULED", publishAt: { gt: new Date() } }, orderBy: { publishAt: "asc" }, take: 5 }),
-    db.post.findMany({ where: { status: "PUBLISHED" }, orderBy: { views: "desc" }, take: 5, select: { id: true, title: true, views: true } }),
+    db.post.findMany({ where: { status: "PUBLISHED" }, orderBy: { views: "desc" }, take: 5, select: { id: true, title: true, titleDv: true, views: true } }),
   ]);
   return (
     <div className="space-y-6">
@@ -39,7 +39,7 @@ export default async function EditorialHome() {
               <ul className="divide-y divide-line">
                 {queue.map((p) => (
                   <li key={p.id}><Link href={`/editorial/posts/${p.id}`} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-sand-50">
-                    <div className="min-w-0"><div className="truncate font-semibold">{p.title}</div><div className="text-xs text-muted">by {p.author.name} · submitted {timeAgo(p.updatedAt)}</div></div>
+                    <div className="min-w-0"><div className="truncate font-semibold">{p.title || p.titleDv}</div><div className="text-xs text-muted">by {p.author.name} · submitted {timeAgo(p.updatedAt)}</div></div>
                     <span className="text-sm font-semibold text-brand-700">Review →</span>
                   </Link></li>
                 ))}
@@ -53,7 +53,7 @@ export default async function EditorialHome() {
             <ul className="divide-y divide-line">
               {myDrafts.map((p) => (
                 <li key={p.id}><Link href={`/editorial/posts/${p.id}`} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-sand-50">
-                  <div className="min-w-0"><div className="truncate font-semibold">{p.title}</div><div className="text-xs text-muted">edited {timeAgo(p.updatedAt)}</div></div>
+                  <div className="min-w-0"><div className="truncate font-semibold">{p.title || p.titleDv}</div><div className="text-xs text-muted">edited {timeAgo(p.updatedAt)}</div></div>
                   <StatusBadge status={p.status} />
                 </Link></li>
               ))}
@@ -64,14 +64,14 @@ export default async function EditorialHome() {
           <CardHeader title="Publishing calendar" />
           {upcoming.length === 0 ? <p className="p-5 text-sm text-muted">Nothing scheduled.</p> : (
             <ul className="divide-y divide-line">
-              {upcoming.map((p) => <li key={p.id}><Link href={`/editorial/posts/${p.id}`} className="flex justify-between gap-3 px-5 py-3 text-sm hover:bg-sand-50"><span className="truncate font-semibold">{p.title}</span><span className="shrink-0 text-muted">{formatDateTime(p.publishAt)}</span></Link></li>)}
+              {upcoming.map((p) => <li key={p.id}><Link href={`/editorial/posts/${p.id}`} className="flex justify-between gap-3 px-5 py-3 text-sm hover:bg-sand-50"><span className="truncate font-semibold">{p.title || p.titleDv}</span><span className="shrink-0 text-muted">{formatDateTime(p.publishAt)}</span></Link></li>)}
             </ul>
           )}
         </Card>
         <Card>
           <CardHeader title="Most read" />
           <ul className="divide-y divide-line">
-            {top.map((p, i) => <li key={p.id} className="flex items-center gap-3 px-5 py-3 text-sm"><span className="w-5 font-extrabold text-muted">{i + 1}</span><span className="flex-1 truncate font-semibold">{p.title}</span><span className="text-muted">{p.views.toLocaleString()} views</span></li>)}
+            {top.map((p, i) => <li key={p.id} className="flex items-center gap-3 px-5 py-3 text-sm"><span className="w-5 font-extrabold text-muted">{i + 1}</span><span className="flex-1 truncate font-semibold">{p.title || p.titleDv}</span><span className="text-muted">{p.views.toLocaleString()} views</span></li>)}
           </ul>
         </Card>
       </div>

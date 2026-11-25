@@ -211,6 +211,7 @@ export function SettingsForm({ s, env }: { s: Settings; env: { bml: boolean; bml
       <section className="space-y-3">
         <h2 className="font-bold">Languages</h2>
         <Checkbox name="dhivehiEnabled" defaultChecked={s.dhivehiEnabled !== "false"} label="Offer the Dhivehi (ދިވެހި) version of the website" />
+        <Checkbox name="singleLanguageBoth" defaultChecked={s.singleLanguageBoth !== "false"} label="Show articles written in only one language on both the English and Dhivehi versions (in the language they were written in)" />
         <p className="text-xs text-muted">When switched off, the language toggle is hidden and everyone sees the English site. Dhivehi text already written in articles is kept and comes back if you switch it on again.</p>
       </section>
       <section className="space-y-4">
