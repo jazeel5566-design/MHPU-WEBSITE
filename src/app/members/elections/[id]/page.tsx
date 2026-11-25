@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, CheckCircle2, Lock, Trophy } from "lucide-react";
 import { db } from "@/lib/db";
 import { flushBallots } from "@/lib/ballots";
-import { requireMember } from "@/lib/auth";
+import { requireActiveMember } from "@/lib/auth";
 import { phaseOf, ineligibleReason, tally } from "@/lib/elections";
 import { formatDateTime } from "@/lib/utils";
 import { ButtonLink, Card, Notice, PageHeader } from "@/components/ui";
@@ -12,7 +12,7 @@ import { ElectionBallot } from "@/components/elections";
 export const dynamic = "force-dynamic";
 
 export default async function MemberElection({ params }: { params: Promise<{ id: string }> }) {
-  const [{ id }, { member }] = await Promise.all([params, requireMember()]);
+  const [{ id }, { member }] = await Promise.all([params, requireActiveMember()]);
   {
     const basic = await db.election.findUnique({ where: { id }, select: { closesAt: true } });
     if (basic && basic.closesAt < new Date()) await flushBallots(id, true); // count sealed ballots before showing results

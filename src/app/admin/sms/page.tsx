@@ -28,7 +28,7 @@ export default async function SmsPage() {
         : testMode ? <Notice tone="amber">Test mode: messages are logged below but not actually sent. Switch the provider to Dhiraagu in Site settings when your Bulk SMS account is ready.</Notice> : null}
       <Card><CardHeader title="Send an SMS" /><div className="p-5"><SmsComposer unions={unions} events={events} testMode={testMode} /></div></Card>
       <Card>
-        <CardHeader title="Automatic dues reminders" desc={s.remindersEnabled === "true" ? `On — checked every morning at 9:00. “Due soon” goes ${s.reminderDaysBefore} days before; “overdue” repeats every ${s.reminderRepeatDays} days, up to ${s.reminderMaxOverdue} times.` : "Off — turn on in Site settings → Dues reminders."} />
+        <CardHeader title="Automatic dues reminders" desc={s.duesCollectionOn !== "true" ? "Waiting — dues collection hasn't been started yet (Financial reports → Dues collection). Nothing is sent until then." : s.remindersEnabled === "true" ? `On — checked every morning at 9:00. “Due soon” goes ${s.reminderDaysBefore} days before; “overdue” repeats every ${s.reminderRepeatDays} days, up to ${s.reminderMaxOverdue} times.` : "Off — turn on in Site settings → Dues reminders."} />
         <div className="p-5"><ReminderPanel /></div>
       </Card>
       <Card>

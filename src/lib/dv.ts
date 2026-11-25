@@ -70,6 +70,7 @@ export const DV: Record<string, string> = {
   "Goal": "އަމާޒު",
   "Status": "ހާލަތު",
   "Active": "ހަރަކާތްތެރި",
+  "Not active": "ހަރަކާތްތެރި ނޫން",
   "Lapsed": "މުއްދަތު ހަމަވެފައި",
   "Suspended": "ހުއްޓާލެވިފައި",
   "Resigned": "ވަކިވެފައި",

@@ -1,6 +1,7 @@
 import "server-only";
 import { createHash } from "node:crypto";
 import { db } from "./db";
+import { duesBase, duesCollection, statusAfterPayment } from "./dues";
 
 /*
  * Online dues payments.
@@ -79,12 +80,12 @@ export async function markIntentPaid(intentId: string, method: string) {
   return db.$transaction(async (tx) => {
     const intent = await tx.paymentIntent.findUnique({ where: { id: intentId }, include: { member: true } });
     if (!intent || intent.status === "PAID") return intent;
-    const base = intent.member.duesPaidUntil && intent.member.duesPaidUntil > new Date() ? new Date(intent.member.duesPaidUntil) : new Date();
+    const base = duesBase(intent.member.duesPaidUntil, (await duesCollection()).start);
     base.setMonth(base.getMonth() + intent.months);
     const payment = await tx.payment.create({
       data: { memberId: intent.memberId, amount: intent.amount, period: `${intent.months} month${intent.months > 1 ? "s" : ""} (online)`, method, reference: intent.providerRef ?? intent.id },
     });
-    await tx.member.update({ where: { id: intent.memberId }, data: { duesPaidUntil: base, status: intent.member.status === "LAPSED" ? "ACTIVE" : intent.member.status } });
+    await tx.member.update({ where: { id: intent.memberId }, data: { duesPaidUntil: base, status: statusAfterPayment(intent.member.status) } });
     return tx.paymentIntent.update({ where: { id: intent.id }, data: { status: "PAID", paidAt: new Date(), paymentId: payment.id } });
   });
 }

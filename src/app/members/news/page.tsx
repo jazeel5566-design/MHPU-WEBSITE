@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { requireMember } from "@/lib/auth";
+import { requireActiveMember } from "@/lib/auth";
 import { livePosts, liveOrder } from "@/lib/content";
 import { PostCard } from "@/components/public/cards";
 import { PageHeader, EmptyState } from "@/components/ui";
@@ -7,7 +7,7 @@ import { PageHeader, EmptyState } from "@/components/ui";
 export const metadata = { title: "Member notices" };
 
 export default async function MemberNews() {
-  await requireMember();
+  await requireActiveMember();
   const [notices, latest] = await Promise.all([
     db.post.findMany({ where: livePosts(["MEMBERS"]), orderBy: liveOrder, take: 12 }),
     db.post.findMany({ where: livePosts(["PUBLIC"]), orderBy: liveOrder, take: 6 }),

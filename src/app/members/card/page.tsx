@@ -5,7 +5,9 @@ import { db } from "@/lib/db";
 import { siteUrl, verifyCode } from "@/lib/security";
 import { formatDate } from "@/lib/utils";
 import { LogoMark } from "@/components/logo";
-import { PageHeader, Card } from "@/components/ui";
+import { PageHeader, Card, Notice, ButtonLink } from "@/components/ui";
+import { getSettings } from "@/lib/settings";
+import { duesCollectionOf } from "@/lib/dues";
 import { PrintButton } from "@/components/members/print-button";
 
 export const metadata = { title: "Membership card" };
@@ -16,10 +18,22 @@ export default async function CardPage() {
   const verifyUrl = `${await siteUrl()}/verify/${member.membershipNo}?c=${verifyCode(member.membershipNo)}`;
   const qr = await QRCode.toDataURL(verifyUrl, { margin: 1, width: 240, color: { dark: "#0d3335", light: "#ffffff" } });
   const active = member.status === "ACTIVE";
+  const statusLabel = active ? "Active" : member.status === "INACTIVE" ? "Not active" : member.status.charAt(0) + member.status.slice(1).toLowerCase();
+  const dues = duesCollectionOf(await getSettings());
+  const start = dues.on ? dues.start : null;
 
   return (
     <div>
       <PageHeader title="Digital membership card" desc="Show this card at your workplace, events or partner offers. Anyone can scan the QR code to verify it." actions={<PrintButton />} />
+      {member.status === "INACTIVE" && (
+        <div className="mb-6 print:hidden">
+          <Notice tone="amber">
+            <strong>Your membership is not active yet.</strong> Pay your union dues{start && start > new Date() ? ` (collected from ${formatDate(start)})` : ""} to become an active member. You&apos;ll then see the member pages: notices, elections, ballots, events, documents and help with cases. If you have already paid, contact the office.
+            <div className="mt-3"><ButtonLink href="/members/dues" size="sm">Pay dues</ButtonLink></div>
+          </Notice>
+        </div>
+      )}
+      {(member.status === "LAPSED" || member.status === "SUSPENDED") && <div className="mb-6 print:hidden"><Notice tone="amber">Your membership is {statusLabel.toLowerCase()}. Member pages are available again once it is active. <a href="/members/dues" className="font-semibold underline">Dues & payments</a></Notice></div>}
       <div className="grid gap-8 lg:grid-cols-[minmax(0,440px)_1fr]">
         <div className="relative aspect-[1.586] w-full overflow-hidden rounded-3xl bg-gradient-to-br from-brand-700 via-brand-800 to-brand-950 p-6 text-white shadow-2xl shadow-brand-900/30 print:shadow-none">
           <svg className="absolute -bottom-6 -end-6 size-48 text-white/5" viewBox="0 0 48 48"><path d="M19 9h10v10h10v10H29v10H19V29H9V19h10z" fill="currentColor" /></svg>
@@ -27,13 +41,14 @@ export default async function CardPage() {
           <div className="relative flex h-full flex-col">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-2"><span className="rounded-lg bg-white p-1"><LogoMark className="h-7" /></span><div className="leading-tight"><div className="font-extrabold">MHPU</div><div className="text-[10px] text-brand-200">Maldives Health Professionals Union</div></div></div>
-              <span className={`rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider ${active ? "bg-emerald-400 text-emerald-950" : "bg-amber-300 text-amber-950"}`}>{member.status}</span>
+              <span className={`rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider ${active ? "bg-emerald-400 text-emerald-950" : "bg-amber-300 text-amber-950"}`}>{statusLabel}</span>
             </div>
             <div className="mt-auto flex items-end justify-between gap-4">
               <div className="min-w-0">
                 <div className="truncate text-xl font-extrabold">{member.fullName}</div>
                 <div className="truncate text-sm text-brand-100">{member.profession}{affiliate ? ` · ${affiliate.shortName}` : ""}</div>
                 <div className="mt-3 font-mono text-sm tracking-wider">{member.membershipNo}</div>
+                {member.unionMemberNo && <div className="font-mono text-[11px] tracking-wider text-brand-100">{member.unionMemberNo}</div>}
                 <div className="text-[10px] text-brand-200">Member since {formatDate(member.joinedAt, { month: "short", year: "numeric" })}</div>
               </div>
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -48,6 +63,8 @@ export default async function CardPage() {
             <div><dt className="text-muted">Workplace</dt><dd className="font-semibold">{member.employer}</dd></div>
             <div><dt className="text-muted">Atoll</dt><dd className="font-semibold">{member.atoll}</dd></div>
             <div><dt className="text-muted">Dues paid until</dt><dd className="font-semibold">{formatDate(member.duesPaidUntil)}</dd></div>
+            <div><dt className="text-muted">Status</dt><dd className="font-semibold">{statusLabel}</dd></div>
+            <div><dt className="text-muted">Workplace union</dt><dd className="font-semibold">{affiliate ? `${affiliate.shortName}${member.unionMemberNo ? ` · ${member.unionMemberNo}` : ""}` : "—"}</dd></div>
             <div><dt className="text-muted">Workplace rep</dt><dd className="font-semibold">{member.isRep ? "Yes" : "No"}</dd></div>
           </dl>
           <p className="mt-5 break-all text-xs text-muted">Verify link: {verifyUrl}</p>

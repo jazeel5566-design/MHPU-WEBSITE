@@ -1,7 +1,7 @@
 import { Vote, CheckCircle2, Lock } from "lucide-react";
 import { db } from "@/lib/db";
 import { flushClosedBallots } from "@/lib/ballots";
-import { requireMember } from "@/lib/auth";
+import { requireActiveMember } from "@/lib/auth";
 import { formatDateTime } from "@/lib/utils";
 import { Badge, Card, PageHeader, EmptyState } from "@/components/ui";
 import { VoteForm } from "@/components/members/forms";
@@ -9,7 +9,7 @@ import { VoteForm } from "@/components/members/forms";
 export const metadata = { title: "Ballots" };
 
 export default async function BallotsPage() {
-  const { member } = await requireMember();
+  const { member } = await requireActiveMember();
   const now = new Date();
   await flushClosedBallots(); // count any sealed votes once a ballot has closed
   const ballots = await db.ballot.findMany({

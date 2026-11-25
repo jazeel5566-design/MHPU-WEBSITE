@@ -45,6 +45,14 @@ export async function requireMember() {
   return { user, member: user.member };
 }
 
+/** Member-only pages: only ACTIVE members (dues paid, or activated by an admin).
+ *  Everyone else is sent to their membership card, which explains how to become active. */
+export async function requireActiveMember() {
+  const r = await requireMember();
+  if (r.member.status !== "ACTIVE") redirect("/members/card");
+  return r;
+}
+
 export function homeFor(role: string) {
   if (role === "MEMBER") return "/members";
   if (role === "TREASURER") return "/admin/finance";
