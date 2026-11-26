@@ -11,3 +11,15 @@ export const PHOTO = {
   maternityPolicy: "/photos/maternity-policy-campaign.jpg",
   unionStall: "/photos/union-stall.jpg",
 };
+
+/** Photos used when an article has no cover of its own: picked by the article's address,
+ *  so each article keeps the same photo and neighbouring cards differ. */
+const COVER_POOL = [
+  PHOTO.workLifeBalance, PHOTO.decentWork, PHOTO.mayDayGathering, PHOTO.march, PHOTO.wageTheft,
+  PHOTO.unionStall, PHOTO.team, PHOTO.oshTraining, PHOTO.maternityPolicy,
+];
+export function coverFor(key: string) {
+  let h = 0;
+  for (const c of key) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return COVER_POOL[h % COVER_POOL.length];
+}
