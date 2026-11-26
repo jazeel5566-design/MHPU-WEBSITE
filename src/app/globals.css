@@ -103,6 +103,10 @@ html[data-contrast="high"] img { filter: grayscale(0.4) contrast(1.1); }
 .prose-mhpu li + li { margin-top: .35em; }
 .prose-mhpu blockquote { border-inline-start: 4px solid var(--color-coral-500); padding: .25em 1em; color: var(--color-muted); font-style: italic; background: var(--color-sand-50); border-radius: 0 8px 8px 0; }
 .prose-mhpu img { border-radius: 12px; }
+/* Images on their own line (e.g. pages of a statement): full width, framed like a document */
+.prose-mhpu p:has(> img:only-child) img { display: block; width: 100%; border: 1px solid var(--color-line); box-shadow: 0 8px 24px -12px rgb(15 23 42 / .25); background: #fff; }
+.prose-mhpu p:has(> img:only-child) + p:has(> img:only-child) { margin-top: 1.5rem; }
+.prose-dv { font-size: 1.125rem; line-height: 2.1; }
 .prose-mhpu table { width: 100%; border-collapse: collapse; font-size: .95rem; }
 .prose-mhpu th, .prose-mhpu td { border: 1px solid var(--color-line); padding: .5em .75em; text-align: start; }
 .prose-mhpu th { background: var(--color-sand-50); }

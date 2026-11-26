@@ -4,7 +4,7 @@ import { CalendarDays, MapPin, Clock, Video, Lock, ArrowUpRight, Users } from "l
 import { formatDate, readingTime } from "@/lib/utils";
 import { labelOf, POST_CATEGORIES } from "@/lib/constants";
 import { Badge, Progress } from "@/components/ui";
-import { PHOTO } from "@/lib/images";
+import { PHOTO, coverFor } from "@/lib/images";
 import type { Lang } from "@/lib/i18n";
 import { pick } from "@/lib/i18n";
 import { makeT } from "@/lib/dv";
@@ -22,7 +22,7 @@ export function PostCard({ post, lang = "en", large = false, href }: { post: Pos
     <Link href={href ?? `/news/${post.slug}`} className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-white transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand-900/5">
       <div className={`relative overflow-hidden bg-sand-100 ${large ? "aspect-[16/9]" : "aspect-[16/10]"}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={post.coverImage || PHOTO.workLifeBalance} alt="" className="size-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" />
+        <img src={post.coverImage || coverFor(post.slug)} alt="" className="size-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" />
         <div className="absolute start-3 top-3 flex gap-1.5">
           <Badge tone="brand" className="bg-white/95 shadow-sm">{T(labelOf(POST_CATEGORIES, post.category))}</Badge>
           {post.visibility === "MEMBERS" && <Badge tone="violet" className="gap-1 shadow-sm"><Lock className="size-3" /> {T("Members")}</Badge>}
